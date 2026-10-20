@@ -35,7 +35,7 @@ main{max-width:560px;margin:0 auto;padding:16px}
 @keyframes flick{0%,100%{transform:scale(1) rotate(-3deg)}50%{transform:scale(1.12) rotate(3deg)}}
 .flame b{font-size:36px;line-height:1;display:block}
 .flame small{display:block;font-size:12px;font-weight:700;opacity:.92}
-.lvl{flex:1;max-width:170px;text-align:right}
+.lvl{flex:1;max-width:190px;text-align:right}
 .lvl b{font-size:15px}
 .lvl small{display:block;font-size:12px;font-weight:700;opacity:.92;margin-top:3px}
 .bar{height:12px;border-radius:7px;background:rgba(255,255,255,.35);overflow:hidden;margin-top:4px}
@@ -235,6 +235,8 @@ const met = i => i.due > 0 && i.done >= Math.min(S.settings.goal, i.due);
 const complete = i => i.due > 0 && i.done === i.due;
 const dayXP = k => { const i = dayInfo(k); return i.done * XP + (complete(i) ? BONUS : 0); };
 function totalXP() { let x = 0; for (const k in S.log) x += dayXP(k); return x; }
+const TITLES = ['Arrancando','Aprendiz','Constante','Disciplinado','Imparable','Máquina','Crack','Fiera','Leyenda','Mito'];
+const titleOf = l => TITLES[Math.min(l, TITLES.length) - 1];
 const need = l => 50 * l * (l - 1);
 function levelOf(xp) { let l = 1; while (xp >= need(l + 1)) l++; return l; }
 
@@ -296,7 +298,7 @@ function header() {
   const p = (xp - need(lv)) / (need(lv + 1) - need(lv)) * 100;
   return `<div class="top-in">
     <div class="flame ${g.lit ? 'lit' : ''}"><span class="fl">🔥</span><div><b>${g.cur}</b><small>${g.cur === 1 ? 'día' : 'días'} de racha</small></div></div>
-    <div class="lvl"><b>Nivel ${lv}</b><div class="bar"><i style="width:${p}%"></i></div><small>${xp - need(lv)} / ${need(lv + 1) - need(lv)} XP</small></div>
+    <div class="lvl"><b>${titleOf(lv)}</b><div class="bar"><i style="width:${p}%"></i></div><small>Nivel ${lv} · ${xp - need(lv)} / ${need(lv + 1) - need(lv)} XP</small></div>
   </div>`;
 }
 const byTime = dow => (a, b) => (timeFor(a, dow) || '99').localeCompare(timeFor(b, dow) || '99') || a.name.localeCompare(b.name);
@@ -428,7 +430,7 @@ function toggle(hid, k, fromSheet) {
   }
   const lvUp = lvAfter > lvBefore;
   if (k === todayKey() && complete(iAfter) && !wasComplete && !fromSheet) setTimeout(() => celebrate(lvUp ? lvAfter : 0), 650);
-  else if (lvUp) toast(`⬆️ ¡Subiste al nivel ${lvAfter}!`);
+  else if (lvUp) toast(`⬆️ ¡Nivel ${lvAfter}! Ahora sos ${titleOf(lvAfter)}`);
   else if (met(iAfter) && !wasMet) toast('🎯 ¡Meta diaria cumplida!');
 }
 function celebrate(newLevel) {
@@ -437,7 +439,7 @@ function celebrate(newLevel) {
   c.innerHTML = `<div class="big">🎉</div><h1>¡Día completo!</h1>
     <p>${FRASES[Math.floor(Math.random() * FRASES.length)]}</p>
     <p>🔥 ${g.cur} ${g.cur === 1 ? 'día' : 'días'} de racha</p><p>⭐ +${dayXP(k)} XP hoy</p>
-    ${newLevel ? `<p>⬆️ ¡Nivel ${newLevel}!</p>` : ''}
+    ${newLevel ? `<p>⬆️ ¡Nivel ${newLevel}! Ahora sos ${titleOf(newLevel)}</p>` : ''}
     <button class="btn" data-act="closeCele">Seguir</button>`;
   c.hidden = false;
   chime([523, 659, 784, 1047]);
