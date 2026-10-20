@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Hábitos">
 <meta name="theme-color" content="#58cc02">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="apple-touch-icon.png">
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--tx:#2f3a40;--mu:#7b8a93;--ln:#e3e8ec;--g:#58cc02;--gd:#46a302;--red:#ffd9db;--redtx:#e5484d;--na:#e9edf0;--amb:#ffe9b0;--ambtx:#a87400;--sh:rgba(0,0,0,.08)}
 @media(prefers-color-scheme:dark){:root{--bg:#10191e;--card:#1b2830;--tx:#eaf1f4;--mu:#8ea2ad;--ln:#2b3b45;--red:#4b2930;--redtx:#ff7b80;--na:#24323a;--amb:#4b4020;--ambtx:#ffc94d;--sh:rgba(0,0,0,.4)}}
@@ -621,19 +623,6 @@ document.addEventListener('click', e => {
   }
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
-
-/* ícono para la pantalla de inicio (se genera, no hay archivos externos) */
-(function () {
-  try {
-    const c = document.createElement('canvas'); c.width = c.height = 180;
-    const x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 180, 180);
-    g.addColorStop(0, '#7ed321'); g.addColorStop(1, '#3d9b00');
-    x.fillStyle = g; x.fillRect(0, 0, 180, 180);
-    x.font = '112px serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('🔥', 90, 98);
-    const url = c.toDataURL('image/png');
-    ['apple-touch-icon', 'icon'].forEach(rel => { const l = document.createElement('link'); l.rel = rel; l.href = url; document.head.appendChild(l); });
-  } catch (e) {}
-})();
 
 render();
 </script>
