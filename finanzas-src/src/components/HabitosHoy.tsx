@@ -23,6 +23,7 @@ function alternar(id: string, k: string) {
     if (ix < 0) arr.push(id); else arr.splice(ix, 1);
     if (!arr.length) delete s.log[k];
     localStorage.setItem(LS, JSON.stringify(s));
+    window.Sync?.touch('habitos');
   } catch { /* sin storage */ }
 }
 

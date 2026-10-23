@@ -2,6 +2,7 @@ import { ahorroActualUsd, mesesDelPlan, sumarMeses } from '../../../lib/finanzas
 import { fmtArs, fmtUsd, mesLargo } from '../../../lib/finanzas/format';
 import { useStore } from '../store';
 import { MoneyInput } from '../components/MoneyInput';
+import { CuentaSync } from '../components/CuentaSync';
 import { SelectMes, Stepper } from '../components/Campos';
 
 const DOLARES = [1500, 1550, 1750];
@@ -16,6 +17,9 @@ export function Config() {
   return (
     <div className="dash">
       <header className="ph"><div><h1>Configuración</h1><p className="sub">Tu meta y tus ahorros</p></div></header>
+
+      <h3 className="sec">Cuenta y sincronización</h3>
+      <section className="card"><CuentaSync /></section>
 
       <h3 className="sec">Tu meta</h3>
       <section className="card pad0">
