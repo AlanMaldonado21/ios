@@ -1,14 +1,17 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Dashboard } from './screens/Dashboard';
+import { Diario } from './screens/Diario';
+import { Guardado, StoreProvider } from './store';
 
-export type Ruta = 'inicio' | 'plan' | 'ingresos' | 'cuotas' | 'gastos' | 'config';
+export type Ruta = 'inicio' | 'diario' | 'plan' | 'ingresos' | 'cuotas' | 'gastos' | 'config';
 
 const NAV: { r: Ruta; ico: string; label: string }[] = [
   { r: 'inicio', ico: '📊', label: 'Inicio' },
+  { r: 'diario', ico: '🧾', label: 'Diario' },
   { r: 'plan', ico: '🗓️', label: 'Plan' },
   { r: 'ingresos', ico: '💵', label: 'Ingresos' },
   { r: 'cuotas', ico: '💳', label: 'Cuotas' },
-  { r: 'gastos', ico: '🧾', label: 'Gastos' },
+  { r: 'gastos', ico: '🏠', label: 'Fijos' },
 ];
 
 function useRuta(): Ruta {
@@ -26,7 +29,7 @@ function Proximamente({ titulo }: { titulo: string }) {
   return (
     <div className="dash">
       <header className="ph"><div><h1>{titulo}</h1><p className="sub">Esta pantalla llega en el próximo paso</p></div></header>
-      <div className="card empty"><span className="big">🚧</span>Primero aprobamos el diseño del Dashboard.</div>
+      <div className="card empty"><span className="big">🚧</span>La armo cuando conectemos Supabase. Por ahora usá Inicio y Diario.</div>
     </div>
   );
 }
@@ -36,11 +39,14 @@ export function App() {
   let vista: ReactNode;
   switch (ruta) {
     case 'inicio': vista = <Dashboard />; break;
+    case 'diario': vista = <Diario />; break;
     case 'config': vista = <Proximamente titulo="Configuración" />; break;
     default: vista = <Proximamente titulo={NAV.find(n => n.r === ruta)?.label ?? 'Finanzas'} />;
   }
   return (
+    <StoreProvider>
     <div className="shell">
+      <Guardado />
       <aside className="side">
         <a className="side-back" href="../">‹ Hábitos</a>
         <div className="side-brand"><span>💰</span>Finanzas</div>
@@ -58,5 +64,6 @@ export function App() {
         {NAV.map(n => <a key={n.r} href={`#/${n.r}`} className={ruta === n.r ? 'on' : ''}><span>{n.ico}</span>{n.label}</a>)}
       </div></nav>
     </div>
+    </StoreProvider>
   );
 }

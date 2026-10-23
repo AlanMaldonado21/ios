@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
-import { calcularPlan, mesActualDelPlan } from '../../../lib/finanzas/calc';
-import { SEED } from '../../../lib/finanzas/seed';
+import { useState } from 'react';
+import { mesActualDelPlan } from '../../../lib/finanzas/calc';
+import { usePlan, useStore } from '../store';
+import { Checklist } from '../components/Checklist';
 import { fmtArs, fmtPct, fmtUsd, mesCorto, mesLargo } from '../../../lib/finanzas/format';
 import { ProgressRing } from '../components/ProgressRing';
 import { KpiCard } from '../components/KpiCard';
@@ -14,10 +15,8 @@ const DOLARES = [1500, 1550, 1750];
 const hoyMes = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
 
 export function Dashboard() {
-  // Maqueta: usa el seed en memoria. Después lee de Supabase.
-  const [dolar, setDolar] = useState(SEED.settings.dolar);
-  const data = useMemo(() => ({ ...SEED, settings: { ...SEED.settings, dolar } }), [dolar]);
-  const { meses, resumen: r } = useMemo(() => calcularPlan(data), [data]);
+  const { dolar, setDolar, checks } = useStore();
+  const { data, meses, resumen: r } = usePlan();
   const hoy = mesActualDelPlan(meses.map(m => m.mes), hoyMes());
   const [sel, setSel] = useState(hoy);
   const ix = Math.max(0, meses.findIndex(m => m.mes === sel));
@@ -62,11 +61,12 @@ export function Dashboard() {
       </section>
 
       {/* MESES */}
-      <MonthStrip meses={meses} sel={sel} onSel={setSel} hoy={hoy} meta={s.metaUsd} />
+      <MonthStrip meses={meses} sel={sel} onSel={setSel} hoy={hoy} meta={s.metaUsd} checks={checks} />
 
       <div className="layout">
         <div className="col-mes">
           <MesBox m={m} ix={ix} meses={meses} meta={s.metaUsd} hoy={hoy} ir={ir} />
+          <Checklist meses={meses} sel={sel} onSel={setSel} />
 
           <section className="kpis">
             <KpiCard ico="🏦" label="Ahorro del mes" value={m.ahorroUsd} prev={prev?.ahorroUsd} format={n => fmtUsd(n, 0)}
