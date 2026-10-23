@@ -52,6 +52,7 @@ type Ctx = Estado & {
 
 const C = createContext<Ctx | null>(null);
 export const hoyISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+export const hoyMes = () => hoyISO().slice(0, 7);
 export const nuevoId = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36);
 
 export function StoreProvider({ children }: { children: ReactNode }) {

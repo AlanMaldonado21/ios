@@ -1,10 +1,10 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { Inicio } from './screens/Inicio';
-import { Dashboard } from './screens/Dashboard';
-import { Diario } from './screens/Diario';
+const Mes = lazy(() => import('./screens/Mes').then(m => ({ default: m.Mes })));
+const Diario = lazy(() => import('./screens/Diario').then(m => ({ default: m.Diario })));
 import { Ingresos } from './screens/Ingresos';
-import { Plan } from './screens/Plan';
-import { Cuotas } from './screens/Cuotas';
+const Plan = lazy(() => import('./screens/Plan').then(m => ({ default: m.Plan })));
+const Cuotas = lazy(() => import('./screens/Cuotas').then(m => ({ default: m.Cuotas })));
 import { Fijos } from './screens/Fijos';
 import { Mas } from './screens/Mas';
 import { Config } from './screens/Config';
@@ -48,7 +48,7 @@ export function App() {
   let vista: ReactNode;
   switch (ruta) {
     case 'inicio': vista = <Inicio />; break;
-    case 'mes': vista = <Dashboard />; break;
+    case 'mes': vista = <Mes />; break;
     case 'diario': vista = <Diario />; break;
     case 'ingresos': vista = <Ingresos />; break;
     case 'plan': vista = <Plan />; break;
@@ -76,7 +76,7 @@ export function App() {
         <a href="../" className="chip">‹ Hábitos</a>
         <a href="#/config" className={`chip ico ${ruta === 'config' ? 'on' : ''}`} aria-label="Configuración">⚙️</a>
       </div>
-      <main className="content" key={ruta}>{vista}</main>
+      <main className="content" key={ruta}><Suspense fallback={<div className="cargando" aria-busy="true" />}>{vista}</Suspense></main>
       <nav className="tabs"><div className="tabs-in">
         {TABS.map(n => <a key={n.r} href={`#/${n.r}`} className={tabActiva === n.r ? 'on' : ''}><span>{n.ico}</span>{n.label}</a>)}
       </div></nav>

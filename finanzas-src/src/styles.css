@@ -605,3 +605,5 @@ h2{font-size:16px;margin:0;font-weight:800}
 .gd-x{width:44px;height:44px}
 .qa-frec{display:flex;gap:6px;margin-top:10px}
 .qa-frec button{min-height:40px;padding:0 14px;border-radius:999px;border:1px dashed var(--acc);background:none;color:var(--acc);font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
+.cargando{height:160px;border-radius:var(--r);background:linear-gradient(90deg,var(--card),var(--card2),var(--card));background-size:200% 100%;animation:shim 1.2s linear infinite;margin-top:16px}
+@keyframes shim{to{background-position:-200% 0}}
