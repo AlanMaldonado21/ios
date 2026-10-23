@@ -58,7 +58,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const first = useRef(true);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
-    try { localStorage.setItem(LS, JSON.stringify({ ...st, fixAhorro: true })); setGuardado(Date.now()); } catch { /* lleno o bloqueado */ }
+    try {
+      const txt = JSON.stringify({ ...st, fixAhorro: true });
+      if (txt === localStorage.getItem(LS)) return; // nada cambió (p. ej. el doble efecto de StrictMode al abrir)
+      localStorage.setItem(LS, txt); setGuardado(Date.now());
+    } catch { /* lleno o bloqueado */ }
   }, [st]);
 
   const toggleCheck = useCallback((mes: string, usd: number) => setSt(s => {

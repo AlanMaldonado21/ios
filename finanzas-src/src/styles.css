@@ -579,3 +579,15 @@ h2{font-size:16px;margin:0;font-weight:800}
 .aviso button{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:11px;min-height:44px;padding:0 14px;font-weight:800}
 .ph .btn-add{height:44px}
 @media (min-width:900px){.fab{bottom:28px;right:32px}.aviso{bottom:100px}}
+.ah-mini{display:block;padding:16px 18px}
+.ah-n{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+.ah-n small{font-size:13px;font-weight:700;color:var(--mu);letter-spacing:0}
+.ah-mini .hint{display:block;margin-top:10px;font-size:13px}
+.sec.first{margin-top:20px}
+.mas-i{display:flex;align-items:center;gap:12px;padding:12px 16px;min-height:64px}
+.mas-i+.mas-i{border-top:1px solid var(--ln)}
+.mas-i div{flex:1;min-width:0}
+.mas-i b{display:block;font-weight:800}
+.mas-i small{display:block;color:var(--mu);font-weight:600;font-size:12.5px}
+.mas-i>i{font-style:normal;color:var(--mu);font-size:22px}
+.tabs a span{font-size:21px}

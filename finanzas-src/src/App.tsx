@@ -1,15 +1,17 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { Inicio } from './screens/Inicio';
 import { Dashboard } from './screens/Dashboard';
 import { Diario } from './screens/Diario';
 import { Ingresos } from './screens/Ingresos';
 import { Plan } from './screens/Plan';
 import { Cuotas } from './screens/Cuotas';
 import { Fijos } from './screens/Fijos';
+import { Mas } from './screens/Mas';
 import { Config } from './screens/Config';
 import { QuickAdd } from './components/QuickAdd';
 import { Guardado, StoreProvider } from './store';
 
-export type Ruta = 'inicio' | 'diario' | 'plan' | 'ingresos' | 'cuotas' | 'gastos' | 'config';
+export type Ruta = 'inicio' | 'mas' | 'mes' | 'diario' | 'plan' | 'ingresos' | 'cuotas' | 'gastos' | 'config';
 
 const NAV: { r: Ruta; ico: string; label: string }[] = [
   { r: 'inicio', ico: '📊', label: 'Inicio' },
@@ -19,6 +21,15 @@ const NAV: { r: Ruta; ico: string; label: string }[] = [
   { r: 'cuotas', ico: '💳', label: 'Cuotas' },
   { r: 'gastos', ico: '🏠', label: 'Fijos' },
 ];
+
+const TABS: { r: Ruta; ico: string; label: string }[] = [
+  { r: 'inicio', ico: '📊', label: 'Inicio' },
+  { r: 'diario', ico: '🧾', label: 'Diario' },
+  { r: 'plan', ico: '🗓️', label: 'Plan' },
+  { r: 'mas', ico: '☰', label: 'Más' },
+];
+/** Qué solapa del celu se ilumina para cada ruta. */
+const tabDe = (r: Ruta): Ruta => (r === 'mes' ? 'plan' : ['ingresos', 'cuotas', 'gastos', 'config'].includes(r) ? 'mas' : r);
 
 function useRuta(): Ruta {
   const leer = () => (location.hash.replace(/^#\/?/, '') || 'inicio') as Ruta;
@@ -33,16 +44,19 @@ function useRuta(): Ruta {
 
 export function App() {
   const ruta = useRuta();
+  const tabActiva = tabDe(ruta);
   let vista: ReactNode;
   switch (ruta) {
-    case 'inicio': vista = <Dashboard />; break;
+    case 'inicio': vista = <Inicio />; break;
+    case 'mes': vista = <Dashboard />; break;
     case 'diario': vista = <Diario />; break;
     case 'ingresos': vista = <Ingresos />; break;
     case 'plan': vista = <Plan />; break;
     case 'cuotas': vista = <Cuotas />; break;
     case 'gastos': vista = <Fijos />; break;
+    case 'mas': vista = <Mas />; break;
     case 'config': vista = <Config />; break;
-    default: vista = <Dashboard />;
+    default: vista = <Inicio />;
   }
   return (
     <StoreProvider>
@@ -54,6 +68,7 @@ export function App() {
         <div className="side-brand"><span>💰</span>Finanzas</div>
         <nav>
           {NAV.map(n => <a key={n.r} href={`#/${n.r}`} className={ruta === n.r ? 'on' : ''}><span>{n.ico}</span>{n.label}</a>)}
+          <a href="#/mes" className={ruta === 'mes' ? 'on' : ''}><span>📅</span>Detalle del mes</a>
           <a href="#/config" className={ruta === 'config' ? 'on' : ''}><span>⚙️</span>Configuración</a>
         </nav>
       </aside>
@@ -63,7 +78,7 @@ export function App() {
       </div>
       <main className="content" key={ruta}>{vista}</main>
       <nav className="tabs"><div className="tabs-in">
-        {NAV.map(n => <a key={n.r} href={`#/${n.r}`} className={ruta === n.r ? 'on' : ''}><span>{n.ico}</span>{n.label}</a>)}
+        {TABS.map(n => <a key={n.r} href={`#/${n.r}`} className={tabActiva === n.r ? 'on' : ''}><span>{n.ico}</span>{n.label}</a>)}
       </div></nav>
     </div>
     </StoreProvider>
