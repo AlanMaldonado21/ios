@@ -1,96 +1,142 @@
 import { useMemo, useState } from 'react';
-import { fmtArs, fmtUsd, mesLargo } from '../../../lib/finanzas/format';
+import { calcularPlan, mesActualDelPlan } from '../../../lib/finanzas/calc';
+import { SEED } from '../../../lib/finanzas/seed';
+import { fmtArs, fmtPct, fmtUsd, mesCorto, mesLargo } from '../../../lib/finanzas/format';
 import { ProgressRing } from '../components/ProgressRing';
 import { KpiCard } from '../components/KpiCard';
 import { CountUp } from '../components/CountUp';
-import { AcumuladoChart, ApiladoChart, CuotasChart, DonaChart, SERIES } from '../components/Charts';
-import { mockPlan, mockResumen } from '../mock';
+import { MonthStrip } from '../components/MonthStrip';
+import { Apertura } from '../components/Apertura';
+import { AcumuladoChart, ApiladoChart, CuotasChart, DonaChart, SERIES, TARJETAS } from '../components/Charts';
 
 const DOLARES = [1500, 1550, 1750];
+const hoyMes = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
 
 export function Dashboard() {
-  const [dolar, setDolar] = useState(mockResumen.dolar);
-  // Maqueta: recalcula los USD con el dólar elegido.
-  const plan = useMemo(() => {
-    let acum = 1050 + 1627500 / dolar;
-    return mockPlan.map(m => { const u = m.ahorroPesos / dolar; acum += u; return { ...m, ahorroUsd: u, usdAcum: acum }; });
-  }, [dolar]);
-  const { meta, fechaMeta } = mockResumen;
-  const proyectados = plan.filter(m => m.mes <= fechaMeta).at(-1)!.usdAcum;
-  const pct = proyectados / meta;
-  const ok = proyectados >= meta;
-  const ix = plan.findIndex(m => m.mes === mockResumen.mesActual);
-  const cur = plan[ix], prev = plan[ix - 1];
-  const serie = (k: keyof (typeof plan)[0]) => plan.filter(m => !m.postMeta).map(m => Number(m[k]));
-  const ingresoTotal = cur.ingreso + cur.aguinaldo;
+  // Maqueta: usa el seed en memoria. Después lee de Supabase.
+  const [dolar, setDolar] = useState(SEED.settings.dolar);
+  const data = useMemo(() => ({ ...SEED, settings: { ...SEED.settings, dolar } }), [dolar]);
+  const { meses, resumen: r } = useMemo(() => calcularPlan(data), [data]);
+  const hoy = mesActualDelPlan(meses.map(m => m.mes), hoyMes());
+  const [sel, setSel] = useState(hoy);
+  const ix = Math.max(0, meses.findIndex(m => m.mes === sel));
+  const m = meses[ix], prev = ix > 0 ? meses[ix - 1] : null;
+  const s = data.settings;
+  const serie = (f: (x: typeof m) => number) => meses.map(f);
+  const ir = (d: number) => setSel(meses[Math.min(meses.length - 1, Math.max(0, ix + d))].mes);
 
   return (
     <div className="dash">
       <header className="ph">
         <div>
           <h1>Finanzas</h1>
-          <p className="sub">Plan de ahorro en dólares · meta {mesLargo(fechaMeta)}</p>
+          <p className="sub">Plan de ahorro en dólares</p>
         </div>
         <div className="seg" role="group" aria-label="Dólar estimado">
+          <span className="seg-l">Dólar</span>
           {DOLARES.map(d => (
-            <button key={d} className={d === dolar ? 'on' : ''} onClick={() => setDolar(d)}>$ {d.toLocaleString('es-AR')}</button>
+            <button key={d} className={d === dolar ? 'on' : ''} onClick={() => setDolar(d)}>{d.toLocaleString('es-AR')}</button>
           ))}
         </div>
       </header>
 
-      <section className="hero card glow">
-        <ProgressRing pct={pct} />
-        <div className="hero-t">
-          <span className="eyebrow">USD proyectados a {mesLargo(fechaMeta)}</span>
-          <div className="hero-n"><CountUp value={proyectados} format={n => fmtUsd(n, 0)} /></div>
-          <div className="hero-s">de <b className="num">{fmtUsd(meta, 0)}</b></div>
-          <span className={`badge ${ok ? 'b-pos' : 'b-warn'}`}>
-            {ok ? '✓ META CUMPLIDA' : `Te faltan ${fmtUsd(meta - proyectados, 0)}`}
-          </span>
-          {ok && <p className="hero-x">Te sobran <b className="num">{fmtUsd(proyectados - meta, 0)}</b> sobre la meta</p>}
+      {/* HERO */}
+      <section className="hero">
+        <div className="hero-top">
+          <ProgressRing pct={r.usdProyectados / s.metaUsd} size={innerWidth >= 900 ? 150 : 112} stroke={innerWidth >= 900 ? 13 : 10} />
+          <div className="hero-t">
+            <span className="eyebrow">Proyectado a {mesCorto(s.fechaMeta)}</span>
+            <div className="hero-n"><CountUp value={r.usdProyectados} format={n => fmtUsd(n, 0)} /></div>
+            <div className="hero-s">meta <b className="num">{fmtUsd(s.metaUsd, 0)}</b></div>
+            <span className={`badge ${r.cumplida ? 'b-pos' : 'b-warn'}`}>
+              {r.cumplida ? '✓ META CUMPLIDA' : `Te faltan ${fmtUsd(-r.diferencia, 0)}`}
+            </span>
+          </div>
+        </div>
+        <div className="hero-stats">
+          <div><span>Ahorrado hoy</span><b className="num">{fmtUsd(r.ahorroActualUsd, 0)}</b></div>
+          <div><span>{r.cumplida ? 'Te sobran' : 'Te faltan'}</span><b className={`num ${r.cumplida ? 'pos' : 'warn'}`}>{fmtUsd(Math.abs(r.diferencia), 0)}</b></div>
+          <div><span>Meses a la meta</span><b className="num">{r.mesesHastaMeta}</b></div>
+          <div><span>Necesitás ahorrar</span><b className="num">{fmtPct(r.pctNecesario)}</b><em>{r.lectura}</em></div>
         </div>
       </section>
 
-      <h3 className="sec">{mesLargo(cur.mes)}</h3>
-      <section className="kpis">
-        <KpiCard label="Ahorro del mes" value={cur.ahorroUsd} prev={prev?.ahorroUsd} format={n => fmtUsd(n, 0)} serie={serie('ahorroUsd')} />
-        <KpiCard label="Te queda libre" value={cur.libre} prev={prev?.libre} format={fmtArs} serie={serie('libre')} tono={cur.libre < 0 ? 'neg' : 'pos'} />
-        <KpiCard label="Ingreso del mes" value={ingresoTotal} prev={prev ? prev.ingreso + prev.aguinaldo : null} format={fmtArs} serie={plan.filter(m => !m.postMeta).map(m => m.ingreso + m.aguinaldo)} tono="c4" />
-        <KpiCard label="Cuotas del mes" value={cur.cuotas} prev={prev?.cuotas} format={fmtArs} serie={serie('cuotas')} tono="warn" invertir />
-        <KpiCard label="USD acumulados" value={cur.usdAcum} prev={prev?.usdAcum} format={n => fmtUsd(n, 0)} serie={serie('usdAcum')} />
-      </section>
+      {/* MESES */}
+      <MonthStrip meses={meses} sel={sel} onSel={setSel} hoy={hoy} />
 
-      <div className="grid2">
-        <section className="card span2">
-          <div className="ch"><h2>Dólares acumulados</h2><span className="hint">Línea punteada: meta</span></div>
-          <AcumuladoChart data={plan} meta={meta} fechaMeta={fechaMeta} />
-        </section>
+      <div className="layout">
+        <div className="col-mes">
+          <div className="mes-h">
+            <button className="nav-b" onClick={() => ir(-1)} disabled={ix === 0} aria-label="Mes anterior">‹</button>
+            <div className="mes-t">
+              <h2 key={m.mes}>{mesLargo(m.mes)}</h2>
+              <div className="mes-tags">
+                {m.mes === hoy && <span className="tag t-acc">mes actual</span>}
+                {m.esMesMeta && <span className="tag t-pos">🎯 mes de la meta</span>}
+                {!m.hastaMeta && <span className="tag">después de la meta</span>}
+                {m.aguinaldo > 0 && <span className="tag t-pos">+ aguinaldo</span>}
+                {m.libre < 0 && <span className="tag t-neg">libre negativo</span>}
+              </div>
+            </div>
+            <button className="nav-b" onClick={() => ir(1)} disabled={ix === meses.length - 1} aria-label="Mes siguiente">›</button>
+          </div>
 
-        <section className="card">
-          <div className="ch"><h2>En qué se va el ingreso</h2><span className="hint">{mesLargo(cur.mes)}</span></div>
-          <DonaChart centro={fmtArs(ingresoTotal)} partes={SERIES.map(s => ({ name: s.name, color: s.color, value: Math.max(0, Number(cur[s.key])) }))} />
-          <ul className="leg">
-            {SERIES.map(s => {
-              const v = Number(cur[s.key]);
-              return (
-                <li key={s.key}><i style={{ background: s.color }} /><span>{s.name}</span>
-                  <b className={`num ${v < 0 ? 't-neg-x' : ''}`}>{fmtArs(v)}</b><em className="num">{Math.round((v / ingresoTotal) * 100)}%</em></li>
-              );
-            })}
-          </ul>
-        </section>
+          <section className="kpis">
+            <KpiCard ico="🏦" label="Ahorro del mes" value={m.ahorroUsd} prev={prev?.ahorroUsd} format={n => fmtUsd(n, 0)}
+              sub={fmtArs(m.ahorroPesos)} serie={serie(x => x.ahorroUsd)} activo={ix} />
+            <KpiCard ico="🍔" label="Te queda libre" value={m.libre} prev={prev?.libre} format={fmtArs}
+              sub="comida y salidas" serie={serie(x => x.libre)} activo={ix} tono={m.libre < 0 ? 'neg' : 'pos'} />
+            <KpiCard ico="💵" label="Ingreso del mes" value={m.ingresoTotal} prev={prev?.ingresoTotal} format={fmtArs}
+              sub={m.aguinaldo ? 'con aguinaldo' : `comisión ${fmtArs(m.comision)}`} serie={serie(x => x.ingresoTotal)} activo={ix} tono="c4" />
+            <KpiCard ico="💳" label="Cuotas del mes" value={m.cuotas} prev={prev?.cuotas} format={fmtArs} invertir
+              sub={m.cuotasDetalle.length ? `${m.cuotasDetalle.length} cuotas activas` : 'libre de cuotas'} serie={serie(x => x.cuotas)} activo={ix} tono="warn" />
+          </section>
 
-        <section className="card cuo">
-          <div className="ch"><h2>Cuotas por mes</h2><span className="hint">Cuándo te las sacás de encima</span></div>
-          <CuotasChart data={plan} />
-          <p className="foot">Última cuota en <b>marzo 2027</b> · después, {fmtArs(0)} por mes</p>
-        </section>
+          <section className="card">
+            <div className="reparto">
+              <DonaChart label="Ingreso" centro={fmtArs(m.ingresoTotal)}
+                partes={SERIES.map(x => ({ name: x.name, color: x.color, value: Math.max(0, Number(m[x.key])) }))} />
+              <ul className="leg">
+                {SERIES.map(x => {
+                  const v = Number(m[x.key]);
+                  return (
+                    <li key={x.key}><i style={{ background: x.color }} /><span>{x.name}</span>
+                      <b className={`num ${v < 0 ? 'neg' : ''}`}>{fmtArs(v)}</b><em className="num">{Math.round((v / m.ingresoTotal) * 100)}%</em></li>
+                  );
+                })}
+              </ul>
+            </div>
+            <div className="acum">
+              <div className="acum-r"><span>Acumulado al cierre del mes</span><b className="num">{fmtUsd(m.usdAcumulados, 0)}</b></div>
+              <div className="pbar big"><i style={{ width: `${Math.min(100, (m.usdAcumulados / s.metaUsd) * 100)}%` }} /></div>
+              <small>{fmtPct(m.usdAcumulados / s.metaUsd)} de la meta</small>
+            </div>
+          </section>
 
-        <section className="card span2">
-          <div className="ch"><h2>Mes a mes</h2><span className="hint">Meses después de la meta, atenuados</span></div>
-          <ul className="leg inline">{SERIES.map(s => <li key={s.key}><i style={{ background: s.color }} /><span>{s.name}</span></li>)}</ul>
-          <ApiladoChart data={plan} />
-        </section>
+          <h3 className="sec">Apertura del mes</h3>
+          <section className="card pad0">
+            <Apertura m={m} data={data} />
+          </section>
+        </div>
+
+        <div className="col-plan">
+          <h3 className="sec first">Todo el plan</h3>
+          <section className="card">
+            <div className="ch"><h2>Dólares acumulados</h2><span className="hint">Tocá un mes para abrirlo</span></div>
+            <AcumuladoChart meses={meses} meta={s.metaUsd} fechaMeta={s.fechaMeta} sel={sel} onSel={setSel} />
+          </section>
+          <section className="card">
+            <div className="ch"><h2>Reparto mes a mes</h2><span className="hint">Atenuado: después de la meta</span></div>
+            <ul className="leg inline">{SERIES.map(x => <li key={x.key}><i style={{ background: x.color }} /><span>{x.name}</span></li>)}</ul>
+            <ApiladoChart meses={meses} sel={sel} onSel={setSel} />
+          </section>
+          <section className="card">
+            <div className="ch"><h2>Cuotas por mes</h2><span className="hint">Total que falta {fmtArs(r.totalCuotasPlan)}</span></div>
+            <ul className="leg inline">{TARJETAS.map(t => <li key={t.key}><i style={{ background: t.color }} /><span>{t.key}</span></li>)}</ul>
+            <CuotasChart meses={meses} sel={sel} onSel={setSel} />
+            <p className="foot">Última cuota en <b>{mesLargo([...meses].reverse().find(x => x.cuotas > 0)?.mes ?? meses[0].mes)}</b></p>
+          </section>
+        </div>
       </div>
     </div>
   );
