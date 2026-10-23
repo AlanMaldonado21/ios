@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Dashboard } from './screens/Dashboard';
 import { Diario } from './screens/Diario';
+import { Ingresos } from './screens/Ingresos';
 import { Guardado, StoreProvider } from './store';
 
 export type Ruta = 'inicio' | 'diario' | 'plan' | 'ingresos' | 'cuotas' | 'gastos' | 'config';
@@ -40,6 +41,7 @@ export function App() {
   switch (ruta) {
     case 'inicio': vista = <Dashboard />; break;
     case 'diario': vista = <Diario />; break;
+    case 'ingresos': vista = <Ingresos />; break;
     case 'config': vista = <Proximamente titulo="Configuración" />; break;
     default: vista = <Proximamente titulo={NAV.find(n => n.r === ruta)?.label ?? 'Finanzas'} />;
   }

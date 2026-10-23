@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { sumarMeses } from '../../../lib/finanzas/calc';
-import { MEDIOS, agruparPorDia, gastosDelMes, parseMonto, totalGastos, totalPorMedio, totalPorTipo, type Medio } from '../../../lib/finanzas/diario';
-import { fmtArs, mesLargo } from '../../../lib/finanzas/format';
+import { MEDIOS, TARJETAS, agruparPorDia, gastosAlContado, gastosDelMes, parseMonto, primerPagoCredito, totalGastos, totalPorMedio, totalPorTipo, type Medio, type Tarjeta } from '../../../lib/finanzas/diario';
+import { fmtArs, mesCorto, mesLargo } from '../../../lib/finanzas/format';
 import { hoyISO, usePlan, useStore } from '../store';
 import { CountUp } from '../components/CountUp';
 
@@ -37,6 +37,8 @@ export function Diario() {
   const [monto, setMonto] = useState('');
   const [tipo, setTipo] = useState('Comida');
   const [medio, setMedio] = useState<Medio>('debito');
+  const [tarjeta, setTarjeta] = useState<Tarjeta>('BNA Visa');
+  const [cuotas, setCuotas] = useState(1);
   const [fecha, setFecha] = useState(hoyISO());
   const [error, setError] = useState('');
   const [nuevo, setNuevo] = useState('');
@@ -44,7 +46,9 @@ export function Diario() {
   const montoRef = useRef<HTMLInputElement>(null);
 
   const delMes = useMemo(() => gastosDelMes(gastos, mes), [gastos, mes]);
-  const total = totalGastos(delMes);
+  const contado = gastosAlContado(delMes);
+  const total = totalGastos(contado);
+  const enCredito = totalGastos(delMes) - total;
   const porMedio = totalPorMedio(delMes);
   const porTipo = totalPorTipo(delMes);
   const dias = agruparPorDia(delMes);
@@ -57,7 +61,7 @@ export function Diario() {
     const n = parseMonto(monto);
     if (!(n > 0)) { setError('Poné un monto'); montoRef.current?.focus(); return; }
     if (!tipo.trim()) { setError('Elegí o escribí el tipo de gasto'); return; }
-    agregarGasto({ fecha, tipo: tipo.trim(), monto: n, medio });
+    agregarGasto(medio === 'credito' ? { fecha, tipo: tipo.trim(), monto: n, medio, tarjeta, cuotas } : { fecha, tipo: tipo.trim(), monto: n, medio });
     setMonto(''); setError('');
     setNuevo(fecha);
     if (fecha.slice(0, 7) !== mes) setMes(fecha.slice(0, 7));
@@ -96,6 +100,30 @@ export function Diario() {
           ))}
         </div>
 
+        {medio === 'credito' && (
+          <div className="credito">
+            <span className="add-l">Tarjeta</span>
+            <div className="tarjetas">
+              {TARJETAS.map(t => (
+                <button key={t.id} className={`tj ${t.id === 'BNA Visa' ? 'cc-bna' : 'cc-mp'} ${tarjeta === t.id ? 'on' : ''}`} onClick={() => setTarjeta(t.id)}>
+                  <span className="tj-chip" />{t.label}
+                </button>
+              ))}
+            </div>
+            <span className="add-l">Cuotas</span>
+            <div className="cuotas-sel">
+              {[1, 3, 6, 9, 12, 18].map(n => (
+                <button key={n} className={cuotas === n ? 'on' : ''} onClick={() => setCuotas(n)}>{n}</button>
+              ))}
+            </div>
+            <p className="cred-prev">
+              {parseMonto(monto) > 0
+                ? <>{cuotas === 1 ? 'Un pago' : `${cuotas} cuotas`} de <b className="num">{fmtArs(parseMonto(monto) / cuotas)}</b> · {cuotas === 1 ? 'se paga' : 'la primera'} en <b>{mesLargo(primerPagoCredito(fecha, tarjeta))}</b></>
+                : <>Se suma solo a Cuotas del plan · {tarjeta === 'BNA Visa' ? 'BNA cierra el 22: lo de después pasa al otro resumen' : 'se paga el mes siguiente'}</>}
+            </p>
+          </div>
+        )}
+
         <div className="add-f">
           <label><span className="add-l">Fecha</span><input type="date" value={fecha} max={hoyISO()} onChange={e => setFecha(e.target.value || hoyISO())} /></label>
           <button className="btn-add" onClick={agregar}>+ Agregar</button>
@@ -111,7 +139,7 @@ export function Diario() {
       </div>
 
       <section className={`card gasto-sum s-${nivel}`}>
-        <span className="eyebrow-d">Gastaste</span>
+        <span className="eyebrow-d">Gastaste al contado</span>
         <b className="gs-n num"><CountUp value={total} format={fmtArs} ms={500} /></b>
         {libre != null ? (
           <>
@@ -122,6 +150,7 @@ export function Diario() {
             </div>
           </>
         ) : <p className="gs-r"><span>Este mes no está en el plan (nov 26 – dic 27), así que no hay "libre" para comparar.</span></p>}
+        {enCredito > 0 && <p className="gs-cred">💳 Además, <b className="num">{fmtArs(enCredito)}</b> con crédito: no salen de este mes, se suman a Cuotas.</p>}
         <div className="gs-medios">
           {MEDIOS.map(x => (
             <div key={x.id} className={`m-${x.id}`}><span>{x.ico} {x.id === 'transferencia' ? 'Transf.' : x.label}</span><b className="num">{fmtArs(porMedio[x.id])}</b></div>
@@ -150,7 +179,9 @@ export function Diario() {
             {d.items.map(g => (
               <div key={g.id} className={`gd ${nuevo === g.fecha && g === d.items[0] ? 'new' : ''}`}>
                 <span className="gd-i">{icoTipo(g.tipo)}</span>
-                <div className="gd-t"><b>{g.tipo}</b><span className={`medio-tag m-${g.medio}`}>{MEDIOS.find(x => x.id === g.medio)?.label}</span></div>
+                <div className="gd-t"><b>{g.tipo}</b><span className={`medio-tag m-${g.medio}`}>{g.medio === 'credito' && g.tarjeta
+                  ? `${TARJETAS.find(t => t.id === g.tarjeta)?.corto} · ${(g.cuotas ?? 1) === 1 ? '1 pago' : `${g.cuotas} cuotas`} · desde ${mesCorto(primerPagoCredito(g.fecha, g.tarjeta))}`
+                  : MEDIOS.find(x => x.id === g.medio)?.label}</span></div>
                 <b className="gd-v num">{fmtArs(g.monto)}</b>
                 {borrando === g.id ? (
                   <span className="gd-del">

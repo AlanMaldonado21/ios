@@ -127,7 +127,8 @@ export function calcularPlan(d: FinData): Plan {
     const aguinaldo = aguinaldoDelMes(d, mes);
     const ingresoTotal = ingreso + aguinaldo;
     const hastaMeta = mes <= s.fechaMeta;
-    const pctAuto = hastaMeta && ingresoTotal ? ahorroMensualPesos / ingresoTotal : 0;
+    // Igual que la planilla: el mismo % para todos los meses hasta la meta.
+    const pctAuto = hastaMeta ? pctNecesario : 0;
     const ov = d.overrides.find(o => o.mes === mes);
     const pctManual = ov && ov.porcentajeManual != null ? ov.porcentajeManual : null;
     const pct = pctManual ?? pctAuto;

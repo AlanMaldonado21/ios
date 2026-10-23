@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { agruparPorDia, gastosDelMes, parseMonto, resumenChecklist, totalGastos, totalPorMedio, totalPorTipo, type GastoDiario } from './diario';
+import { cuotaDesdeGasto, gastosAlContado, primerPagoCredito, agruparPorDia, gastosDelMes, parseMonto, resumenChecklist, totalGastos, totalPorMedio, totalPorTipo, type GastoDiario } from './diario';
 
 const G: GastoDiario[] = [
   { id: '1', fecha: '2026-11-02', tipo: 'Comida', monto: 12000, medio: 'debito' },
@@ -38,5 +38,22 @@ describe('checklist de ahorro', () => {
     const meses = [{ mes: '2026-11', ahorroUsd: 1000 }, { mes: '2026-12', ahorroUsd: 2000 }, { mes: '2027-01', ahorroUsd: 1500 }];
     const r = resumenChecklist(meses, { '2026-11': '2026-11-05', '2027-01': '2027-01-03' });
     expect(r).toEqual({ cumplidos: 2, total: 3, usdCumplidos: 2500, usdTotal: 4500 });
+  });
+});
+
+describe('compras con crédito', () => {
+  it('BNA: hasta el cierre (22) se paga el mes siguiente; después, el otro', () => {
+    expect(primerPagoCredito('2026-10-22', 'BNA Visa')).toBe('2026-11');
+    expect(primerPagoCredito('2026-10-23', 'BNA Visa')).toBe('2026-12');
+    expect(primerPagoCredito('2026-12-28', 'BNA Visa')).toBe('2027-02');
+    expect(primerPagoCredito('2026-10-28', 'MercadoPago')).toBe('2026-11');
+  });
+  it('se convierte en cuota del plan', () => {
+    const c = cuotaDesdeGasto({ id: 'x', fecha: '2026-11-10', tipo: 'Zapatillas', monto: 120000, medio: 'credito', tarjeta: 'BNA Visa', cuotas: 6 })!;
+    expect(c).toMatchObject({ concepto: 'Zapatillas', tarjeta: 'BNA Visa', cuotaMensual: 20000, cuotasRestantes: 6, primerPago: '2026-12', origen: 'x' });
+    expect(cuotaDesdeGasto({ id: 'y', fecha: '2026-11-10', tipo: 'Café', monto: 3000, medio: 'debito' })).toBeNull();
+  });
+  it('el crédito no cuenta como gasto al contado del mes', () => {
+    expect(totalGastos(gastosAlContado(gastosDelMes(G, '2026-11')))).toBe(20000);
   });
 });

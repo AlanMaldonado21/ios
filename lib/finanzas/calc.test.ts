@@ -68,6 +68,10 @@ describe('reglas', () => {
     const r = sinOv.resumen;
     expect(r.usdFaltan).toBe(12900);
     expect(r.mesesHastaMeta).toBe(9);
+    // % automático = igual para todos los meses hasta la meta (53,9% en la planilla)
+    expect(r.pctNecesario.toFixed(3)).toBe('0.539');
+    expect(sinOv.meses[0].pct).toBe(r.pctNecesario);
+    expect(sinOv.meses.find(m => m.mes === '2027-07')!.pct).toBe(r.pctNecesario);
     // con el % automático se ahorra justo lo necesario → llega exacto a la meta
     expect(r.usdProyectados).toBeCloseTo(15000, 6);
     expect(sinOv.meses.find(m => m.mes === '2027-08')!.pct).toBe(0);
@@ -75,6 +79,12 @@ describe('reglas', () => {
   it('te queda libre', () => {
     const m = mes('2026-11');
     expect(Math.round(m.libre)).toBe(Math.round(3725000 - 2235000 - 540204.12 - 273750));
+  });
+  it('valores de la planilla: ahorro necesario', () => {
+    expect(plan.resumen.ahorroMensualUsd.toFixed(2)).toBe('1433.33');
+    expect(Math.round(plan.resumen.ahorroMensualPesos)).toBe(2221667);
+    expect(plan.resumen.lectura).toBe('exigente pero posible');
+    expect(mes('2026-11').pctAuto.toFixed(3)).toBe('0.539');
   });
   it('lectura', () => {
     expect(lecturaDe(1.2)).toBe('imposible');

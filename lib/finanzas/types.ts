@@ -14,7 +14,11 @@ export type Settings = {
 
 export type IngresoFijo = { id: string; nombre: string; montoMensual: number; esBaseAguinaldo: boolean };
 export type Facturacion = { mes: Mes; monto: number };
-export type Cuota = { id: string; concepto: string; tarjeta: string; cuotaMensual: number; cuotasRestantes: number; primerPago: Mes };
+export type Cuota = {
+  id: string; concepto: string; tarjeta: string; cuotaMensual: number; cuotasRestantes: number; primerPago: Mes;
+  /** id del gasto diario que la generó (compra con crédito cargada en Diario). */
+  origen?: string;
+};
 export type GastoFijo = { id: string; concepto: string; montoMensual: number };
 export type SuscripcionUsd = { id: string; concepto: string; montoUsd: number };
 export type Override = { mes: Mes; porcentajeManual: number | null };

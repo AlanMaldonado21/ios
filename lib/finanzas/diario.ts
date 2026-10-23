@@ -1,5 +1,6 @@
 // Gastos diarios y checklist de ahorro: lógica pura.
-import type { Mes } from './types';
+import type { Cuota, Mes } from './types';
+import { sumarMeses } from './calc';
 
 export type Medio = 'credito' | 'debito' | 'transferencia';
 export const MEDIOS: { id: Medio; label: string; ico: string }[] = [
@@ -8,7 +9,41 @@ export const MEDIOS: { id: Medio; label: string; ico: string }[] = [
   { id: 'transferencia', label: 'Transferencia', ico: '🔁' },
 ];
 
-export type GastoDiario = { id: string; fecha: string; tipo: string; monto: number; medio: Medio };
+export type Tarjeta = 'BNA Visa' | 'MercadoPago';
+export const TARJETAS: { id: Tarjeta; label: string; corto: string }[] = [
+  { id: 'BNA Visa', label: 'Banco Nación', corto: 'BNA' },
+  { id: 'MercadoPago', label: 'MercadoPago', corto: 'MP' },
+];
+/** Día de cierre del resumen BNA: lo comprado hasta ese día se paga el mes siguiente. */
+export const CIERRE_BNA = 22;
+
+export type GastoDiario = {
+  id: string; fecha: string; tipo: string; monto: number; medio: Medio;
+  /** Solo crédito */
+  tarjeta?: Tarjeta;
+  cuotas?: number;
+};
+
+/** Mes en que se paga la primera cuota de una compra con crédito. */
+export function primerPagoCredito(fecha: string, tarjeta: Tarjeta): Mes {
+  const mes = fecha.slice(0, 7);
+  const dia = Number(fecha.slice(8, 10));
+  if (tarjeta === 'BNA Visa' && dia > CIERRE_BNA) return sumarMeses(mes, 2);
+  return sumarMeses(mes, 1);
+}
+
+/** Una compra con crédito se convierte en cuota del plan (aunque sea en 1 pago). */
+export function cuotaDesdeGasto(g: GastoDiario): Cuota | null {
+  if (g.medio !== 'credito' || !g.tarjeta) return null;
+  const n = Math.max(1, Math.round(g.cuotas ?? 1));
+  return {
+    id: `g-${g.id}`, origen: g.id, concepto: g.tipo, tarjeta: g.tarjeta,
+    cuotaMensual: g.monto / n, cuotasRestantes: n, primerPago: primerPagoCredito(g.fecha, g.tarjeta),
+  };
+}
+
+/** Lo que sale del bolsillo ese mes (débito y transferencia). El crédito se paga después, como cuota. */
+export const gastosAlContado = (gastos: GastoDiario[]) => gastos.filter(g => g.medio !== 'credito');
 
 /** "1.234.567" o "1234567,50" → 1234567.5. Devuelve NaN si no es un número. */
 export function parseMonto(txt: string): number {
