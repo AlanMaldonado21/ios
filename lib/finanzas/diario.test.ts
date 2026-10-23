@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cuotaDesdeGasto, gastosAlContado, primerPagoCredito, agruparPorDia, gastosDelMes, parseMonto, resumenChecklist, totalGastos, totalPorMedio, totalPorTipo, type GastoDiario } from './diario';
+import { ahorroReal, cuotaDesdeGasto, gastosAlContado, primerPagoCredito, agruparPorDia, gastosDelMes, parseMonto, resumenChecklist, totalGastos, totalPorMedio, totalPorTipo, type GastoDiario } from './diario';
 
 const G: GastoDiario[] = [
   { id: '1', fecha: '2026-11-02', tipo: 'Comida', monto: 12000, medio: 'debito' },
@@ -55,5 +55,24 @@ describe('compras con crédito', () => {
   });
   it('el crédito no cuenta como gasto al contado del mes', () => {
     expect(totalGastos(gastosAlContado(gastosDelMes(G, '2026-11')))).toBe(20000);
+  });
+});
+
+describe('ahorro real con el checklist', () => {
+  const meses = [{ mes: '2026-11', ahorroUsd: 1441.94 }, { mes: '2026-12', ahorroUsd: 2357.66 }, { mes: '2027-01', ahorroUsd: 1966.94 }];
+  it('tachar noviembre suma sus USD a lo que tenés', () => {
+    expect(ahorroReal(1050, meses, {}).real).toBe(1050);
+    const r = ahorroReal(1050, meses, { '2026-11': { fecha: '2026-11-05', usd: 1441.94 } }, '2026-11');
+    expect(r.real.toFixed(2)).toBe('2491.94');
+    expect(r.pendiente).toBe(0);
+  });
+  it('hasta un mes: lo no tachado queda pendiente', () => {
+    const r = ahorroReal(1050, meses, { '2026-11': '2026-11-05' }, '2026-12');
+    expect(r.real.toFixed(2)).toBe('2491.94');
+    expect(r.pendiente).toBe(2357.66);
+  });
+  it('el monto tachado queda congelado aunque cambie el plan', () => {
+    const r = resumenChecklist(meses, { '2026-11': { fecha: '2026-11-05', usd: 1500 } });
+    expect(r.usdCumplidos).toBe(1500);
   });
 });

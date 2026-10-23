@@ -4,7 +4,7 @@ import type { MesCalc } from '../../../lib/finanzas/calc';
 const M = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
 
 /** Tira deslizable de meses. La barrita muestra el progreso acumulado hacia la meta (verde al llegar). */
-export function MonthStrip({ meses, sel, onSel, hoy, meta, checks }: { meses: MesCalc[]; sel: string; onSel: (m: string) => void; hoy: string; meta: number; checks: Record<string, string> }) {
+export function MonthStrip({ meses, sel, onSel, hoy, meta, checks }: { meses: MesCalc[]; sel: string; onSel: (m: string) => void; hoy: string; meta: number; checks: Record<string, unknown> }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current?.querySelector<HTMLElement>('.mp.on');
@@ -23,7 +23,7 @@ export function MonthStrip({ meses, sel, onSel, hoy, meta, checks }: { meses: Me
               <span className="mp-y">{String(y).slice(2)}</span>
               <span className="mp-bar"><i style={{ height: `${Math.max(6, Math.min(1, m.usdAcumulados / meta) * 100)}%` }} /></span>
               <span className="mp-p num">{Math.round((m.usdAcumulados / meta) * 100)}%</span>
-              {checks[m.mes] && <span className="mp-done" aria-label="Ahorro cumplido">✓</span>}
+              {!!checks[m.mes] && <span className="mp-done" aria-label="Ahorro cumplido">✓</span>}
               <span className="mp-tags">
                 {m.esMesMeta && <em title="Mes de la meta">🎯</em>}
                 {m.aguinaldo > 0 && <em className="dot ag" title="Aguinaldo" />}

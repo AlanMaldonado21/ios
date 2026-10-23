@@ -80,15 +80,35 @@ export function agruparPorDia(gastos: GastoDiario[]): { fecha: string; total: nu
   return [...m].map(([fecha, items]) => ({ fecha, items, total: totalGastos(items) }));
 }
 
-/** Checklist: { "2026-11": "2026-11-05" } = mes cumplido y cuándo se tachó. */
-export type Checks = Record<Mes, string>;
+/**
+ * Checklist: mes tachado → cuándo y cuántos USD se separaron (congelados al tachar).
+ * Formato viejo: solo la fecha (string); ahí se toma el USD del plan.
+ */
+export type Check = string | { fecha: string; usd: number };
+export type Checks = Record<Mes, Check>;
+
+export const fechaCheck = (c: Check) => (typeof c === 'string' ? c : c.fecha);
+export const usdCheck = (c: Check, plan: number) => (typeof c === 'string' ? plan : c.usd);
 
 export function resumenChecklist(meses: { mes: Mes; ahorroUsd: number }[], checks: Checks) {
   const hechos = meses.filter(m => checks[m.mes]);
   return {
     cumplidos: hechos.length,
     total: meses.length,
-    usdCumplidos: hechos.reduce((a, m) => a + m.ahorroUsd, 0),
+    usdCumplidos: hechos.reduce((a, m) => a + usdCheck(checks[m.mes], m.ahorroUsd), 0),
     usdTotal: meses.reduce((a, m) => a + m.ahorroUsd, 0),
   };
+}
+
+/**
+ * Ahorro real hasta el cierre de un mes: lo que ya tenías + los meses tachados (hasta ese mes inclusive).
+ * pendiente = USD de los meses sin tachar hasta ese mes (lo que falta separar para llegar a lo proyectado).
+ */
+export function ahorroReal(base: number, meses: { mes: Mes; ahorroUsd: number }[], checks: Checks, hasta?: Mes) {
+  let real = base, pendiente = 0;
+  for (const m of meses) {
+    if (hasta && m.mes > hasta) break;
+    if (checks[m.mes]) real += usdCheck(checks[m.mes], m.ahorroUsd); else pendiente += m.ahorroUsd;
+  }
+  return { real, pendiente };
 }

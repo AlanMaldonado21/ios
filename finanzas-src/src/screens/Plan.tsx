@@ -7,6 +7,7 @@ import { MonthStrip } from '../components/MonthStrip';
 import { AcumuladoChart, ApiladoChart, CuotasChart, SERIES, TARJETAS } from '../components/Charts';
 import { hoyMes } from './Dashboard';
 import { PlanTabla } from '../components/PlanTabla';
+import { ahorroReal } from '../../../lib/finanzas/diario';
 
 const DOLARES = [1500, 1550, 1750];
 
@@ -45,7 +46,7 @@ export function Plan() {
           </div>
         </div>
         <div className="hero-stats">
-          <div><span>Ahorrado hoy</span><b className="num">{fmtUsd(r.ahorroActualUsd, 0)}</b></div>
+          <div><span>Ahorrado hoy</span><b className="num">{fmtUsd(ahorroReal(r.ahorroActualUsd, meses, checks).real, 0)}</b></div>
           <div><span>{r.cumplida ? 'Te sobran' : 'Te faltan'}</span><b className={`num ${r.cumplida ? 'pos' : 'warn'}`}>{fmtUsd(Math.abs(r.diferencia), 0)}</b></div>
           <div><span>Ahorro necesario</span><b className="num">{fmtPct(r.pctNecesario)}</b><em>{r.lectura}</em></div>
         </div>

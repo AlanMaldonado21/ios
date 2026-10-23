@@ -28,7 +28,8 @@ function cargar(): Estado {
 
 type Ctx = Estado & {
   dolar: number;
-  toggleCheck: (mes: string) => void;
+  /** Tacha/destacha un mes. usd = lo que se separó (queda congelado). */
+  toggleCheck: (mes: string, usd: number) => void;
   agregarGasto: (g: Omit<GastoDiario, 'id'>) => void;
   borrarGasto: (id: string) => void;
   setDolar: (d: number) => void;
@@ -54,9 +55,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     try { localStorage.setItem(LS, JSON.stringify({ ...st, fixAhorro: true })); setGuardado(Date.now()); } catch { /* lleno o bloqueado */ }
   }, [st]);
 
-  const toggleCheck = useCallback((mes: string) => setSt(s => {
+  const toggleCheck = useCallback((mes: string, usd: number) => setSt(s => {
     const checks = { ...s.checks };
-    if (checks[mes]) delete checks[mes]; else checks[mes] = hoyISO();
+    if (checks[mes]) delete checks[mes]; else checks[mes] = { fecha: hoyISO(), usd };
     return { ...s, checks };
   }), []);
   const agregarGasto = useCallback((g: Omit<GastoDiario, 'id'>) => setSt(s => ({ ...s, gastos: [{ ...g, id: nuevoId() }, ...s.gastos] })), []);

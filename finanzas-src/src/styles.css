@@ -151,8 +151,8 @@ h2{font-size:16px;margin:0;font-weight:800}
 .prog-si.ok{color:var(--pos)}
 .prog-bar{position:relative;height:14px;border-radius:99px;background:var(--track);margin-top:10px;overflow:hidden}
 .prog-bar i{position:absolute;top:0;bottom:0;transition:left .6s cubic-bezier(.2,.8,.2,1),width .6s cubic-bezier(.2,.8,.2,1)}
-.pb-antes{left:0;border-radius:99px 0 0 99px;background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 55%,var(--track)),var(--acc))}
-.pb-mes{border-radius:0 99px 99px 0;background:repeating-linear-gradient(-45deg,var(--pos) 0 6px,color-mix(in srgb,var(--pos) 75%,#fff) 6px 12px);box-shadow:0 0 12px var(--pos);animation:shine 1.6s linear infinite;background-size:34px 34px}
+.pb-antes{left:0;border-radius:99px 0 0 99px;background:linear-gradient(90deg,color-mix(in srgb,var(--pos) 55%,var(--track)),var(--pos))}
+.pb-mes{border-radius:0 99px 99px 0;background:repeating-linear-gradient(-45deg,var(--acc) 0 6px,color-mix(in srgb,var(--acc) 55%,transparent) 6px 12px);box-shadow:0 0 12px color-mix(in srgb,var(--acc) 60%,transparent);animation:shine 1.6s linear infinite;background-size:34px 34px}
 @keyframes shine{to{background-position:34px 0}}
 .mesbox.ok .pb-antes{background:linear-gradient(90deg,color-mix(in srgb,var(--pos) 55%,var(--track)),var(--pos))}
 .prog-bar em{position:absolute;top:3px;bottom:3px;width:2px;margin-left:-1px;border-radius:2px;background:color-mix(in srgb,var(--mu) 35%,transparent)}
@@ -160,9 +160,9 @@ h2{font-size:16px;margin:0;font-weight:800}
 .prog-leg{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:11.5px;font-weight:700;color:var(--mu)}
 .prog-leg span{display:flex;align-items:center;gap:5px}
 .prog-leg i{width:8px;height:8px;border-radius:3px}
-.lg-antes{background:var(--acc)}
+.lg-antes{background:var(--pos)}
 .mesbox.ok .lg-antes{background:var(--pos)}
-.lg-mes{background:var(--pos)}
+.lg-mes{background:var(--acc)}
 .prog-msg{margin-top:10px;padding:8px 10px;border-radius:12px;background:var(--warn-bg);color:var(--warn-tx);font-size:12.5px;font-weight:700}
 .prog-msg.ok{background:var(--pos-bg);color:var(--pos)}
 .prog-msg b{font-weight:800}
@@ -275,6 +275,7 @@ h2{font-size:16px;margin:0;font-weight:800}
 .chk-sum{display:flex;align-items:baseline;gap:6px}
 .chk-sum b{font-size:22px;font-weight:800;color:var(--pos)}
 .chk-sum span{font-size:13px;font-weight:700;color:var(--mu)}
+.chk-det{margin:2px 0 0;font-size:12px;font-weight:600;color:var(--mu)}
 .chk-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--ln)}
 .chk-list li{display:flex;align-items:center;gap:4px;padding:0 12px 0 10px;transition:background .2s}
 .chk-list li+li{border-top:1px solid var(--ln)}

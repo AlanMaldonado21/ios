@@ -11,7 +11,7 @@ export const hoyMes = () => { const d = new Date(); return `${d.getFullYear()}-$
 
 export function Dashboard() {
   const { mesSel, setMesSel } = useStore();
-  const { data, meses } = usePlan();
+  const { data, meses, resumen } = usePlan();
   const hoy = mesActualDelPlan(meses.map(m => m.mes), hoyMes());
   const sel = mesSel && meses.some(m => m.mes === mesSel) ? mesSel : hoy;
   const setSel = (m: string) => setMesSel(m);
@@ -29,8 +29,8 @@ export function Dashboard() {
 
       <div className="layout">
         <div className="col-mes">
-          <MesBox m={m} ix={ix} meses={meses} meta={s.metaUsd} hoy={hoy} ir={ir} />
-          <div className="solo-mobile"><Checklist meses={meses} sel={sel} onSel={setSel} /></div>
+          <MesBox m={m} ix={ix} meses={meses} meta={s.metaUsd} hoy={hoy} ir={ir} base={resumen.ahorroActualUsd} />
+          <div className="solo-mobile"><Checklist meses={meses} sel={sel} onSel={setSel} base={resumen.ahorroActualUsd} /></div>
 
           <section className="kpis">
             <KpiCard ico="🏦" label="Ahorro del mes" value={m.ahorroUsd} prev={prev?.ahorroUsd} format={n => fmtUsd(n, 0)}
@@ -66,7 +66,7 @@ export function Dashboard() {
         </div>
 
         <div className="col-plan">
-          <div className="solo-desktop"><Checklist meses={meses} sel={sel} onSel={setSel} /></div>
+          <div className="solo-desktop"><Checklist meses={meses} sel={sel} onSel={setSel} base={resumen.ahorroActualUsd} /></div>
         </div>
       </div>
     </div>
