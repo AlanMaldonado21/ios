@@ -595,6 +595,7 @@ h2{font-size:16px;margin:0;font-weight:800}
 .hh-h{display:flex;justify-content:space-between;align-items:center}
 .hh-h b{font-size:15px;font-weight:800}.hh-h b.ok{color:var(--pos)}
 .hh-l{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.hh-l span{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:var(--card2);border:1px solid var(--ln);font-size:13px;font-weight:700}
-.hh-l span.ok{background:var(--pos-bg);border-color:transparent;color:var(--pos);text-decoration:line-through}
+.hh-l button{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;background:var(--card2);border:1px solid var(--ln);font-size:14px;font-weight:700;transition:.15s}
+.hh-l button:active{transform:scale(.95)}
+.hh-l button.ok{background:var(--pos-bg);border-color:transparent;color:var(--pos);text-decoration:line-through}
 .hh-l i{font-style:normal}
