@@ -4,8 +4,7 @@ import { fmtArs, fmtUsd, mesLargo } from '../../../lib/finanzas/format';
 import { HabitosHoy } from '../components/HabitosHoy';
 import { ComoVoy } from '../components/ComoVoy';
 import { icoTipo } from '../components/QuickAdd';
-import { usePlan, useStore } from '../store';
-import { hoyMes } from './Dashboard';
+import { hoyMes, usePlan, useStore } from '../store';
 
 const diaCorto = (iso: string) => { const [, m, d] = iso.split('-'); return `${Number(d)}/${Number(m)}`; };
 

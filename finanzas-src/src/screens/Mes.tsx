@@ -1,5 +1,5 @@
 import { mesActualDelPlan } from '../../../lib/finanzas/calc';
-import { usePlan, useStore } from '../store';
+import { hoyMes, usePlan, useStore } from '../store';
 import { Checklist } from '../components/Checklist';
 import { fmtArs, fmtUsd } from '../../../lib/finanzas/format';
 import { KpiCard } from '../components/KpiCard';
@@ -7,9 +7,7 @@ import { MesBox } from '../components/MesBox';
 import { Apertura } from '../components/Apertura';
 import { DonaChart, SERIES } from '../components/Charts';
 
-export const hoyMes = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
-
-export function Dashboard() {
+export function Mes() {
   const { mesSel, setMesSel } = useStore();
   const { data, meses, resumen } = usePlan();
   const hoy = mesActualDelPlan(meses.map(m => m.mes), hoyMes());
