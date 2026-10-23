@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { cuotaDesdeGasto, type Checks, type GastoDiario } from '../../lib/finanzas/diario';
 import { calcularPlan } from '../../lib/finanzas/calc';
-import { SEED } from '../../lib/finanzas/seed';
+import { DATOS_INICIALES } from '../../lib/finanzas/seed';
 import type { FinData } from '../../lib/finanzas/types';
 
 // Por ahora los datos viven en este dispositivo (localStorage), igual que hábitos.
@@ -10,7 +10,7 @@ const LS = 'finanzas-v1';
 
 type Estado = { data: FinData; checks: Checks; gastos: GastoDiario[] };
 
-const copiaSeed = (): FinData => JSON.parse(JSON.stringify(SEED));
+const copiaSeed = (): FinData => JSON.parse(JSON.stringify(DATOS_INICIALES));
 
 function cargar(): Estado {
   try {
@@ -18,6 +18,8 @@ function cargar(): Estado {
     if (s && typeof s === 'object') {
       const data: FinData = s.data && s.data.settings ? s.data : copiaSeed();
       if (!s.data && Number(s.dolar)) data.settings.dolar = Number(s.dolar); // formato viejo
+      // Corrección: el ahorro en pesos de la planilla era el mismo ahorro en USD pasado a pesos.
+      if (!s.fixAhorro && data.settings.ahorroUsdActual === 1050 && data.settings.ahorroPesosActual === 1627500) data.settings.ahorroPesosActual = 0;
       return { data, checks: s.checks || {}, gastos: Array.isArray(s.gastos) ? s.gastos : [] };
     }
   } catch { /* sin datos */ }
@@ -49,7 +51,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const first = useRef(true);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
-    try { localStorage.setItem(LS, JSON.stringify(st)); setGuardado(Date.now()); } catch { /* lleno o bloqueado */ }
+    try { localStorage.setItem(LS, JSON.stringify({ ...st, fixAhorro: true })); setGuardado(Date.now()); } catch { /* lleno o bloqueado */ }
   }, [st]);
 
   const toggleCheck = useCallback((mes: string) => setSt(s => {

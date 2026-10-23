@@ -111,7 +111,7 @@ export function CuotasChart({ meses, sel, onSel }: { meses: MesCalc[] } & Sel) {
           ) : null} />
         {TARJETAS.map((t, i) => (
           <Bar key={t.key} dataKey={t.key} name={t.key} stackId="c" fill={t.color} radius={i === TARJETAS.length - 1 ? [6, 6, 0, 0] : 0} animationDuration={700}>
-            {rows.map(r => <Cell key={String(r.mes)} fillOpacity={r.mes === sel ? 1 : 0.6} />)}
+            {rows.map(r => <Cell key={String(r.mes)} fillOpacity={!sel || r.mes === sel ? 1 : 0.6} />)}
           </Bar>
         ))}
       </BarChart>

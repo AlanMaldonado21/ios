@@ -3,7 +3,7 @@ import {
   ahorroActualUsd, calcularPlan, cuotaActiva, gastosEstimados, ingresoDelMes, lecturaDe, mesActualDelPlan,
   sumarMeses, totalQueFalta, ultimoPago,
 } from './calc';
-import { SEED } from './seed';
+import { DATOS_INICIALES, SEED } from './seed';
 import { fmtArs, fmtUsd } from './format';
 
 const plan = calcularPlan(SEED);
@@ -103,5 +103,14 @@ describe('formatos', () => {
   it('pesos y dólares', () => {
     expect(fmtArs(1234567)).toBe('$ 1.234.567');
     expect(fmtUsd(1234.56)).toBe('U$S 1.234,56');
+  });
+});
+
+describe('datos con los que arranca la app', () => {
+  it('ahorro actual real: U$S 1.050 (los pesos de la planilla eran el mismo ahorro)', () => {
+    expect(ahorroActualUsd(DATOS_INICIALES)).toBe(1050);
+    const p = calcularPlan(DATOS_INICIALES);
+    expect(p.resumen.usdProyectados.toFixed(2)).toBe('18809.02');
+    expect(p.resumen.cumplida).toBe(true);
   });
 });

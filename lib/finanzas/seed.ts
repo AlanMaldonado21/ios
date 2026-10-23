@@ -50,3 +50,10 @@ export const SEED: FinData = {
     ...['07', '08', '09', '10', '11', '12'].map(m => ({ mes: `2027-${m}`, porcentajeManual: 0.75 })),
   ],
 };
+
+/**
+ * Datos con los que arranca la app. Igual que SEED, salvo el ahorro en pesos:
+ * los $ 1.627.500 de la planilla eran los mismos U$S 1.050 pasados a pesos (1.050 × 1.550),
+ * así que el ahorro real es U$S 1.050. Se edita en Configuración.
+ */
+export const DATOS_INICIALES: FinData = { ...SEED, settings: { ...SEED.settings, ahorroPesosActual: 0 } };

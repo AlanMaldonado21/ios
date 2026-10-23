@@ -6,6 +6,7 @@ import { CountUp } from '../components/CountUp';
 import { MonthStrip } from '../components/MonthStrip';
 import { AcumuladoChart, ApiladoChart, CuotasChart, SERIES, TARJETAS } from '../components/Charts';
 import { hoyMes } from './Dashboard';
+import { PlanTabla } from '../components/PlanTabla';
 
 const DOLARES = [1500, 1550, 1750];
 
@@ -53,6 +54,11 @@ export function Plan() {
       <h3 className="sec">Tocá un mes para abrirlo</h3>
       <MonthStrip meses={meses} sel={sel} onSel={abrir} hoy={hoy} meta={s.metaUsd} checks={checks} />
 
+      <h3 className="sec">Mes a mes</h3>
+      <p className="ed-help" style={{ padding: '0 4px 10px' }}>Mové el % de ahorro de cada mes. "auto" usa el {fmtPct(r.pctNecesario)} que necesitás para llegar justo.</p>
+      <PlanTabla meses={meses} abrir={abrir} />
+
+      <h3 className="sec">Gráficos</h3>
       <div className="grid-plan">
         <section className="card span2">
           <div className="ch"><h2>Dólares acumulados</h2><span className="hint">Línea punteada: meta</span></div>

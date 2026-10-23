@@ -3,6 +3,9 @@ import { Dashboard } from './screens/Dashboard';
 import { Diario } from './screens/Diario';
 import { Ingresos } from './screens/Ingresos';
 import { Plan } from './screens/Plan';
+import { Cuotas } from './screens/Cuotas';
+import { Fijos } from './screens/Fijos';
+import { Config } from './screens/Config';
 import { Guardado, StoreProvider } from './store';
 
 export type Ruta = 'inicio' | 'diario' | 'plan' | 'ingresos' | 'cuotas' | 'gastos' | 'config';
@@ -27,15 +30,6 @@ function useRuta(): Ruta {
   return r;
 }
 
-function Proximamente({ titulo }: { titulo: string }) {
-  return (
-    <div className="dash">
-      <header className="ph"><div><h1>{titulo}</h1><p className="sub">Esta pantalla llega en el próximo paso</p></div></header>
-      <div className="card empty"><span className="big">🚧</span>La armo cuando conectemos Supabase. Por ahora usá Inicio y Diario.</div>
-    </div>
-  );
-}
-
 export function App() {
   const ruta = useRuta();
   let vista: ReactNode;
@@ -44,8 +38,10 @@ export function App() {
     case 'diario': vista = <Diario />; break;
     case 'ingresos': vista = <Ingresos />; break;
     case 'plan': vista = <Plan />; break;
-    case 'config': vista = <Proximamente titulo="Configuración" />; break;
-    default: vista = <Proximamente titulo={NAV.find(n => n.r === ruta)?.label ?? 'Finanzas'} />;
+    case 'cuotas': vista = <Cuotas />; break;
+    case 'gastos': vista = <Fijos />; break;
+    case 'config': vista = <Config />; break;
+    default: vista = <Dashboard />;
   }
   return (
     <StoreProvider>
