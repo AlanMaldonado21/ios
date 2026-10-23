@@ -98,3 +98,15 @@ describe('ritmoMes', () => {
     expect(ritmoMes([g('2026-10-05', 400000)], 310000, '2026-10-23').nivel).toBe('neg');
   });
 });
+
+import { acumuladoDiario } from './diario';
+describe('acumuladoDiario', () => {
+  it('acumula por día, ignora crédito y corta en hastaDia', () => {
+    const g = (fecha: string, monto: number, medio: 'debito' | 'credito' = 'debito') => ({ id: fecha + monto, fecha, tipo: 'X', monto, medio });
+    const r = acumuladoDiario([g('2026-10-01', 100), g('2026-10-01', 50), g('2026-10-03', 25), g('2026-10-02', 999, 'credito')], '2026-10', 3, 310);
+    expect(r).toHaveLength(31);
+    expect(r.slice(0, 4).map(p => p.real)).toEqual([150, 150, 175, null]);
+    expect(r[30].ideal).toBeCloseTo(310);
+    expect(r[0].ideal).toBeCloseTo(10);
+  });
+});

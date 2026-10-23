@@ -141,3 +141,19 @@ export function ritmoMes(gastos: GastoDiario[], tope: number | null, hoy: string
   const nivel = !t ? 'pos' : gastado > t ? 'neg' : gastado > ideal! * 1.05 ? 'warn' : 'pos';
   return { dia: d, diasMes, diasRestantes, gastado, hoy: hoyTotal, tope: t, quedan, porDia, ideal, proyeccion, promedioDia, nivel };
 }
+
+export type PuntoAcum = { dia: number; real: number | null; ideal: number | null };
+
+/** Gasto acumulado día a día (al contado) contra la recta del tope. `real` es null después de `hastaDia`. */
+export function acumuladoDiario(gastos: GastoDiario[], mes: Mes, hastaDia: number, tope: number | null): PuntoAcum[] {
+  const [y, m] = mes.split('-').map(Number);
+  const diasMes = new Date(y, m, 0).getDate();
+  const porDia = new Array(diasMes + 1).fill(0);
+  for (const g of gastosAlContado(gastosDelMes(gastos, mes))) porDia[Number(g.fecha.slice(8, 10))] += g.monto;
+  let acc = 0;
+  return Array.from({ length: diasMes }, (_, i) => {
+    const dia = i + 1;
+    acc += porDia[dia];
+    return { dia, real: dia <= hastaDia ? acc : null, ideal: tope ? (tope * dia) / diasMes : null };
+  });
+}

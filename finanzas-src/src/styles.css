@@ -599,3 +599,5 @@ h2{font-size:16px;margin:0;font-weight:800}
 .hh-l button:active{transform:scale(.95)}
 .hh-l button.ok{background:var(--pos-bg);border-color:transparent;color:var(--pos);text-decoration:line-through}
 .hh-l i{font-style:normal}
+.gs-graf{margin-top:14px;padding-top:10px;border-top:1px solid var(--ln)}
+.gs-graf .hint{margin:4px 0 0}
