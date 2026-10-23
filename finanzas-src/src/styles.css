@@ -147,6 +147,8 @@ h2{font-size:16px;margin:0;font-weight:800}
 .prog-n>div>span{font-size:13px;font-weight:700;color:var(--mu)}
 .prog-pct{font-size:30px!important;color:var(--acc)}
 .mesbox.ok .prog-pct{color:var(--pos)}
+.prog-si{margin:2px 0 0;font-size:12px;font-weight:700;color:var(--mu)}
+.prog-si.ok{color:var(--pos)}
 .prog-bar{position:relative;height:14px;border-radius:99px;background:var(--track);margin-top:10px;overflow:hidden}
 .prog-bar i{position:absolute;top:0;bottom:0;transition:left .6s cubic-bezier(.2,.8,.2,1),width .6s cubic-bezier(.2,.8,.2,1)}
 .pb-antes{left:0;border-radius:99px 0 0 99px;background:linear-gradient(90deg,color-mix(in srgb,var(--acc) 55%,var(--track)),var(--acc))}
