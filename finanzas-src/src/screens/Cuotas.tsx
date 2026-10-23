@@ -18,7 +18,7 @@ export function Cuotas() {
   const opcionesMes = Array.from({ length: base.settings.mesesPlan + 6 }, (_, i) => sumarMeses(base.settings.mesInicioPlan, i - 3));
   const set = (id: string, fn: (c: Cuota) => void) => editar(d => { const c = d.cuotas.find(x => x.id === id); if (c) fn(c); });
   const porTarjeta = (t: string) => todas.filter(c => c.tarjeta === t).reduce((a, c) => a + totalQueFalta(c), 0);
-  const abrir = (m: string) => { setMesSel(m); location.hash = '#/inicio'; };
+  const abrir = (m: string) => { setMesSel(m); location.hash = '#/mes'; };
 
   const fila = (c: Cuota, editable: boolean) => (
     <div key={c.id} className="cuo-row">

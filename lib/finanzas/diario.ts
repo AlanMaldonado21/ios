@@ -112,3 +112,55 @@ export function ahorroReal(base: number, meses: { mes: Mes; ahorroUsd: number }[
   }
   return { real, pendiente };
 }
+
+export type Ritmo = {
+  dia: number; diasMes: number; diasRestantes: number;
+  gastado: number; hoy: number;
+  /** Con tope: lo que queda, lo que podés gastar por día desde hoy y dónde "debería" ir según el día. */
+  tope: number | null; quedan: number | null; porDia: number | null; ideal: number | null;
+  /** Sin tope (o con): a este ritmo cerrás el mes en... */
+  proyeccion: number; promedioDia: number;
+  nivel: 'pos' | 'warn' | 'neg';
+};
+
+/** ¿Cómo va el mes? Solo mira lo que sale del bolsillo (débito/transferencia) del mes de `hoy` (YYYY-MM-DD). */
+export function ritmoMes(gastos: GastoDiario[], tope: number | null, hoy: string): Ritmo {
+  const mes = mesDeFecha(hoy);
+  const [y, m, d] = hoy.split('-').map(Number);
+  const diasMes = new Date(y, m, 0).getDate();
+  const delMes = gastosAlContado(gastosDelMes(gastos, mes));
+  const gastado = totalGastos(delMes);
+  const hoyTotal = totalGastos(delMes.filter(g => g.fecha === hoy));
+  const diasRestantes = diasMes - d + 1; // contando hoy
+  const promedioDia = gastado / d;
+  const proyeccion = promedioDia * diasMes;
+  const t = tope && tope > 0 ? tope : null;
+  const ideal = t ? (t * d) / diasMes : null;
+  const quedan = t ? t - gastado : null;
+  const porDia = t && quedan! > 0 ? quedan! / diasRestantes : t ? 0 : null;
+  const nivel = !t ? 'pos' : gastado > t ? 'neg' : gastado > ideal! * 1.05 ? 'warn' : 'pos';
+  return { dia: d, diasMes, diasRestantes, gastado, hoy: hoyTotal, tope: t, quedan, porDia, ideal, proyeccion, promedioDia, nivel };
+}
+
+export type PuntoAcum = { dia: number; real: number | null; ideal: number | null };
+
+/** Gasto acumulado día a día (al contado) contra la recta del tope. `real` es null después de `hastaDia`. */
+export function acumuladoDiario(gastos: GastoDiario[], mes: Mes, hastaDia: number, tope: number | null): PuntoAcum[] {
+  const [y, m] = mes.split('-').map(Number);
+  const diasMes = new Date(y, m, 0).getDate();
+  const porDia = new Array(diasMes + 1).fill(0);
+  for (const g of gastosAlContado(gastosDelMes(gastos, mes))) porDia[Number(g.fecha.slice(8, 10))] += g.monto;
+  let acc = 0;
+  return Array.from({ length: diasMes }, (_, i) => {
+    const dia = i + 1;
+    acc += porDia[dia];
+    return { dia, real: dia <= hastaDia ? acc : null, ideal: tope ? (tope * dia) / diasMes : null };
+  });
+}
+
+/** Hasta 3 montos que más se repitieron para ese tipo de gasto (atajos de carga). */
+export function montosFrecuentes(gastos: GastoDiario[], tipo: string, max = 3): number[] {
+  const c = new Map<number, number>();
+  for (const g of gastos) if (g.tipo.toLowerCase() === tipo.toLowerCase()) c.set(g.monto, (c.get(g.monto) ?? 0) + 1);
+  return [...c].filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1] || b[0] - a[0]).slice(0, max).map(([m]) => m);
+}

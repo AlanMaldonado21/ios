@@ -24,12 +24,12 @@ export function Dashboard() {
   return (
     <div className="dash">
       <header className="ph ph-sm">
-        <div><h1>Finanzas</h1></div>
+        <div><h1>Detalle del mes</h1><p className="sub">Ahorro, reparto y apertura</p></div>
       </header>
 
       <div className="layout">
         <div className="col-mes">
-          <MesBox m={m} ix={ix} meses={meses} meta={s.metaUsd} hoy={hoy} ir={ir} base={resumen.ahorroActualUsd} />
+          <MesBox m={m} ix={ix} meses={meses} meta={s.metaUsd} hoy={hoyMes()} ir={ir} base={resumen.ahorroActualUsd} />
           <div className="solo-mobile"><Checklist meses={meses} sel={sel} onSel={setSel} base={resumen.ahorroActualUsd} /></div>
 
           <section className="kpis">

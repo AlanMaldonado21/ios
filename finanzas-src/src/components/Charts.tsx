@@ -1,7 +1,8 @@
 import {
-  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ReferenceDot, ReferenceLine,
+  Area, AreaChart, Bar, BarChart, Line, LineChart, CartesianGrid, Cell, Pie, PieChart, ReferenceDot, ReferenceLine,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
+import type { PuntoAcum } from '../../../lib/finanzas/diario';
 import type { MesCalc } from '../../../lib/finanzas/calc';
 import { fmtArs, fmtUsd, mesCorto, mesLargo } from '../../../lib/finanzas/format';
 
@@ -135,5 +136,30 @@ export function DonaChart({ partes, centro, label }: { partes: { name: string; v
       </ResponsiveContainer>
       <div className="dona-c"><span>{label}</span><b className="num">{centro}</b></div>
     </div>
+  );
+}
+
+/** Gasto acumulado del mes contra el ritmo ideal (recta hasta el tope). */
+export function RitmoChart({ puntos, hoy }: { puntos: PuntoAcum[]; hoy: number }) {
+  const hayIdeal = puntos[0]?.ideal != null;
+  return (
+    <ResponsiveContainer width="100%" height={150}>
+      <LineChart data={puntos} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+        <CartesianGrid vertical={false} stroke="var(--ln)" />
+        <XAxis dataKey="dia" tick={eje} axisLine={false} tickLine={false} interval="preserveStartEnd" minTickGap={14} />
+        <YAxis tick={eje} axisLine={false} tickLine={false} width={44} tickFormatter={v => `${Math.round(v / 1000)}k`} />
+        <Tooltip cursor={{ stroke: 'var(--mu)', strokeDasharray: '3 3' }}
+          content={({ active, payload, label }) => active && payload?.length ? (
+            <Tip titulo={`Día ${label}`} rows={[
+              ...(payload.find(p => p.dataKey === 'real')?.value != null ? [{ name: 'Gastado', value: Number(payload.find(p => p.dataKey === 'real')!.value), color: 'var(--acc)', fmt: fmtArs }] : []),
+              ...(hayIdeal ? [{ name: 'Ritmo ideal', value: Number(payload.find(p => p.dataKey === 'ideal')?.value ?? 0), color: 'var(--mu)', fmt: fmtArs }] : []),
+            ]} />
+          ) : null} />
+        {hayIdeal && <Line type="linear" dataKey="ideal" stroke="var(--mu)" strokeDasharray="4 4" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
+        <Line type="monotone" dataKey="real" stroke="var(--acc)" strokeWidth={2.5} dot={false} connectNulls={false} animationDuration={600}
+          activeDot={{ r: 5, strokeWidth: 2, stroke: 'var(--card)' }} />
+        <ReferenceLine x={hoy} stroke="var(--ln)" />
+      </LineChart>
+    </ResponsiveContainer>
   );
 }

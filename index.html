@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="apple-touch-icon.png">
 <style>
-:root{--bg:#f4f6f8;--card:#fff;--tx:#2f3a40;--mu:#7b8a93;--ln:#e3e8ec;--g:#58cc02;--gd:#46a302;--red:#ffd9db;--redtx:#e5484d;--na:#e9edf0;--amb:#ffe9b0;--ambtx:#a87400;--sh:rgba(0,0,0,.08)}
+:root{--bg:#f4f6f8;--card:#fff;--tx:#2f3a40;--mu:#66757e;--ln:#e6ebef;--g:#58cc02;--gd:#46a302;--red:#ffd9db;--redtx:#e5484d;--na:#e9edf0;--amb:#ffe9b0;--ambtx:#a87400;--sh:rgba(0,0,0,.08)}
 @media(prefers-color-scheme:dark){:root{--bg:#10191e;--card:#1b2830;--tx:#eaf1f4;--mu:#8ea2ad;--ln:#2b3b45;--red:#4b2930;--redtx:#ff7b80;--na:#24323a;--amb:#4b4020;--ambtx:#ffc94d;--sh:rgba(0,0,0,.4)}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
@@ -44,42 +44,42 @@ main{max-width:560px;margin:0 auto;padding:16px}
 .bar.dk i{background:var(--g)}
 
 /* cards */
-.card{background:var(--card);border:2px solid var(--ln);border-bottom-width:4px;border-radius:18px;padding:14px;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:22px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.05)}
 .grp{display:flex;justify-content:space-between;align-items:center;margin:18px 4px 8px;font-weight:800;color:var(--mu);text-transform:uppercase;font-size:13px;letter-spacing:.06em}
-.item{display:flex;align-items:center;gap:12px;background:var(--card);border:2px solid var(--ln);border-bottom-width:4px;border-radius:18px;padding:12px;margin-bottom:10px;transition:background .3s,border-color .3s}
-.item.done{border-color:var(--g);background:color-mix(in srgb,var(--g) 10%,var(--card))}
+.item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--ln);border-radius:22px;padding:12px 14px;margin-bottom:10px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.05);transition:background .3s,border-color .3s}
+.item.done{border-color:color-mix(in srgb,var(--g) 55%,transparent);background:color-mix(in srgb,var(--g) 10%,var(--card))}
 .item.done .nm{text-decoration:line-through;opacity:.55}
 .ico{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;font-size:26px;flex:none}
 .txt{flex:1;min-width:0}
 .nm{display:block;font-weight:800;font-size:17px;overflow:hidden;text-overflow:ellipsis}
 .meta{display:block;color:var(--mu);font-size:13px;font-weight:600;margin-top:2px}
-.chk{width:66px;height:66px;border-radius:50%;flex:none;border:3px solid var(--c);background:transparent;color:transparent;font-size:34px;font-weight:900;display:grid;place-items:center;padding:0;box-shadow:0 4px 0 color-mix(in srgb,var(--c) 45%,transparent);transition:background .2s,color .2s}
-.chk:active{transform:translateY(3px);box-shadow:none}
-.done .chk{background:var(--c);color:#fff}
+.chk{width:60px;height:60px;border-radius:50%;flex:none;border:3px solid var(--c);background:transparent;color:transparent;font-size:30px;font-weight:900;display:grid;place-items:center;padding:0;transition:background .2s,color .2s}
+.chk:active{transform:scale(.92)}
+.done .chk{background:var(--c);color:#fff;box-shadow:0 8px 18px -6px var(--c)}
 .pop{animation:pop .55s cubic-bezier(.3,1.6,.5,1)}
 @keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
 .empty{text-align:center;padding:36px 12px;color:var(--mu);font-weight:600}
 .empty .big{font-size:64px;display:block;margin-bottom:8px}
 
 /* buttons */
-.btn{display:block;width:100%;border:0;border-radius:16px;padding:14px 18px;font-weight:800;font-size:15px;color:#fff;background:var(--g);box-shadow:0 4px 0 var(--gd);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
-.btn:active{transform:translateY(4px);box-shadow:none}
-.btn.sec{background:var(--card);color:var(--tx);border:2px solid var(--ln);box-shadow:0 4px 0 var(--ln)}
-.btn.dng{background:#ff4b4b;box-shadow:0 4px 0 #cc3a3a}
+.btn{display:block;width:100%;min-height:48px;border:0;border-radius:16px;padding:14px 18px;font-weight:800;font-size:15px;color:#fff;background:var(--g);box-shadow:0 8px 18px -8px var(--g);margin-bottom:8px}
+.btn:active{transform:scale(.97)}
+.btn.sec{background:var(--card);color:var(--tx);border:1px solid var(--ln);box-shadow:none}
+.btn.dng{background:#ff4b4b;box-shadow:0 8px 18px -8px #ff4b4b}
 .btn.row2{display:inline-block;width:calc(50% - 4px)}
 .rowb{display:flex;gap:8px}
 .rowb .btn{flex:1}
 .stepper{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.stepper button{width:48px;height:48px;border-radius:14px;border:2px solid var(--ln);border-bottom-width:4px;background:var(--card);font-size:24px;font-weight:900}
+.stepper button{width:48px;height:48px;border-radius:14px;border:1px solid var(--ln);background:var(--card);font-size:24px;font-weight:900}
 .stepper b{font-size:22px}
 
 /* progreso */
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.stat{background:var(--card);border:2px solid var(--ln);border-bottom-width:4px;border-radius:18px;padding:12px;text-align:center}
+.stat{background:var(--card);border:1px solid var(--ln);box-shadow:0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.05);border-radius:22px;padding:12px;text-align:center}
 .stat b{display:block;font-size:30px;line-height:1.1}
 .stat span{font-size:12px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.05em}
 .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.nav button{width:44px;height:44px;border-radius:12px;border:2px solid var(--ln);background:var(--card);font-size:20px;font-weight:900}
+.nav button{width:44px;height:44px;border-radius:12px;border:1px solid var(--ln);background:var(--card);font-size:20px;font-weight:900}
 .nav div{text-align:center;font-weight:800}
 .nav small{display:block;color:var(--mu);font-weight:700}
 .wk{display:grid;grid-template-columns:34px repeat(7,1fr);gap:5px;align-items:center;margin-bottom:5px}
@@ -105,7 +105,7 @@ button.c:disabled{opacity:.6}
 .hs .ico{width:40px;height:40px;font-size:21px}
 
 /* hábitos */
-.hc{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:2px solid var(--ln);border-bottom-width:4px;border-radius:18px;padding:12px;margin-bottom:10px}
+.hc{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:1px solid var(--ln);box-shadow:0 1px 2px rgba(16,24,40,.04),0 6px 20px rgba(16,24,40,.05);border-radius:22px;padding:12px;margin-bottom:10px}
 .dots{display:flex;gap:3px;margin-top:5px}
 .dots i{font-style:normal;font-size:10px;font-weight:800;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;background:var(--na);color:var(--mu)}
 .dots i.on{background:var(--c);color:#fff}
@@ -136,11 +136,11 @@ button.c:disabled{opacity:.6}
 .dayrow .chk{width:54px;height:54px;font-size:28px}
 
 /* nav */
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);border-top:2px solid var(--ln);display:flex;justify-content:center;padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
-.tabs-in{display:flex;gap:8px;width:100%;max-width:560px}
-.tabs button{flex:1;border:2px solid transparent;border-radius:16px;background:none;padding:8px 0 6px;font-size:12px;font-weight:800;color:var(--mu);display:flex;flex-direction:column;align-items:center;gap:2px}
-.tabs button span{font-size:26px;line-height:1.1}
-.tabs button.on{background:color-mix(in srgb,#1cb0f6 15%,var(--card));border-color:#1cb0f6;color:#1cb0f6}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:color-mix(in srgb,var(--card) 86%,transparent);backdrop-filter:saturate(1.6) blur(16px);-webkit-backdrop-filter:saturate(1.6) blur(16px);border-top:1px solid var(--ln);display:flex;justify-content:center;padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+.tabs-in{display:flex;gap:4px;width:100%;max-width:560px}
+.tabs button{flex:1;min-height:54px;border:0;border-radius:14px;background:none;padding:7px 0 5px;font-size:10.5px;font-weight:800;color:var(--mu);display:flex;flex-direction:column;align-items:center;gap:2px}
+.tabs button span{font-size:21px;line-height:1.1}
+.tabs button.on{background:color-mix(in srgb,#1cb0f6 13%,transparent);color:#1cb0f6}
 
 /* fx */
 #fx{position:fixed;inset:0;pointer-events:none;z-index:90;overflow:hidden}
@@ -252,19 +252,23 @@ function habitStreak(h) {
   }
   return { cur: run, best };
 }
+/* Día de gracia: un día fallado no corta la racha si venías con racha y no usaste otro en los últimos 7 días. */
 function globalStreak() {
   const today = todayKey();
-  if (!S.habits.length) return { cur: 0, best: 0, lit: false };
+  if (!S.habits.length) return { cur: 0, best: 0, lit: false, grace: null };
   const start = S.habits.reduce((m, h) => h.since < m ? h.since : m, today);
-  let run = 0, best = 0;
+  let run = 0, best = 0, grace = null;
   for (let d = parse(start); key(d) <= today; d = addDays(d, 1)) {
     const k = key(d), i = dayInfo(k);
     if (!i.due) continue;
     if (met(i)) { run++; if (run > best) best = run; }
-    else if (k !== today) run = 0;
+    else if (k !== today) {
+      if (run > 0 && (!grace || (parse(k) - parse(grace)) / 864e5 >= 7)) grace = k;
+      else run = 0;
+    }
   }
   const ti = dayInfo(today);
-  return { cur: run, best, lit: ti.due ? met(ti) : run > 0 };
+  return { cur: run, best, lit: ti.due ? met(ti) : run > 0, grace: grace && (parse(today) - parse(grace)) / 864e5 < 7 ? grace : null };
 }
 function pct(from, to) {
   const today = todayKey();
@@ -298,7 +302,7 @@ function header() {
   const g = globalStreak(), xp = totalXP(), lv = levelOf(xp);
   const p = (xp - need(lv)) / (need(lv + 1) - need(lv)) * 100;
   return `<div class="top-in">
-    <div class="flame ${g.lit ? 'lit' : ''}"><span class="fl">🔥</span><div><b>${g.cur}</b><small>${g.cur === 1 ? 'día' : 'días'} de racha</small></div></div>
+    <div class="flame ${g.lit ? 'lit' : ''}"><span class="fl">🔥</span><div><b>${g.cur}</b><small>${g.cur === 1 ? 'día' : 'días'} de racha${g.grace ? ' · gracia usada' : ''}</small></div></div>
     <div class="lvl"><b>${titleOf(lv)}</b><div class="bar"><i style="width:${p}%"></i></div><small>Nivel ${lv} · ${xp - need(lv)} / ${need(lv + 1) - need(lv)} XP</small></div>
   </div>`;
 }
@@ -327,7 +331,7 @@ function vHoy() {
   S.routines.forEach(r => { const hs = list.filter(h => h.routine === r.id); if (hs.length) groups.push({ name: r.name, hs }); });
   const loose = list.filter(h => !S.routines.some(r => r.id === h.routine));
   if (loose.length) groups.push({ name: groups.length ? 'Otros' : null, hs: loose });
-  const msg = complete(i) ? '🎉 ¡Día completo!' : ok ? '🎯 ¡Meta diaria cumplida!' : g.cur && !g.lit ? `Cumplí ${goal - i.done === 1 ? '1 hábito más' : (goal - i.done) + ' hábitos más'} para sostener la racha 🔥` : `Meta diaria: ${goal} ${goal === 1 ? 'hábito' : 'hábitos'}`;
+  const msg = complete(i) ? '🎉 ¡Día completo!' : ok ? '🎯 ¡Meta diaria cumplida!' : g.cur === 0 && g.best > 0 && !ok ? `Cualquier día se retoma: ${goal === 1 ? '1 hábito' : goal + ' hábitos'} hoy y arrancás otra racha 💪` : g.cur && !g.lit ? `Cumplí ${goal - i.done === 1 ? '1 hábito más' : (goal - i.done) + ' hábitos más'} para sostener la racha 🔥` : `Meta diaria: ${goal} ${goal === 1 ? 'hábito' : 'hábitos'}`;
   return head + `<div class="card"><div class="tog"><b>${i.done} de ${i.due} hábitos</b><span style="color:var(--mu);font-weight:700">+${dayXP(k)} XP</span></div>
     <div class="bar dk" style="margin:10px 0"><i style="width:${i.done / i.due * 100}%"></i></div>
     <div style="font-weight:700;color:${ok ? 'var(--gd)' : 'var(--mu)'}">${msg}</div></div>` +
@@ -625,7 +629,8 @@ document.addEventListener('click', e => {
     case 'import': $('#imp').click(); break;
   }
 });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { S = load(); render(); } });
+addEventListener('pageshow', e => { if (e.persisted) { S = load(); render(); } });
 
 render();
 </script>
