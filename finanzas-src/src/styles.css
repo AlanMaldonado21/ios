@@ -607,3 +607,8 @@ h2{font-size:16px;margin:0;font-weight:800}
 .qa-frec button{min-height:40px;padding:0 14px;border-radius:999px;border:1px dashed var(--acc);background:none;color:var(--acc);font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
 .cargando{height:160px;border-radius:var(--r);background:linear-gradient(90deg,var(--card),var(--card2),var(--card));background-size:200% 100%;animation:shim 1.2s linear infinite;margin-top:16px}
 @keyframes shim{to{background-position:-200% 0}}
+
+.sy{display:flex;flex-direction:column;gap:8px}
+.sy input{height:48px;border-radius:14px;border:1px solid var(--ln);background:var(--card2);padding:0 12px;font-size:16px;color:var(--tx)}
+.sy .btn-add:disabled{opacity:.5}
+.sy-b{display:flex;justify-content:space-between}

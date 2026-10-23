@@ -171,6 +171,8 @@ button.c:disabled{opacity:.6}
 <div id="toast"></div>
 <input type="file" id="imp" accept="application/json,.json,text/plain" hidden>
 
+<script src="config.js"></script>
+<script src="sync.js"></script>
 <script>
 'use strict';
 const LS = 'habitos-v1';
@@ -219,7 +221,7 @@ function load() {
   try { const s = JSON.parse(localStorage.getItem(LS)); if (s && Array.isArray(s.habits)) return normalize(s); } catch (e) {}
   return seed();
 }
-function save() { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {} }
+function save() { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {} if (window.Sync) Sync.touch('habitos'); }
 let S = load(); save();
 const V = { tab: 'hoy', week: 0, month: 0 };
 let openDay = null, ED = null;
@@ -398,16 +400,35 @@ function vHab() {
   <div class="card"><div class="stepper"><div><b>Meta diaria</b><div class="meta" style="color:var(--mu);font-size:13px;font-weight:600">Hábitos por día para sostener la racha</div></div>
     <div class="stepper"><button data-act="goal" data-n="-1">−</button><b>${S.settings.goal}</b><button data-act="goal" data-n="1">+</button></div></div></div>
   <div class="card"><div class="tog"><b>Sonido</b><button class="btn sec" style="width:90px;margin:0;padding:10px" data-act="sound">${S.settings.sound ? 'Sí' : 'No'}</button></div></div>
+  <h3 style="margin-top:26px">Cuenta y sincronización</h3>
+  <div class="card" id="syncbox"></div>
   <h3 style="margin-top:26px">Respaldo</h3>
   <div class="rowb"><button class="btn sec" data-act="export">Exportar</button><button class="btn sec" data-act="import">Importar</button></div>
   <p style="color:var(--mu);font-size:13px;font-weight:600">Tus datos viven solo en este dispositivo. Exportá un JSON de vez en cuando.</p>`;
   return out;
+}
+function renderSync(i) {
+  const b = $('#syncbox'); if (!b) return;
+  i = i || Sync.info();
+  if (!i.enabled) { b.innerHTML = '<div class="meta" style="color:var(--mu);font-weight:600">Sincronización apagada: tus datos viven solo en este dispositivo.</div>'; return; }
+  if (i.status === 'out') {
+    b.innerHTML = `<div class="meta" style="color:var(--mu);font-weight:600;margin-bottom:8px">Entrá para tener tus datos en la nube y en todos tus dispositivos.</div>
+      <input type="text" id="sy-mail" inputmode="email" autocapitalize="none" autocomplete="username" placeholder="Email" style="width:100%;padding:12px;border-radius:14px;border:1px solid var(--ln);background:var(--card);margin-bottom:8px">
+      <input type="password" id="sy-pass" autocomplete="current-password" placeholder="Contraseña" style="width:100%;padding:12px;border-radius:14px;border:1px solid var(--ln);background:var(--card);margin-bottom:8px">
+      <div id="sy-err" style="color:var(--redtx);font-weight:700;font-size:13px;min-height:1em"></div>
+      <button class="btn" data-act="syncLogin">Entrar</button>`;
+    return;
+  }
+  const txt = i.status === 'ok' ? '✓ Sincronizado' : i.status === 'pending' ? 'Sincronizando…' : '⚠️ No se pudo sincronizar (' + esc(i.error) + ')';
+  b.innerHTML = `<div class="tog"><b>${esc(i.email)}</b><span style="color:var(--mu);font-weight:700;font-size:13px">${txt}</span></div>
+    <div class="rowb" style="margin-top:10px"><button class="btn sec" style="margin:0" data-act="syncNow">Sincronizar</button><button class="btn sec" style="margin:0" data-act="syncOut">Salir</button></div>`;
 }
 function render() {
   $('#top').innerHTML = header();
   $('#view').innerHTML = V.tab === 'hoy' ? vHoy() : V.tab === 'prog' ? vProg() : vHab();
   $$('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === V.tab));
   if (openDay) fillDay();
+  if (window.Sync) renderSync();
 }
 
 /* ---------- acciones ---------- */
@@ -625,6 +646,13 @@ document.addEventListener('click', e => {
       break;
     case 'goal': S.settings.goal = Math.max(1, Math.min(10, S.settings.goal + +d.n)); save(); render(); break;
     case 'sound': S.settings.sound = !S.settings.sound; save(); render(); if (S.settings.sound) chime([660, 880]); break;
+    case 'syncLogin': {
+      t.disabled = true;
+      Sync.login($('#sy-mail').value.trim(), $('#sy-pass').value).then(r => { t.disabled = false; if (r.error) { const e = $('#sy-err'); if (e) e.textContent = r.error; } });
+      break;
+    }
+    case 'syncNow': Sync.syncAll(); break;
+    case 'syncOut': if (confirm('¿Salir? Tus datos quedan en este dispositivo y en la nube.')) Sync.logout(); break;
     case 'export': exportData(); break;
     case 'import': $('#imp').click(); break;
   }
@@ -633,6 +661,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) { S 
 addEventListener('pageshow', e => { if (e.persisted) { S = load(); render(); } });
 
 render();
+if (window.Sync) { Sync.onStatus(renderSync); Sync.register('habitos', () => { S = load(); render(); }); }
 </script>
 </body>
 </html>

@@ -65,12 +65,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const editarGasto = useCallback((g: GastoDiario | null) => { setGastoEdit(g); setSheetGastoRaw(!!g); }, []);
   const guardarEdicion = useCallback((g: GastoDiario) => setSt(s => ({ ...s, gastos: s.gastos.map(x => x.id === g.id ? g : x) })), []);
   const first = useRef(true);
+  useEffect(() => { window.Sync?.register('finanzas', () => setSt(cargar())); }, []);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
     try {
       const txt = JSON.stringify({ ...st, fixAhorro: true });
       if (txt === localStorage.getItem(LS)) return; // nada cambió (p. ej. el doble efecto de StrictMode al abrir)
       localStorage.setItem(LS, txt); setGuardado(Date.now());
+      window.Sync?.touch('finanzas');
     } catch { /* lleno o bloqueado */ }
   }, [st]);
 
