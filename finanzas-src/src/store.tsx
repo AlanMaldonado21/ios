@@ -30,7 +30,7 @@ type Ctx = Estado & {
   dolar: number;
   /** Tacha/destacha un mes. usd = lo que se separó (queda congelado). */
   toggleCheck: (mes: string, usd: number) => void;
-  agregarGasto: (g: Omit<GastoDiario, 'id'>) => void;
+  agregarGasto: (g: Omit<GastoDiario, 'id'>) => string;
   borrarGasto: (id: string) => void;
   setDolar: (d: number) => void;
   /** Tope de gasto manual de un mes (para meses fuera del plan). null lo borra. */
@@ -39,6 +39,9 @@ type Ctx = Estado & {
   editar: (fn: (d: FinData) => void) => void;
   guardado: number;
   /** Mes abierto en Inicio (no se guarda). null = mes actual. */
+  /** Hoja de carga rápida de gasto abierta (no se guarda). */
+  sheetGasto: boolean;
+  setSheetGasto: (v: boolean) => void;
   mesSel: string | null;
   setMesSel: (m: string | null) => void;
 };
@@ -51,6 +54,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [st, setSt] = useState<Estado>(cargar);
   const [guardado, setGuardado] = useState(0);
   const [mesSel, setMesSel] = useState<string | null>(null);
+  const [sheetGasto, setSheetGasto] = useState(false);
   const first = useRef(true);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
@@ -62,7 +66,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (checks[mes]) delete checks[mes]; else checks[mes] = { fecha: hoyISO(), usd };
     return { ...s, checks };
   }), []);
-  const agregarGasto = useCallback((g: Omit<GastoDiario, 'id'>) => setSt(s => ({ ...s, gastos: [{ ...g, id: nuevoId() }, ...s.gastos] })), []);
+  const agregarGasto = useCallback((g: Omit<GastoDiario, 'id'>) => {
+    const id = nuevoId();
+    setSt(s => ({ ...s, gastos: [{ ...g, id }, ...s.gastos] }));
+    return id;
+  }, []);
   const borrarGasto = useCallback((id: string) => setSt(s => ({ ...s, gastos: s.gastos.filter(g => g.id !== id) })), []);
   const editar = useCallback((fn: (d: FinData) => void) => setSt(s => {
     const data: FinData = JSON.parse(JSON.stringify(s.data));
@@ -76,7 +84,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }), []);
   const setDolar = useCallback((dolar: number) => editar(d => { d.settings.dolar = dolar; }), [editar]);
 
-  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, mesSel, setMesSel }}>{children}</C.Provider>;
+  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, sheetGasto, setSheetGasto, mesSel, setMesSel }}>{children}</C.Provider>;
 }
 
 export function useStore() {

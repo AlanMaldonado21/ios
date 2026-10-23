@@ -6,6 +6,7 @@ import { Plan } from './screens/Plan';
 import { Cuotas } from './screens/Cuotas';
 import { Fijos } from './screens/Fijos';
 import { Config } from './screens/Config';
+import { QuickAdd } from './components/QuickAdd';
 import { Guardado, StoreProvider } from './store';
 
 export type Ruta = 'inicio' | 'diario' | 'plan' | 'ingresos' | 'cuotas' | 'gastos' | 'config';
@@ -47,6 +48,7 @@ export function App() {
     <StoreProvider>
     <div className="shell">
       <Guardado />
+      {ruta !== 'config' && <QuickAdd />}
       <aside className="side">
         <a className="side-back" href="../">‹ Hábitos</a>
         <div className="side-brand"><span>💰</span>Finanzas</div>
