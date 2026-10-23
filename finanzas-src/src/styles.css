@@ -264,8 +264,8 @@ h2{font-size:16px;margin:0;font-weight:800}
 .saved.on{opacity:1;transform:translate(-50%,0)}
 
 /* tira: mes cumplido */
-.mp-done{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:18px;height:18px;border-radius:50%;background:var(--pos);color:#fff;font-size:11px;font-weight:900;display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg);animation:pop .4s cubic-bezier(.3,1.6,.5,1)}
-@keyframes pop{0%{transform:translateX(-50%) scale(.4)}100%{transform:translateX(-50%) scale(1)}}
+.mp-done{position:absolute;top:-6px;left:-5px;width:18px;height:18px;border-radius:50%;background:var(--pos);color:#fff;font-size:11px;font-weight:900;display:grid;place-items:center;box-shadow:0 0 0 2px var(--bg);animation:pop .4s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:scale(.4)}100%{transform:scale(1)}}
 .strip{padding-bottom:10px}
 
 /* checklist */
@@ -423,6 +423,12 @@ h2{font-size:16px;margin:0;font-weight:800}
 .fact-c small{font-size:11px;color:var(--mu);font-weight:600}
 @media (max-width:420px){.fact-h,.fact-r{grid-template-columns:78px 1fr 92px;gap:8px;padding:8px 12px}.fact-m{font-size:13px}.ed-row .money{width:132px}}
 
+/* inicio / plan */
+.ph-sm{margin:10px 0 10px}
+.solo-desktop{display:none}
+.grid-plan{display:grid;gap:12px;margin-top:8px}
+.grid-plan .card{margin:0}
+
 /* desktop */
 @media (min-width:900px){
   .topbar,.tabs{display:none}
@@ -451,7 +457,11 @@ h2{font-size:16px;margin:0;font-weight:800}
   .layout{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:24px;align-items:start}
   .sec.first{margin-top:8px}
   .col-plan .card{margin-bottom:16px}
-  .col-plan{position:sticky;top:118px}
+
+  .solo-desktop{display:block}
+  .solo-mobile{display:none}
+  .grid-plan{grid-template-columns:1fr 1fr;gap:16px}
+  .grid-plan .span2{grid-column:span 2}
 }
 @media (min-width:900px) and (max-width:1100px){.hero{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

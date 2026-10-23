@@ -33,6 +33,9 @@ type Ctx = Estado & {
   /** Cambia los datos del plan (ingresos, cuotas, etc.). Se guarda y recalcula al instante. */
   editar: (fn: (d: FinData) => void) => void;
   guardado: number;
+  /** Mes abierto en Inicio (no se guarda). null = mes actual. */
+  mesSel: string | null;
+  setMesSel: (m: string | null) => void;
 };
 
 const C = createContext<Ctx | null>(null);
@@ -42,6 +45,7 @@ export const nuevoId = () => Math.random().toString(36).slice(2, 9) + Date.now()
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [st, setSt] = useState<Estado>(cargar);
   const [guardado, setGuardado] = useState(0);
+  const [mesSel, setMesSel] = useState<string | null>(null);
   const first = useRef(true);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
@@ -62,7 +66,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }), []);
   const setDolar = useCallback((dolar: number) => editar(d => { d.settings.dolar = dolar; }), [editar]);
 
-  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, agregarGasto, borrarGasto, setDolar, editar, guardado }}>{children}</C.Provider>;
+  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, agregarGasto, borrarGasto, setDolar, editar, guardado, mesSel, setMesSel }}>{children}</C.Provider>;
 }
 
 export function useStore() {
