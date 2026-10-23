@@ -8,7 +8,7 @@ import type { FinData } from '../../lib/finanzas/types';
 // Cuando se conecte Supabase, esto se reemplaza por las tablas fin_*.
 const LS = 'finanzas-v1';
 
-type Estado = { data: FinData; checks: Checks; gastos: GastoDiario[] };
+type Estado = { data: FinData; checks: Checks; gastos: GastoDiario[]; topes: Record<string, number> };
 
 const copiaSeed = (): FinData => JSON.parse(JSON.stringify(DATOS_INICIALES));
 
@@ -20,10 +20,10 @@ function cargar(): Estado {
       if (!s.data && Number(s.dolar)) data.settings.dolar = Number(s.dolar); // formato viejo
       // Corrección: el ahorro en pesos de la planilla era el mismo ahorro en USD pasado a pesos.
       if (!s.fixAhorro && data.settings.ahorroUsdActual === 1050 && data.settings.ahorroPesosActual === 1627500) data.settings.ahorroPesosActual = 0;
-      return { data, checks: s.checks || {}, gastos: Array.isArray(s.gastos) ? s.gastos : [] };
+      return { data, checks: s.checks || {}, gastos: Array.isArray(s.gastos) ? s.gastos : [], topes: s.topes && typeof s.topes === 'object' ? s.topes : {} };
     }
   } catch { /* sin datos */ }
-  return { data: copiaSeed(), checks: {}, gastos: [] };
+  return { data: copiaSeed(), checks: {}, gastos: [], topes: {} };
 }
 
 type Ctx = Estado & {
@@ -33,6 +33,8 @@ type Ctx = Estado & {
   agregarGasto: (g: Omit<GastoDiario, 'id'>) => void;
   borrarGasto: (id: string) => void;
   setDolar: (d: number) => void;
+  /** Tope de gasto manual de un mes (para meses fuera del plan). null lo borra. */
+  setTope: (mes: string, monto: number | null) => void;
   /** Cambia los datos del plan (ingresos, cuotas, etc.). Se guarda y recalcula al instante. */
   editar: (fn: (d: FinData) => void) => void;
   guardado: number;
@@ -67,9 +69,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     fn(data);
     return { ...s, data };
   }), []);
+  const setTope = useCallback((mes: string, monto: number | null) => setSt(s => {
+    const topes = { ...s.topes };
+    if (monto && monto > 0) topes[mes] = monto; else delete topes[mes];
+    return { ...s, topes };
+  }), []);
   const setDolar = useCallback((dolar: number) => editar(d => { d.settings.dolar = dolar; }), [editar]);
 
-  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, agregarGasto, borrarGasto, setDolar, editar, guardado, mesSel, setMesSel }}>{children}</C.Provider>;
+  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, mesSel, setMesSel }}>{children}</C.Provider>;
 }
 
 export function useStore() {

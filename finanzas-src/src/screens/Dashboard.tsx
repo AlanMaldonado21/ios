@@ -4,6 +4,7 @@ import { Checklist } from '../components/Checklist';
 import { fmtArs, fmtUsd } from '../../../lib/finanzas/format';
 import { KpiCard } from '../components/KpiCard';
 import { MesBox } from '../components/MesBox';
+import { ComoVoy } from '../components/ComoVoy';
 import { Apertura } from '../components/Apertura';
 import { DonaChart, SERIES } from '../components/Charts';
 
@@ -29,7 +30,8 @@ export function Dashboard() {
 
       <div className="layout">
         <div className="col-mes">
-          <MesBox m={m} ix={ix} meses={meses} meta={s.metaUsd} hoy={hoy} ir={ir} base={resumen.ahorroActualUsd} />
+          <ComoVoy librePlan={meses.find(x => x.mes === hoyMes())?.libre ?? null} />
+          <MesBox m={m} ix={ix} meses={meses} meta={s.metaUsd} hoy={hoyMes()} ir={ir} base={resumen.ahorroActualUsd} />
           <div className="solo-mobile"><Checklist meses={meses} sel={sel} onSel={setSel} base={resumen.ahorroActualUsd} /></div>
 
           <section className="kpis">

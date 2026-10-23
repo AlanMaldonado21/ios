@@ -531,3 +531,25 @@ h2{font-size:16px;margin:0;font-weight:800}
 }
 @media (min-width:900px) and (max-width:1100px){.hero{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ¿Cómo voy? */
+.link{border:0;background:none;padding:10px 0;font-weight:800;font-size:13px;color:var(--acc)}
+.link.neg{color:var(--neg)}
+.cv{padding:16px 18px 8px}
+.cv-h{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.cv-n{display:block;font-size:40px;font-weight:800;line-height:1.05;letter-spacing:-.03em}
+.cv-pos .cv-n{color:var(--tx)}.cv-warn .cv-n{color:var(--warn-tx)}.cv-neg .cv-n{color:var(--neg)}
+.cv-l{display:block;color:var(--mu);font-weight:700;font-size:14px;margin-top:2px}
+.cv-bar{position:relative;height:12px;border-radius:99px;background:var(--track);margin-top:14px;overflow:visible}
+.cv-bar i{display:block;height:100%;border-radius:99px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.cv-bar i.pos{background:linear-gradient(90deg,var(--acc-2),var(--acc))}
+.cv-bar i.warn{background:var(--warn)}.cv-bar i.neg{background:var(--neg)}
+.cv-bar em{position:absolute;top:-4px;width:3px;height:20px;border-radius:2px;background:var(--tx);opacity:.55;transform:translateX(-50%)}
+.cv-f{display:flex;justify-content:space-between;gap:8px;margin-top:10px;font-size:13px;font-weight:700;color:var(--mu)}
+.cv-f b{color:var(--tx)}
+.cv-proy{margin:10px 0 0;font-size:14px;font-weight:700;color:var(--mu)}.cv-proy b{color:var(--tx)}
+.cv-pie{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:4px;border-top:1px solid var(--ln);font-size:13px;font-weight:700;color:var(--mu);min-height:44px}
+.cv-pie b{color:var(--tx)}
+.cv-edit{display:flex;align-items:center;gap:8px;padding:4px 0 6px}
+.cv-edit>span{font-weight:800;color:var(--mu);font-size:18px}
+.cv-edit input{flex:1;min-width:0;height:46px;border-radius:14px;border:1px solid var(--ln);background:var(--card2);padding:0 12px;font-size:17px;font-weight:700;color:var(--tx)}

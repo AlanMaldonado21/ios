@@ -112,3 +112,32 @@ export function ahorroReal(base: number, meses: { mes: Mes; ahorroUsd: number }[
   }
   return { real, pendiente };
 }
+
+export type Ritmo = {
+  dia: number; diasMes: number; diasRestantes: number;
+  gastado: number; hoy: number;
+  /** Con tope: lo que queda, lo que podés gastar por día desde hoy y dónde "debería" ir según el día. */
+  tope: number | null; quedan: number | null; porDia: number | null; ideal: number | null;
+  /** Sin tope (o con): a este ritmo cerrás el mes en... */
+  proyeccion: number; promedioDia: number;
+  nivel: 'pos' | 'warn' | 'neg';
+};
+
+/** ¿Cómo va el mes? Solo mira lo que sale del bolsillo (débito/transferencia) del mes de `hoy` (YYYY-MM-DD). */
+export function ritmoMes(gastos: GastoDiario[], tope: number | null, hoy: string): Ritmo {
+  const mes = mesDeFecha(hoy);
+  const [y, m, d] = hoy.split('-').map(Number);
+  const diasMes = new Date(y, m, 0).getDate();
+  const delMes = gastosAlContado(gastosDelMes(gastos, mes));
+  const gastado = totalGastos(delMes);
+  const hoyTotal = totalGastos(delMes.filter(g => g.fecha === hoy));
+  const diasRestantes = diasMes - d + 1; // contando hoy
+  const promedioDia = gastado / d;
+  const proyeccion = promedioDia * diasMes;
+  const t = tope && tope > 0 ? tope : null;
+  const ideal = t ? (t * d) / diasMes : null;
+  const quedan = t ? t - gastado : null;
+  const porDia = t && quedan! > 0 ? quedan! / diasRestantes : t ? 0 : null;
+  const nivel = !t ? 'pos' : gastado > t ? 'neg' : gastado > ideal! * 1.05 ? 'warn' : 'pos';
+  return { dia: d, diasMes, diasRestantes, gastado, hoy: hoyTotal, tope: t, quedan, porDia, ideal, proyeccion, promedioDia, nivel };
+}

@@ -76,3 +76,25 @@ describe('ahorro real con el checklist', () => {
     expect(r.usdCumplidos).toBe(1500);
   });
 });
+
+import { ritmoMes } from './diario';
+describe('ritmoMes', () => {
+  const g = (fecha: string, monto: number, medio: 'debito' | 'credito' = 'debito') => ({ id: fecha + monto, fecha, tipo: 'Comida', monto, medio });
+  it('sin tope: promedio y proyección, el crédito no cuenta', () => {
+    const r = ritmoMes([g('2026-10-02', 100000), g('2026-10-20', 210000), g('2026-10-21', 999999, 'credito'), g('2026-09-30', 5)], null, '2026-10-23');
+    expect(r.gastado).toBe(310000);
+    expect(r.diasMes).toBe(31);
+    expect(r.diasRestantes).toBe(9);
+    expect(Math.round(r.proyeccion)).toBe(Math.round(310000 / 23 * 31));
+    expect(r.tope).toBeNull();
+  });
+  it('con tope: queda, por día y nivel', () => {
+    const r = ritmoMes([g('2026-10-23', 100000)], 310000, '2026-10-23');
+    expect(r.hoy).toBe(100000);
+    expect(r.quedan).toBe(210000);
+    expect(r.porDia).toBeCloseTo(210000 / 9);
+    expect(r.nivel).toBe('pos');
+    expect(ritmoMes([g('2026-10-05', 250000)], 310000, '2026-10-23').nivel).toBe('warn');
+    expect(ritmoMes([g('2026-10-05', 400000)], 310000, '2026-10-23').nivel).toBe('neg');
+  });
+});
