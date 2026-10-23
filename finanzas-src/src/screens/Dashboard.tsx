@@ -6,6 +6,7 @@ import { ProgressRing } from '../components/ProgressRing';
 import { KpiCard } from '../components/KpiCard';
 import { CountUp } from '../components/CountUp';
 import { MonthStrip } from '../components/MonthStrip';
+import { MesBox } from '../components/MesBox';
 import { Apertura } from '../components/Apertura';
 import { AcumuladoChart, ApiladoChart, CuotasChart, DonaChart, SERIES, TARJETAS } from '../components/Charts';
 
@@ -30,10 +31,10 @@ export function Dashboard() {
       <header className="ph">
         <div>
           <h1>Finanzas</h1>
-          <p className="sub">Plan de ahorro en dólares</p>
+          <p className="sub">Ahorro en dólares</p>
         </div>
         <div className="seg" role="group" aria-label="Dólar estimado">
-          <span className="seg-l">Dólar</span>
+          <span className="seg-l">U$S</span>
           {DOLARES.map(d => (
             <button key={d} className={d === dolar ? 'on' : ''} onClick={() => setDolar(d)}>{d.toLocaleString('es-AR')}</button>
           ))}
@@ -43,11 +44,11 @@ export function Dashboard() {
       {/* HERO */}
       <section className="hero">
         <div className="hero-top">
-          <ProgressRing pct={r.usdProyectados / s.metaUsd} size={innerWidth >= 900 ? 150 : 112} stroke={innerWidth >= 900 ? 13 : 10} />
+          <ProgressRing pct={r.usdProyectados / s.metaUsd} size={innerWidth >= 900 ? 150 : 96} stroke={innerWidth >= 900 ? 13 : 9} />
           <div className="hero-t">
             <span className="eyebrow">Proyectado a {mesCorto(s.fechaMeta)}</span>
             <div className="hero-n"><CountUp value={r.usdProyectados} format={n => fmtUsd(n, 0)} /></div>
-            <div className="hero-s">meta <b className="num">{fmtUsd(s.metaUsd, 0)}</b></div>
+            <div className="hero-s">meta <b className="num">{fmtUsd(s.metaUsd, 0)}</b> · {r.mesesHastaMeta} meses</div>
             <span className={`badge ${r.cumplida ? 'b-pos' : 'b-warn'}`}>
               {r.cumplida ? '✓ META CUMPLIDA' : `Te faltan ${fmtUsd(-r.diferencia, 0)}`}
             </span>
@@ -56,30 +57,16 @@ export function Dashboard() {
         <div className="hero-stats">
           <div><span>Ahorrado hoy</span><b className="num">{fmtUsd(r.ahorroActualUsd, 0)}</b></div>
           <div><span>{r.cumplida ? 'Te sobran' : 'Te faltan'}</span><b className={`num ${r.cumplida ? 'pos' : 'warn'}`}>{fmtUsd(Math.abs(r.diferencia), 0)}</b></div>
-          <div><span>Meses a la meta</span><b className="num">{r.mesesHastaMeta}</b></div>
-          <div><span>Necesitás ahorrar</span><b className="num">{fmtPct(r.pctNecesario)}</b><em>{r.lectura}</em></div>
+          <div><span>Ahorro necesario</span><b className="num">{fmtPct(r.pctNecesario)}</b><em>{r.lectura}</em></div>
         </div>
       </section>
 
       {/* MESES */}
-      <MonthStrip meses={meses} sel={sel} onSel={setSel} hoy={hoy} />
+      <MonthStrip meses={meses} sel={sel} onSel={setSel} hoy={hoy} meta={s.metaUsd} />
 
       <div className="layout">
         <div className="col-mes">
-          <div className="mes-h">
-            <button className="nav-b" onClick={() => ir(-1)} disabled={ix === 0} aria-label="Mes anterior">‹</button>
-            <div className="mes-t">
-              <h2 key={m.mes}>{mesLargo(m.mes)}</h2>
-              <div className="mes-tags">
-                {m.mes === hoy && <span className="tag t-acc">mes actual</span>}
-                {m.esMesMeta && <span className="tag t-pos">🎯 mes de la meta</span>}
-                {!m.hastaMeta && <span className="tag">después de la meta</span>}
-                {m.aguinaldo > 0 && <span className="tag t-pos">+ aguinaldo</span>}
-                {m.libre < 0 && <span className="tag t-neg">libre negativo</span>}
-              </div>
-            </div>
-            <button className="nav-b" onClick={() => ir(1)} disabled={ix === meses.length - 1} aria-label="Mes siguiente">›</button>
-          </div>
+          <MesBox m={m} ix={ix} meses={meses} meta={s.metaUsd} hoy={hoy} ir={ir} />
 
           <section className="kpis">
             <KpiCard ico="🏦" label="Ahorro del mes" value={m.ahorroUsd} prev={prev?.ahorroUsd} format={n => fmtUsd(n, 0)}
@@ -105,11 +92,6 @@ export function Dashboard() {
                   );
                 })}
               </ul>
-            </div>
-            <div className="acum">
-              <div className="acum-r"><span>Acumulado al cierre del mes</span><b className="num">{fmtUsd(m.usdAcumulados, 0)}</b></div>
-              <div className="pbar big"><i style={{ width: `${Math.min(100, (m.usdAcumulados / s.metaUsd) * 100)}%` }} /></div>
-              <small>{fmtPct(m.usdAcumulados / s.metaUsd)} de la meta</small>
             </div>
           </section>
 
