@@ -1,28 +1,18 @@
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { copyFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-// Hábitos (index.html en la raíz) no pasa por Vite: se copia tal cual al build.
-function copiarHabitos(): Plugin {
-  return {
-    name: 'copiar-habitos',
-    apply: 'build',
-    closeBundle() {
-      const out = resolve(__dirname, 'dist');
-      mkdirSync(out, { recursive: true });
-      for (const f of ['index.html', 'apple-touch-icon.png']) copyFileSync(resolve(__dirname, f), resolve(out, f));
-    },
-  };
-}
+// Código fuente en finanzas-src/. El build compilado va a finanzas/ (se commitea:
+// GitHub Pages sirve main tal cual, sin compilar). Hábitos (index.html) no pasa por Vite.
 
 export default defineConfig({
-  root: resolve(__dirname, 'finanzas'),
+  root: resolve(__dirname, 'finanzas-src'),
   base: './',
   envDir: __dirname,
-  plugins: [react(), copiarHabitos()],
+  plugins: [react()],
   build: {
-    outDir: resolve(__dirname, 'dist/finanzas'),
+    outDir: resolve(__dirname, 'finanzas'),
+    chunkSizeWarningLimit: 1000,
     emptyOutDir: true,
   },
   test: {

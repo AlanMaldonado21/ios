@@ -13,5 +13,5 @@
     "noEmit": true,
     "types": ["vite/client"]
   },
-  "include": ["finanzas/src", "lib"]
+  "include": ["finanzas-src/src", "lib"]
 }
