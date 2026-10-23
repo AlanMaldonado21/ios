@@ -591,3 +591,10 @@ h2{font-size:16px;margin:0;font-weight:800}
 .mas-i small{display:block;color:var(--mu);font-weight:600;font-size:12.5px}
 .mas-i>i{font-style:normal;color:var(--mu);font-size:22px}
 .tabs a span{font-size:21px}
+.hh{display:block;padding:14px 16px}
+.hh-h{display:flex;justify-content:space-between;align-items:center}
+.hh-h b{font-size:15px;font-weight:800}.hh-h b.ok{color:var(--pos)}
+.hh-l{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.hh-l span{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:var(--card2);border:1px solid var(--ln);font-size:13px;font-weight:700}
+.hh-l span.ok{background:var(--pos-bg);border-color:transparent;color:var(--pos);text-decoration:line-through}
+.hh-l i{font-style:normal}

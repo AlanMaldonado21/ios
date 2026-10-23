@@ -1,6 +1,7 @@
 import { mesActualDelPlan } from '../../../lib/finanzas/calc';
 import { ahorroReal } from '../../../lib/finanzas/diario';
 import { fmtArs, fmtUsd, mesLargo } from '../../../lib/finanzas/format';
+import { HabitosHoy } from '../components/HabitosHoy';
 import { ComoVoy } from '../components/ComoVoy';
 import { icoTipo } from '../components/QuickAdd';
 import { usePlan, useStore } from '../store';
@@ -24,6 +25,7 @@ export function Inicio() {
     <div className="dash">
       <header className="ph ph-sm"><div><h1>Inicio</h1></div></header>
       <ComoVoy librePlan={planMes?.libre ?? null} />
+      <HabitosHoy />
 
       <h3 className="sec first">Últimos gastos</h3>
       {recientes.length === 0
