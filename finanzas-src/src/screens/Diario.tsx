@@ -21,7 +21,7 @@ function etiquetaDia(iso: string) {
 }
 
 export function Diario() {
-  const { gastos, topes, borrarGasto } = useStore();
+  const { gastos, topes, borrarGasto, editarGasto } = useStore();
   const { meses } = usePlan();
   const [mes, setMes] = useState(hoyISO().slice(0, 7));
   const [borrando, setBorrando] = useState<string | null>(null);
@@ -97,11 +97,13 @@ export function Diario() {
           <div className="card pad0">
             {d.items.map(g => (
               <div key={g.id} className={`gd `}>
+                <button className="gd-main" onClick={() => editarGasto(g)} aria-label={`Editar ${g.tipo}`}>
                 <span className="gd-i">{icoTipo(g.tipo)}</span>
                 <div className="gd-t"><b>{g.tipo}</b><span className={`medio-tag m-${g.medio}`}>{g.medio === 'credito' && g.tarjeta
                   ? `${TARJETAS.find(t => t.id === g.tarjeta)?.corto} · ${(g.cuotas ?? 1) === 1 ? '1 pago' : `${g.cuotas} cuotas`} · desde ${mesCorto(primerPagoCredito(g.fecha, g.tarjeta))}`
                   : MEDIOS.find(x => x.id === g.medio)?.label}</span></div>
                 <b className="gd-v num">{fmtArs(g.monto)}</b>
+                </button>
                 {borrando === g.id ? (
                   <span className="gd-del">
                     <button className="si" onClick={() => { borrarGasto(g.id); setBorrando(null); }}>Borrar</button>

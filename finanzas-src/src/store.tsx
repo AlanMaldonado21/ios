@@ -42,6 +42,10 @@ type Ctx = Estado & {
   /** Hoja de carga rápida de gasto abierta (no se guarda). */
   sheetGasto: boolean;
   setSheetGasto: (v: boolean) => void;
+  /** Gasto que se está editando en la hoja (null = uno nuevo). */
+  gastoEdit: GastoDiario | null;
+  editarGasto: (g: GastoDiario | null) => void;
+  guardarEdicion: (g: GastoDiario) => void;
   mesSel: string | null;
   setMesSel: (m: string | null) => void;
 };
@@ -54,7 +58,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [st, setSt] = useState<Estado>(cargar);
   const [guardado, setGuardado] = useState(0);
   const [mesSel, setMesSel] = useState<string | null>(null);
-  const [sheetGasto, setSheetGasto] = useState(false);
+  const [sheetGasto, setSheetGastoRaw] = useState(false);
+  const [gastoEdit, setGastoEdit] = useState<GastoDiario | null>(null);
+  const setSheetGasto = useCallback((v: boolean) => { setSheetGastoRaw(v); if (!v) setGastoEdit(null); }, []);
+  const editarGasto = useCallback((g: GastoDiario | null) => { setGastoEdit(g); setSheetGastoRaw(!!g); }, []);
+  const guardarEdicion = useCallback((g: GastoDiario) => setSt(s => ({ ...s, gastos: s.gastos.map(x => x.id === g.id ? g : x) })), []);
   const first = useRef(true);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
@@ -88,7 +96,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }), []);
   const setDolar = useCallback((dolar: number) => editar(d => { d.settings.dolar = dolar; }), [editar]);
 
-  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, sheetGasto, setSheetGasto, mesSel, setMesSel }}>{children}</C.Provider>;
+  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, sheetGasto, setSheetGasto, gastoEdit, editarGasto, guardarEdicion, mesSel, setMesSel }}>{children}</C.Provider>;
 }
 
 export function useStore() {

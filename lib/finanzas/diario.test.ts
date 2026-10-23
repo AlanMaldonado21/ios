@@ -110,3 +110,12 @@ describe('acumuladoDiario', () => {
     expect(r[0].ideal).toBeCloseTo(10);
   });
 });
+
+import { montosFrecuentes } from './diario';
+describe('montosFrecuentes', () => {
+  it('solo montos repetidos del mismo tipo, más frecuentes primero', () => {
+    const g = (tipo: string, monto: number) => ({ id: Math.random().toString(), fecha: '2026-10-01', tipo, monto, medio: 'debito' as const });
+    const r = montosFrecuentes([g('Comida', 5000), g('Comida', 5000), g('comida', 5000), g('Comida', 3000), g('Comida', 3000), g('Comida', 700), g('Súper', 5000)], 'Comida');
+    expect(r).toEqual([5000, 3000]);
+  });
+});

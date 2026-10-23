@@ -1,6 +1,6 @@
 /* Tokens: base de hábitos (index.html) + capa fintech */
 :root{
-  --bg:#f3f5f8;--card:#fff;--card2:#f7f9fb;--tx:#22303a;--mu:#7b8a93;--ln:#e6ebef;--na:#eef1f4;
+  --bg:#f3f5f8;--card:#fff;--card2:#f7f9fb;--tx:#22303a;--mu:#66757e;--ln:#e6ebef;--na:#eef1f4;
   --acc:#1cb0f6;--acc-2:#6fd0ff;
   --pos:#3f9e00;--pos-bg:#e8f7dc;
   --warn:#f5a524;--warn-tx:#9a6a00;--warn-bg:#fff3d9;
@@ -132,7 +132,7 @@ h2{font-size:16px;margin:0;font-weight:800}
 .mes-t h2{font-size:22px;letter-spacing:-.01em;animation:in .3s}
 .mes-t h2::first-letter{text-transform:uppercase}
 .mes-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:5px;min-height:20px}
-.nav-b{width:40px;height:40px;flex:none;border-radius:12px;border:1px solid var(--ln);background:var(--card);box-shadow:var(--sh);font-size:22px;font-weight:800;color:var(--mu);display:grid;place-items:center;padding:0 0 3px}
+.nav-b{width:44px;height:44px;flex:none;border-radius:12px;border:1px solid var(--ln);background:var(--card);box-shadow:var(--sh);font-size:22px;font-weight:800;color:var(--mu);display:grid;place-items:center;padding:0 0 3px}
 .nav-b:disabled{opacity:.35}
 
 /* caja del mes */
@@ -601,3 +601,7 @@ h2{font-size:16px;margin:0;font-weight:800}
 .hh-l i{font-style:normal}
 .gs-graf{margin-top:14px;padding-top:10px;border-top:1px solid var(--ln)}
 .gs-graf .hint{margin:4px 0 0}
+.gd-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;text-align:left;min-height:44px;color:inherit}
+.gd-x{width:44px;height:44px}
+.qa-frec{display:flex;gap:6px;margin-top:10px}
+.qa-frec button{min-height:40px;padding:0 14px;border-radius:999px;border:1px dashed var(--acc);background:none;color:var(--acc);font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}

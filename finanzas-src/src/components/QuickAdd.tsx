@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { MEDIOS, TARJETAS, parseMonto, primerPagoCredito, type Medio, type Tarjeta } from '../../../lib/finanzas/diario';
+import { MEDIOS, TARJETAS, montosFrecuentes, parseMonto, primerPagoCredito, type Medio, type Tarjeta } from '../../../lib/finanzas/diario';
+import type { GastoDiario } from '../../../lib/finanzas/diario';
 import { fmtArs, mesLargo } from '../../../lib/finanzas/format';
 import { hoyISO, useStore } from '../store';
 
@@ -24,8 +25,8 @@ const ayerISO = () => { const d = new Date(); d.setDate(d.getDate() - 1); return
 
 /** Botón flotante + hoja de carga rápida + aviso con "Deshacer". Monto → Guardar son 2 toques: tipo y medio se acuerdan del último gasto. */
 export function QuickAdd() {
-  const { sheetGasto, setSheetGasto, agregarGasto, borrarGasto } = useStore();
-  const [aviso, setAviso] = useState<{ id: string; msg: string } | null>(null);
+  const { sheetGasto, setSheetGasto, agregarGasto, borrarGasto, gastoEdit, guardarEdicion } = useStore();
+  const [aviso, setAviso] = useState<{ id: string; msg: string; sinDeshacer?: boolean } | null>(null);
   useEffect(() => { if (sheetGasto) setAviso(null); }, [sheetGasto]);
   useEffect(() => {
     if (!aviso) return;
@@ -36,30 +37,33 @@ export function QuickAdd() {
   return (
     <>
       {!sheetGasto && <button className="fab" onClick={() => setSheetGasto(true)} aria-label="Cargar gasto"><span aria-hidden>+</span></button>}
-      {sheetGasto && <Hoja onClose={() => setSheetGasto(false)} onGuardado={(id, msg) => { setSheetGasto(false); setAviso({ id, msg }); }} agregar={agregarGasto} />}
+      {sheetGasto && <Hoja key={gastoEdit?.id ?? 'nuevo'} inicial={gastoEdit} onEditado={g => { guardarEdicion(g); setSheetGasto(false); setAviso({ id: g.id, msg: '✓ Gasto actualizado', sinDeshacer: true }); }} onClose={() => setSheetGasto(false)} onGuardado={(id, msg) => { setSheetGasto(false); setAviso({ id, msg }); }} agregar={agregarGasto} />}
       <div className={`aviso ${aviso ? 'on' : ''}`} role="status" aria-live="polite">
         <span>{aviso?.msg}</span>
-        <button onClick={() => { if (aviso) borrarGasto(aviso.id); setAviso(null); }}>Deshacer</button>
+        {!aviso?.sinDeshacer && <button onClick={() => { if (aviso) borrarGasto(aviso.id); setAviso(null); }}>Deshacer</button>}
       </div>
     </>
   );
 }
 
-function Hoja({ onClose, onGuardado, agregar }: {
+function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
+  inicial: GastoDiario | null; onEditado: (g: GastoDiario) => void;
   onClose: () => void; onGuardado: (id: string, msg: string) => void; agregar: ReturnType<typeof useStore>['agregarGasto'];
 }) {
-  const ult = useRef(leerUlt()).current;
-  const [monto, setMonto] = useState('');
+  const ult = useRef(inicial ? { tipo: inicial.tipo, medio: inicial.medio, tarjeta: inicial.tarjeta ?? ULT0.tarjeta, cuotas: inicial.cuotas ?? 1 } : leerUlt()).current;
+  const { gastos } = useStore();
+  const [monto, setMonto] = useState(inicial ? formatearInput(String(inicial.monto).replace('.', ',')) : '');
   const [tipo, setTipo] = useState(ult.tipo);
   const [medio, setMedio] = useState<Medio>(ult.medio);
   const [tarjeta, setTarjeta] = useState<Tarjeta>(ult.tarjeta);
   const [cuotas, setCuotas] = useState(ult.cuotas);
-  const [fecha, setFecha] = useState(hoyISO());
-  const [otraFecha, setOtraFecha] = useState(false);
+  const [fecha, setFecha] = useState(inicial?.fecha ?? hoyISO());
+  const [otraFecha, setOtraFecha] = useState(!!inicial && inicial.fecha !== hoyISO() && inicial.fecha !== ayerISO());
   const [bottom, setBottom] = useState(0);
   const n = parseMonto(monto);
   const esTipoLibre = !TIPOS.some(x => x.t === tipo);
   const [otro, setOtro] = useState(esTipoLibre);
+  const frecuentes = montosFrecuentes(gastos, tipo);
   const puede = n > 0 && tipo.trim().length > 0;
 
   // Con el teclado abierto (iOS), la hoja sube pegada al teclado.
@@ -78,6 +82,10 @@ function Hoja({ onClose, onGuardado, agregar }: {
   function guardar() {
     if (!puede) return;
     const t = tipo.trim();
+    if (inicial) {
+      onEditado(medio === 'credito' ? { id: inicial.id, fecha, tipo: t, monto: n, medio, tarjeta, cuotas } : { id: inicial.id, fecha, tipo: t, monto: n, medio });
+      return;
+    }
     const id = agregar(medio === 'credito' ? { fecha, tipo: t, monto: n, medio, tarjeta, cuotas } : { fecha, tipo: t, monto: n, medio });
     guardarUlt({ tipo: t, medio, tarjeta, cuotas });
     if (navigator.vibrate) navigator.vibrate(20);
@@ -94,6 +102,11 @@ function Hoja({ onClose, onGuardado, agregar }: {
             onChange={e => setMonto(formatearInput(e.target.value))} onKeyDown={e => { if (e.key === 'Enter') guardar(); }} />
         </div>
 
+        {!inicial && frecuentes.length > 0 && (
+          <div className="qa-frec" aria-label="Montos frecuentes">
+            {frecuentes.map(m => <button key={m} onClick={() => setMonto(formatearInput(String(m)))}>{fmtArs(m)}</button>)}
+          </div>
+        )}
         <div className="tipos">
           {TIPOS.map(x => (
             <button key={x.t} className={!otro && tipo === x.t ? 'on' : ''} onClick={() => { setTipo(x.t); setOtro(false); }}><span>{x.i}</span>{x.t}</button>
@@ -138,7 +151,7 @@ function Hoja({ onClose, onGuardado, agregar }: {
               ? <input type="date" aria-label="Fecha" value={fecha} max={hoyISO()} onChange={e => setFecha(e.target.value || hoyISO())} />
               : <button aria-label="Elegir otra fecha" onClick={() => setOtraFecha(true)}>📅</button>}
           </div>
-          <button className="btn-add qa-ok" disabled={!puede} onClick={guardar}>Guardar</button>
+          <button className="btn-add qa-ok" disabled={!puede} onClick={guardar}>{inicial ? 'Actualizar' : 'Guardar'}</button>
         </div>
       </div>
     </div>

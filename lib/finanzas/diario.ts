@@ -157,3 +157,10 @@ export function acumuladoDiario(gastos: GastoDiario[], mes: Mes, hastaDia: numbe
     return { dia, real: dia <= hastaDia ? acc : null, ideal: tope ? (tope * dia) / diasMes : null };
   });
 }
+
+/** Hasta 3 montos que más se repitieron para ese tipo de gasto (atajos de carga). */
+export function montosFrecuentes(gastos: GastoDiario[], tipo: string, max = 3): number[] {
+  const c = new Map<number, number>();
+  for (const g of gastos) if (g.tipo.toLowerCase() === tipo.toLowerCase()) c.set(g.monto, (c.get(g.monto) ?? 0) + 1);
+  return [...c].filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1] || b[0] - a[0]).slice(0, max).map(([m]) => m);
+}
