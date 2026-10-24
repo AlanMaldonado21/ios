@@ -29,7 +29,7 @@ export function ComoVoy({ librePlan }: { librePlan: number | null }) {
   return (
     <section className={`card cv cv-${r.nivel}`}>
       <div className="cv-h">
-        <span className="eyebrow-d">{mesLargo(mes)} · día {r.dia} de {r.diasMes}</span>
+        <span className="eyebrow-d">Mes en curso · {mesLargo(mes)} · día {r.dia} de {r.diasMes}</span>
         {r.tope && <span className={`tag t-${r.nivel === 'pos' ? 'pos' : r.nivel === 'warn' ? 'warn' : 'neg'}`}>{FRASE[r.nivel]}</span>}
       </div>
 
@@ -42,7 +42,7 @@ export function ComoVoy({ librePlan }: { librePlan: number | null }) {
             <em style={{ left: `${(r.ideal! / r.tope) * 100}%` }} title="Dónde deberías ir hoy" />
           </div>
           <div className="cv-f">
-            <span>Gastaste <b className="num">{ars(r.gastado)}</b></span>
+            <span>Gastaste al contado <b className="num">{ars(r.gastado)}</b></span>
             <span>{r.porDia! > 0 ? <>≈ <b className="num">{ars(r.porDia!)}</b> por día</> : 'sin margen'}</span>
           </div>
         </>
@@ -55,7 +55,7 @@ export function ComoVoy({ librePlan }: { librePlan: number | null }) {
       )}
 
       <div className="cv-pie">
-        <span>Hoy: <b className="num">{ars(r.hoy)}</b></span>
+        <span>Hoy al contado: <b className="num">{ars(r.hoy)}</b></span>
         {!edit && <button className="link" onClick={abrir}>{manual ? 'Cambiar tope' : r.tope ? 'Poner otro tope' : 'Poner un tope'}</button>}
       </div>
 

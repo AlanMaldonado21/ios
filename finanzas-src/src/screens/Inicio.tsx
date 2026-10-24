@@ -1,4 +1,3 @@
-import { mesActualDelPlan } from '../../../lib/finanzas/calc';
 import { ahorroReal } from '../../../lib/finanzas/diario';
 import { mesLargo } from '../../../lib/finanzas/format';
 import { HabitosHoy } from '../components/HabitosHoy';
@@ -26,7 +25,8 @@ function Pantalla() {
   const real = ahorroReal(resumen.ahorroActualUsd, meses, checks).real;
   const meta = data.settings.metaUsd;
   const proximo = meses.find(m => !checks[m.mes]);
-  const verMes = () => { setMesSel(proximo?.mes ?? mesActualDelPlan(meses.map(m => m.mes), mes)); };
+  // Detalle del mes abre siempre en el mes en curso (o el primero del plan si todavía no arrancó).
+  const verMes = () => { setMesSel(null); };
 
   return (
     <div className="dash">
@@ -58,7 +58,7 @@ function Pantalla() {
           <b className="ah-n num">{usd(real, 0)} <small>de {usd(meta, 0)}</small></b>
         </div>
         <div className="pbar"><i style={{ width: `${Math.min(100, (real / meta) * 100)}%` }} /></div>
-        <span className="hint">{proximo ? <>Próximo: separar {usd(proximo.ahorroUsd, 0)} en {mesLargo(proximo.mes)}</> : 'Todos los meses separados'} · ver detalle →</span>
+        <span className="hint">{proximo ? <>{proximo.mes > mes ? 'Próximo mes del plan' : 'Pendiente'}: separar {usd(proximo.ahorroUsd, 0)} en {mesLargo(proximo.mes)}</> : 'Todos los meses separados'} · ver detalle →</span>
       </a>
     </div>
   );

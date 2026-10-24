@@ -25,7 +25,7 @@ export function MesBox({ m, ix, meses, meta, hoy, ir, base }: {
         <div className="mes-t">
           <h2 key={m.mes}>{mesLargo(m.mes)}</h2>
           <div className="mes-tags">
-            {m.mes === hoy && <span className="tag t-acc">mes actual</span>}
+            {m.mes === hoy ? <span className="tag t-acc">mes en curso</span> : ix === 0 && hoy < m.mes ? <span className="tag">el plan arranca acá · hoy es {mesLargo(hoy).split(' ')[0]}</span> : null}
             {m.esMesMeta && <span className="tag t-pos">🎯 mes de la meta</span>}
             {!m.hastaMeta && <span className="tag">después de la meta</span>}
             {m.aguinaldo > 0 && <span className="tag t-pos">+ aguinaldo</span>}

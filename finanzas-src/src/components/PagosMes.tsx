@@ -30,7 +30,7 @@ export function PagosMes() {
         <div className="mes-t">
           <span className="eyebrow-d">Caja de</span>
           <h2 key={m.mes}>{mesLargo(m.mes)}</h2>
-          <div className="mes-tags">{m.mes === hoy ? <span className="tag t-acc">mes actual</span> : m.mes > hoy ? <span className="tag">próximo</span> : null}</div>
+          <div className="mes-tags">{m.mes === hoy ? <span className="tag t-acc">mes en curso</span> : m.mes > hoy ? <span className="tag">{ix === 0 && hoy < m.mes ? 'el plan arranca acá' : 'más adelante'}</span> : <span className="tag">ya pasó</span>}</div>
         </div>
         <button className="nav-b" onClick={() => ir(1)} disabled={ix === meses.length - 1} aria-label="Mes siguiente">›</button>
       </div>
