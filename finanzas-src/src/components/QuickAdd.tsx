@@ -11,9 +11,17 @@ export const TIPOS = [
 export const icoTipo = (t: string) => TIPOS.find(x => x.t.toLowerCase() === t.toLowerCase())?.i ?? '🧾';
 
 const LS_ULT = 'finanzas-ult';
+/** Una sola categoría para lo que no entra en las otras; se le puede escribir un detalle. */
+export const OTROS = 'Otros';
 type Ult = { tipo: string; medio: Medio; tarjeta: Tarjeta; cuotas: number };
 const ULT0: Ult = { tipo: 'Comida', medio: 'debito', tarjeta: 'BNA Visa', cuotas: 1 };
-const leerUlt = (): Ult => { try { return { ...ULT0, ...JSON.parse(localStorage.getItem(LS_ULT) || '{}') }; } catch { return ULT0; } };
+const leerUlt = (): Ult => {
+  try {
+    const u: Ult = { ...ULT0, ...JSON.parse(localStorage.getItem(LS_ULT) || '{}') };
+    // Se recuerda solo la categoría; un nombre escrito a mano no se arrastra al gasto siguiente.
+    return TIPOS.some(x => x.t === u.tipo) ? u : { ...u, tipo: OTROS };
+  } catch { return ULT0; }
+};
 const guardarUlt = (u: Ult) => { try { localStorage.setItem(LS_ULT, JSON.stringify(u)); } catch { /* sin storage */ } };
 
 const formatearInput = (txt: string) => {
@@ -53,7 +61,6 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
   const ult = useRef(inicial ? { tipo: inicial.tipo, medio: inicial.medio, tarjeta: inicial.tarjeta ?? ULT0.tarjeta, cuotas: inicial.cuotas ?? 1 } : leerUlt()).current;
   const { gastos } = useStore();
   const [monto, setMonto] = useState(inicial ? formatearInput(String(inicial.monto).replace('.', ',')) : '');
-  const [tipo, setTipo] = useState(ult.tipo);
   const [medio, setMedio] = useState<Medio>(ult.medio);
   const [tarjeta, setTarjeta] = useState<Tarjeta>(ult.tarjeta);
   const [cuotas, setCuotas] = useState(ult.cuotas);
@@ -61,10 +68,14 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
   const [otraFecha, setOtraFecha] = useState(!!inicial && inicial.fecha !== hoyISO() && inicial.fecha !== ayerISO());
   const [bottom, setBottom] = useState(0);
   const n = parseMonto(monto);
-  const esTipoLibre = !TIPOS.some(x => x.t === tipo);
-  const [otro, setOtro] = useState(esTipoLibre);
-  const frecuentes = montosFrecuentes(gastos, tipo);
-  const puede = n > 0 && tipo.trim().length > 0;
+  // Categoría elegida (chip) y detalle libre opcional para "Otros". El gasto se guarda con el detalle si hay, si no con la categoría.
+  const inicialLibre = !TIPOS.some(x => x.t === ult.tipo);
+  const [cat, setCat] = useState(inicialLibre ? OTROS : ult.tipo);
+  const [detalle, setDetalle] = useState(inicialLibre ? ult.tipo : '');
+  const tipoFinal = cat === OTROS && detalle.trim() ? detalle.trim() : cat;
+  const recordada = !inicial && cat === ult.tipo;
+  const frecuentes = montosFrecuentes(gastos, tipoFinal);
+  const puede = n > 0 && tipoFinal.length > 0;
 
   // Con el teclado abierto (iOS), la hoja sube pegada al teclado.
   useEffect(() => {
@@ -81,13 +92,13 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
 
   function guardar() {
     if (!puede) return;
-    const t = tipo.trim();
+    const t = tipoFinal;
     if (inicial) {
       onEditado(medio === 'credito' ? { id: inicial.id, fecha, tipo: t, monto: n, medio, tarjeta, cuotas } : { id: inicial.id, fecha, tipo: t, monto: n, medio });
       return;
     }
     const id = agregar(medio === 'credito' ? { fecha, tipo: t, monto: n, medio, tarjeta, cuotas } : { fecha, tipo: t, monto: n, medio });
-    guardarUlt({ tipo: t, medio, tarjeta, cuotas });
+    guardarUlt({ tipo: cat, medio, tarjeta, cuotas });
     if (navigator.vibrate) navigator.vibrate(20);
     onGuardado(id, `✓ ${t} ${fmtArs(n)} · ${MEDIOS.find(m => m.id === medio)!.label.toLowerCase()}`);
   }
@@ -107,13 +118,13 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
             {frecuentes.map(m => <button key={m} onClick={() => setMonto(formatearInput(String(m)))}>{fmtArs(m)}</button>)}
           </div>
         )}
-        <div className="tipos">
+        <span className="add-l qa-l">Categoría{recordada ? <em> · la última que usaste</em> : null}</span>
+        <div className="tipos" role="radiogroup" aria-label="Categoría">
           {TIPOS.map(x => (
-            <button key={x.t} className={!otro && tipo === x.t ? 'on' : ''} onClick={() => { setTipo(x.t); setOtro(false); }}><span>{x.i}</span>{x.t}</button>
+            <button key={x.t} role="radio" aria-checked={cat === x.t} className={cat === x.t ? 'on' : ''} onClick={() => setCat(x.t)}><span>{x.i}</span>{x.t}</button>
           ))}
-          <button className={otro ? 'on' : ''} onClick={() => { setOtro(true); if (!esTipoLibre) setTipo(''); }}><span>✏️</span>Otro</button>
         </div>
-        {otro && <input className="add-txt" autoFocus placeholder="farmacia, regalo, nafta…" value={tipo} onChange={e => setTipo(e.target.value)} />}
+        {cat === OTROS && <input className="add-txt" placeholder="Detalle (opcional): farmacia, regalo…" aria-label="Detalle del gasto" value={detalle} onChange={e => setDetalle(e.target.value)} />}
 
         <div className="medios qa-medios">
           {MEDIOS.map(x => (

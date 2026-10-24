@@ -629,3 +629,9 @@ h2{font-size:16px;margin:0;font-weight:800}
 /* Ojito: al lado del monto de la caja */
 .ojo-n{display:inline-flex;align-items:center;gap:8px}
 .ojito{background:none;border:0;padding:4px;color:var(--acc);display:grid;place-items:center;cursor:pointer}
+
+/* pantalla rota: mensaje + recargar */
+.falla{text-align:center;padding:40px 16px}
+.falla h2{font-size:20px;margin-bottom:8px}
+.falla p{color:var(--mu);margin:0 0 16px}
+.sy-st.sy-ok{color:var(--pos)}.sy-st.sy-pend{color:var(--warn-tx)}.sy-st.sy-err{color:var(--neg)}
