@@ -34,13 +34,13 @@ export function PagosMes() {
       </div>
 
       <div className={`libre ${caja < 0 ? 'neg' : ''}`} style={{ marginTop: 12 }}>
-        <div><span className="libre-l">Te queda de caja</span><small>{gastado > 0 ? `libre ${fmtArs(topes[m.mes] ?? m.libre)} − gastado ${fmtArs(gastado)}` : 'para comida y salidas'}</small></div>
+        <div><span className="libre-l">Te queda de caja</span><small>{gastado > 0 ? <>libre <span className="num">{fmtArs(topes[m.mes] ?? m.libre)}</span> − gastado <span className="num">{fmtArs(gastado)}</span></> : 'para comida y salidas'}</small></div>
         <b className="num">{fmtArs(caja)}</b>
       </div>
 
       <div style={{ marginTop: 8 }}>
         <Fila nombre="Ingresos" valor={`+ ${fmtArs(m.ingresoTotal)}`} />
-        <Fila nombre="Ahorro" detalle={fmtUsd(m.ahorroUsd, 0)} valor={`− ${fmtArs(m.ahorroPesos)}`} />
+        <Fila nombre="Ahorro" detalle={<span className="num">{fmtUsd(m.ahorroUsd, 0)}</span>} valor={`− ${fmtArs(m.ahorroPesos)}`} />
         <Fila nombre="Cuotas" detalle={m.cuotasDetalle.length ? `${m.cuotasDetalle.length} activas` : 'sin cuotas'} valor={`− ${fmtArs(m.cuotas)}`} />
         <Fila nombre="Gastos fijos" valor={`− ${fmtArs(m.gastos)}`} />
       </div>
@@ -53,7 +53,7 @@ export function PagosMes() {
               detalle={c.numero === c.total ? 'última cuota' : `cuota ${c.numero} de ${c.total}`} valor={fmtArs(c.monto)} />
           )))}
           {data.gastosFijos.map(g => <Fila key={g.id} nombre={g.concepto} valor={fmtArs(g.montoMensual)} />)}
-          {data.suscripciones.map(s => <Fila key={s.id} nombre={s.concepto} tag={<span className="tag t-c4">USD</span>} detalle={`${fmtUsd(s.montoUsd)} × ${fmtArs(dolar)}`} valor={fmtArs(s.montoUsd * dolar)} />)}
+          {data.suscripciones.map(s => <Fila key={s.id} nombre={s.concepto} tag={<span className="tag t-c4">USD</span>} detalle={<span className="num">{fmtUsd(s.montoUsd)} × {fmtArs(dolar)}</span>} valor={fmtArs(s.montoUsd * dolar)} />)}
         </div>
       )}
     </section>
