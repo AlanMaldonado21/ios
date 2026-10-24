@@ -30,6 +30,9 @@ type Ctx = Estado & {
   dolar: number;
   /** Tacha/destacha un mes. usd = lo que se separó (queda congelado). */
   toggleCheck: (mes: string, usd: number) => void;
+  /** Tacha un mes con el monto real separado (o lo corrige si ya estaba tachado). */
+  marcarCheck: (mes: string, usd: number) => void;
+  desmarcarCheck: (mes: string) => void;
   agregarGasto: (g: Omit<GastoDiario, 'id'>) => void;
   borrarGasto: (id: string) => void;
   setDolar: (d: number) => void;
@@ -60,6 +63,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (checks[mes]) delete checks[mes]; else checks[mes] = { fecha: hoyISO(), usd };
     return { ...s, checks };
   }), []);
+  const marcarCheck = useCallback((mes: string, usd: number) => setSt(s => {
+    const prev = s.checks[mes];
+    const fecha = prev ? (typeof prev === 'string' ? prev : prev.fecha) : hoyISO();
+    return { ...s, checks: { ...s.checks, [mes]: { fecha, usd } } };
+  }), []);
+  const desmarcarCheck = useCallback((mes: string) => setSt(s => {
+    const checks = { ...s.checks }; delete checks[mes];
+    return { ...s, checks };
+  }), []);
   const agregarGasto = useCallback((g: Omit<GastoDiario, 'id'>) => setSt(s => ({ ...s, gastos: [{ ...g, id: nuevoId() }, ...s.gastos] })), []);
   const borrarGasto = useCallback((id: string) => setSt(s => ({ ...s, gastos: s.gastos.filter(g => g.id !== id) })), []);
   const editar = useCallback((fn: (d: FinData) => void) => setSt(s => {
@@ -69,7 +81,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }), []);
   const setDolar = useCallback((dolar: number) => editar(d => { d.settings.dolar = dolar; }), [editar]);
 
-  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, agregarGasto, borrarGasto, setDolar, editar, guardado, mesSel, setMesSel }}>{children}</C.Provider>;
+  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, marcarCheck, desmarcarCheck, agregarGasto, borrarGasto, setDolar, editar, guardado, mesSel, setMesSel }}>{children}</C.Provider>;
 }
 
 export function useStore() {

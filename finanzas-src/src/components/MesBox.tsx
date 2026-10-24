@@ -17,7 +17,7 @@ export function MesBox({ m, ix, meses, meta, hoy, ir, base }: {
   const ok = cierre >= meta;
   const nMeta = meses.filter(x => x.hastaMeta).length;
   // primer mes en que se llega a la meta
-  const llega = meses.find(x => x.usdAcumulados >= meta);
+  const llega = meses.find(x => { const r = ahorroReal(base, meses, checks, x.mes); return r.real + r.pendiente >= meta; });
   return (
     <section className={`mesbox ${ok ? 'ok' : ''}`}>
       <div className="mes-h">

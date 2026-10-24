@@ -1,13 +1,18 @@
 import type { MesCalc } from '../../../lib/finanzas/calc';
 import { ahorroReal, fechaCheck, resumenChecklist, usdCheck } from '../../../lib/finanzas/diario';
 import { fmtArs, fmtPct, fmtUsd, mesLargo } from '../../../lib/finanzas/format';
+import { useState } from 'react';
 import { useStore } from '../store';
+import { MoneyInput } from './MoneyInput';
 
 const fechaCorta = (iso: string) => { const [, m, d] = iso.split('-'); return `${Number(d)}/${Number(m)}`; };
 
 /** Checklist de ahorro: cuánto hay que separar cada mes. Se tacha al cumplirlo. */
 export function Checklist({ meses, sel, onSel, base }: { meses: MesCalc[]; sel: string; onSel: (m: string) => void; base: number }) {
-  const { checks, toggleCheck } = useStore();
+  const { checks, marcarCheck, desmarcarCheck } = useStore();
+  // Mes que se está tachando/corrigiendo y el monto que se va a guardar
+  const [ed, setEd] = useState<{ mes: string; usd: number } | null>(null);
+  const abrirEd = (mes: string, usd: number) => setEd({ mes, usd: Math.round(usd * 100) / 100 });
   const r = resumenChecklist(meses, checks);
   const total = ahorroReal(base, meses, checks).real;
   const p = r.usdTotal ? r.usdCumplidos / r.usdTotal : 0;
@@ -30,7 +35,7 @@ export function Checklist({ meses, sel, onSel, base }: { meses: MesCalc[]; sel: 
           const ok = !!checks[m.mes];
           return (
             <li key={m.mes} className={`${ok ? 'ok' : ''} ${m.hastaMeta ? '' : 'post'} ${m.mes === sel ? 'sel' : ''}`}>
-              <button className="chk-b" onClick={() => toggleCheck(m.mes, m.ahorroUsd)} aria-pressed={ok} aria-label={`${ok ? 'Desmarcar' : 'Marcar'} ${mesLargo(m.mes)}`}>
+              <button className="chk-b" onClick={() => abrirEd(m.mes, ok ? usdCheck(checks[m.mes], m.ahorroUsd) : m.ahorroUsd)} aria-pressed={ok} aria-label={`${ok ? 'Editar' : 'Marcar'} ${mesLargo(m.mes)}`}>
                 <svg viewBox="0 0 24 24" aria-hidden><path d="M6 12.5l4 4 8-9" /></svg>
               </button>
               <button className="chk-row" onClick={() => onSel(m.mes)}>
@@ -40,6 +45,22 @@ export function Checklist({ meses, sel, onSel, base }: { meses: MesCalc[]; sel: 
                 </span>
                 <b className="chk-v num">{fmtUsd(ok ? usdCheck(checks[m.mes], m.ahorroUsd) : m.ahorroUsd, 0)}</b>
               </button>
+              {ed?.mes === m.mes && (
+                <div className="chk-ed">
+                  <span className="chk-ed-l">¿Cuánto separaste en {mesLargo(m.mes).split(' ')[0]}?</span>
+                  <div className="chk-ed-r">
+                    <MoneyInput value={ed.usd} prefijo="U$S" ariaLabel="Dólares separados" onChange={n => setEd({ mes: m.mes, usd: n })} />
+                    <button className="btn-ok" disabled={!(ed.usd > 0)} onClick={() => { marcarCheck(m.mes, ed.usd); setEd(null); }}>{ok ? 'Guardar' : '✓ Tachar'}</button>
+                  </div>
+                  <div className="chk-ed-f">
+                    <span>El plan decía {fmtUsd(m.ahorroUsd, 0)}{ed.usd > 0 && Math.abs(ed.usd - m.ahorroUsd) >= 1 ? <b className={ed.usd >= m.ahorroUsd ? 'pos' : 'neg'}> · {ed.usd >= m.ahorroUsd ? '+' : '−'}{fmtUsd(Math.abs(ed.usd - m.ahorroUsd), 0)}</b> : null}</span>
+                    <span>
+                      {ok && <button className="lnk neg" onClick={() => { desmarcarCheck(m.mes); setEd(null); }}>Destachar</button>}
+                      <button className="lnk" onClick={() => setEd(null)}>Cancelar</button>
+                    </span>
+                  </div>
+                </div>
+              )}
             </li>
           );
         })}

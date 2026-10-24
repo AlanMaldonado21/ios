@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { mesActualDelPlan } from '../../../lib/finanzas/calc';
 import { usePlan, useStore } from '../store';
 import { Checklist } from '../components/Checklist';
@@ -9,7 +10,19 @@ import { DonaChart, SERIES } from '../components/Charts';
 
 export const hoyMes = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
 
+function useDesktop() {
+  const q = '(min-width: 900px)';
+  const [d, setD] = useState(() => matchMedia(q).matches);
+  useEffect(() => {
+    const mq = matchMedia(q), f = () => setD(mq.matches);
+    mq.addEventListener('change', f);
+    return () => mq.removeEventListener('change', f);
+  }, []);
+  return d;
+}
+
 export function Dashboard() {
+  const desktop = useDesktop();
   const { mesSel, setMesSel } = useStore();
   const { data, meses, resumen } = usePlan();
   const hoy = mesActualDelPlan(meses.map(m => m.mes), hoyMes());
@@ -30,7 +43,7 @@ export function Dashboard() {
       <div className="layout">
         <div className="col-mes">
           <MesBox m={m} ix={ix} meses={meses} meta={s.metaUsd} hoy={hoy} ir={ir} base={resumen.ahorroActualUsd} />
-          <div className="solo-mobile"><Checklist meses={meses} sel={sel} onSel={setSel} base={resumen.ahorroActualUsd} /></div>
+          {!desktop && <Checklist meses={meses} sel={sel} onSel={setSel} base={resumen.ahorroActualUsd} />}
 
           <section className="kpis">
             <KpiCard ico="🏦" label="Ahorro del mes" value={m.ahorroUsd} prev={prev?.ahorroUsd} format={n => fmtUsd(n, 0)}
@@ -66,7 +79,7 @@ export function Dashboard() {
         </div>
 
         <div className="col-plan">
-          <div className="solo-desktop"><Checklist meses={meses} sel={sel} onSel={setSel} base={resumen.ahorroActualUsd} /></div>
+          {desktop && <Checklist meses={meses} sel={sel} onSel={setSel} base={resumen.ahorroActualUsd} />}
         </div>
       </div>
     </div>

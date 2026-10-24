@@ -277,7 +277,7 @@ h2{font-size:16px;margin:0;font-weight:800}
 .chk-sum span{font-size:13px;font-weight:700;color:var(--mu)}
 .chk-det{margin:2px 0 0;font-size:12px;font-weight:600;color:var(--mu)}
 .chk-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--ln)}
-.chk-list li{display:flex;align-items:center;gap:4px;padding:0 12px 0 10px;transition:background .2s}
+.chk-list li{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:0 12px 0 10px;transition:background .2s}
 .chk-list li+li{border-top:1px solid var(--ln)}
 .chk-list li.sel{background:var(--hover)}
 .chk-list li.post .chk-row{opacity:.5}
@@ -296,6 +296,19 @@ h2{font-size:16px;margin:0;font-weight:800}
 .chk-list li.ok .chk-v{color:var(--mu)}
 .chk-list li.ok .chk-v::after{transform:scaleX(1)}
 .chk-list li.ok .chk-m small{color:var(--pos)}
+
+/* checklist: corregir monto */
+.chk-ed{flex-basis:100%;margin:0 0 12px 48px;padding:12px;border-radius:14px;background:var(--card2);border:1px solid var(--ln);animation:in .2s}
+.chk-ed-l{display:block;font-size:12px;font-weight:800;color:var(--mu);margin-bottom:8px}
+.chk-ed-r{display:flex;gap:8px}
+.chk-ed-r .money{flex:1;min-width:0}
+.btn-ok{flex:none;border:0;border-radius:10px;padding:0 14px;min-height:40px;background:var(--pos);color:#fff;font-weight:800;font-size:14px;box-shadow:0 4px 12px -4px var(--pos)}
+.btn-ok:disabled{opacity:.4}
+.chk-ed-f{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;font-weight:700;color:var(--mu)}
+.chk-ed-f b{white-space:nowrap}
+.chk-ed-f b.pos{color:var(--pos)}.chk-ed-f b.neg{color:var(--neg)}
+.lnk{border:0;background:none;padding:4px 6px;font-size:12px;font-weight:800;color:var(--acc)}
+.lnk.neg{color:var(--neg)}
 
 /* diario: alta */
 .add{padding:16px}
