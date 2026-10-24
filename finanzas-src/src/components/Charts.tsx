@@ -1,5 +1,5 @@
 import {
-  Area, AreaChart, Bar, BarChart, Line, LineChart, CartesianGrid, Cell, Pie, PieChart, ReferenceDot, ReferenceLine,
+  Area, AreaChart, Bar, BarChart, Line, LineChart, CartesianGrid, Cell, Pie, PieChart, ReferenceArea, ReferenceDot, ReferenceLine,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
 import type { PuntoAcum } from '../../../lib/finanzas/diario';
@@ -142,6 +142,7 @@ export function DonaChart({ partes, centro, label }: { partes: { name: string; v
 /** Gasto acumulado del mes contra el ritmo ideal (recta hasta el tope). */
 export function RitmoChart({ puntos, hoy }: { puntos: PuntoAcum[]; hoy: number }) {
   const hayIdeal = puntos[0]?.ideal != null;
+  const sd = puntos.filter(p => p.sinDatos).length;
   return (
     <ResponsiveContainer width="100%" height={150}>
       <LineChart data={puntos} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
@@ -158,6 +159,8 @@ export function RitmoChart({ puntos, hoy }: { puntos: PuntoAcum[]; hoy: number }
         {hayIdeal && <Line type="linear" dataKey="ideal" stroke="var(--mu)" strokeDasharray="4 4" strokeWidth={1.5} dot={false} isAnimationActive={false} />}
         <Line type="monotone" dataKey="real" stroke="var(--acc)" strokeWidth={2.5} dot={false} connectNulls={false} animationDuration={600}
           activeDot={{ r: 5, strokeWidth: 2, stroke: 'var(--card)' }} />
+        {sd > 0 && <ReferenceArea x1={1} x2={sd} fill="var(--mu)" fillOpacity={0.08} stroke="none"
+          label={{ value: 'sin datos', position: 'insideTop', fill: 'var(--mu)', fontSize: 12 }} />}
         <ReferenceLine x={hoy} stroke="var(--ln)" />
       </LineChart>
     </ResponsiveContainer>

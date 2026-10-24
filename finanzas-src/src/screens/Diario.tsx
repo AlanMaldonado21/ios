@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { sumarMeses } from '../../../lib/finanzas/calc';
-import { MEDIOS, TARJETAS, acumuladoDiario, agruparPorDia, gastosAlContado, gastosDelMes, primerPagoCredito, totalGastos, totalPorMedio, totalPorTipo } from '../../../lib/finanzas/diario';
+import { MEDIOS, TARJETAS, acumuladoDiario, primerRegistro, agruparPorDia, gastosAlContado, gastosDelMes, primerPagoCredito, totalGastos, totalPorMedio, totalPorTipo } from '../../../lib/finanzas/diario';
 import { fmtArs, mesCorto, mesLargo } from '../../../lib/finanzas/format';
 import { hoyISO, usePlan, useStore } from '../store';
 import { CountUp } from '../components/CountUp';
@@ -64,12 +64,20 @@ export function Diario() {
           </>
         ) : <p className="gs-r"><span>Este mes no está en el plan: poné un tope desde Inicio si querés compararlo.</span></p>}
         {enCredito > 0 && <p className="gs-cred">💳 Además, <b className="num">{fmtArs(enCredito)}</b> con crédito: no salen de este mes, se suman a Cuotas.</p>}
-        {total > 0 && (
-          <div className="gs-graf">
-            <RitmoChart puntos={acumuladoDiario(gastos, mes, mes === hoyISO().slice(0, 7) ? Number(hoyISO().slice(8)) : 31, libre)} hoy={mes === hoyISO().slice(0, 7) ? Number(hoyISO().slice(8)) : 0} />
-            {libre != null && <p className="hint">Línea punteada: el ritmo para llegar justo al tope.</p>}
-          </div>
-        )}
+        {(() => {
+          const hoyM = hoyISO().slice(0, 7), hoyD = Number(hoyISO().slice(8));
+          if (mes > hoyM) return null;
+          const desde = primerRegistro(gastos);
+          const puntos = acumuladoDiario(gastos, mes, mes === hoyM ? hoyD : 31, libre, desde);
+          if (puntos.every(p => p.sinDatos)) return null;
+          const sd = puntos.filter(p => p.sinDatos).length;
+          return (
+            <div className="gs-graf">
+              <RitmoChart puntos={puntos} hoy={mes === hoyM ? hoyD : 0} />
+              <p className="hint">{sd > 0 ? `Días 1 a ${sd}: sin datos (todavía no registrabas). ` : ''}{libre != null ? 'Línea punteada: el ritmo para llegar justo al tope.' : ''}</p>
+            </div>
+          );
+        })()}
         <div className="gs-medios">
           {MEDIOS.map(x => (
             <div key={x.id} className={`m-${x.id}`}><span>{x.ico} {x.id === 'transferencia' ? 'Transf.' : x.label}</span><b className="num">{fmtArs(porMedio[x.id])}</b></div>
@@ -93,7 +101,10 @@ export function Diario() {
       )}
       {dias.map(d => (
         <section key={d.fecha} className="dia">
-          <div className="dia-h"><span>{etiquetaDia(d.fecha)}</span><b className="num">{fmtArs(d.total)}</b></div>
+          <div className="dia-h"><span>{etiquetaDia(d.fecha)}</span>{(() => {
+            const cont = totalGastos(gastosAlContado(d.items)), cred = d.total - cont;
+            return <span className="dia-t"><b className="num">{fmtArs(cont)} al contado</b>{cred > 0 && <small className="num"> · {fmtArs(cred)} con crédito</small>}</span>;
+          })()}</div>
           <div className="card pad0">
             {d.items.map(g => (
               <div key={g.id} className={`gd `}>

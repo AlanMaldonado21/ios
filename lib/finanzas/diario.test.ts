@@ -99,7 +99,7 @@ describe('ritmoMes', () => {
   });
 });
 
-import { acumuladoDiario } from './diario';
+import { acumuladoDiario, primerRegistro } from './diario';
 describe('acumuladoDiario', () => {
   it('acumula por día, ignora crédito y corta en hastaDia', () => {
     const g = (fecha: string, monto: number, medio: 'debito' | 'credito' = 'debito') => ({ id: fecha + monto, fecha, tipo: 'X', monto, medio });
@@ -108,6 +108,18 @@ describe('acumuladoDiario', () => {
     expect(r.slice(0, 4).map(p => p.real)).toEqual([150, 150, 175, null]);
     expect(r[30].ideal).toBeCloseTo(310);
     expect(r[0].ideal).toBeCloseTo(10);
+  });
+  it('antes del primer registro es "sin datos" (null), no gasto cero', () => {
+    const g = (fecha: string, monto: number) => ({ id: fecha, fecha, tipo: 'X', monto, medio: 'debito' as const });
+    const gs = [g('2026-10-20', 100), g('2026-10-22', 50)];
+    const desde = primerRegistro(gs);
+    expect(desde).toBe('2026-10-20');
+    const r = acumuladoDiario(gs, '2026-10', 24, null, desde);
+    expect(r[18]).toMatchObject({ real: null, sinDatos: true });
+    expect(r.slice(19, 24).map(p => p.real)).toEqual([100, 100, 150, 150, 150]);
+    expect(acumuladoDiario(gs, '2026-11', 5, null, desde)[0].sinDatos).toBe(false);
+    expect(acumuladoDiario([], '2026-10', 5, null, null).every(p => p.sinDatos)).toBe(true);
+    expect(primerRegistro(gs, ['2026-10-02'])).toBe('2026-10-02');
   });
 });
 

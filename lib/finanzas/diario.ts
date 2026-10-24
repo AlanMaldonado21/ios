@@ -142,19 +142,31 @@ export function ritmoMes(gastos: GastoDiario[], tope: number | null, hoy: string
   return { dia: d, diasMes, diasRestantes, gastado, hoy: hoyTotal, tope: t, quedan, porDia, ideal, proyeccion, promedioDia, nivel };
 }
 
-export type PuntoAcum = { dia: number; real: number | null; ideal: number | null };
+export type PuntoAcum = { dia: number; real: number | null; ideal: number | null; sinDatos: boolean };
 
-/** Gasto acumulado día a día (al contado) contra la recta del tope. `real` es null después de `hastaDia`. */
-export function acumuladoDiario(gastos: GastoDiario[], mes: Mes, hastaDia: number, tope: number | null): PuntoAcum[] {
+/** Primer día con algo registrado (un gasto o un día marcado "sin gastos"). null si no hay nada. */
+export function primerRegistro(gastos: GastoDiario[], diasSinGasto: string[] = []): string | null {
+  let min: string | null = null;
+  for (const f of [...gastos.map(g => g.fecha), ...diasSinGasto]) if (!min || f < min) min = f;
+  return min;
+}
+
+/**
+ * Gasto acumulado día a día (al contado) contra la recta del tope.
+ * `real` es null después de `hastaDia` (todavía no pasó) y antes de `desde` (no había registro: sin datos, no "gasto cero").
+ */
+export function acumuladoDiario(gastos: GastoDiario[], mes: Mes, hastaDia: number, tope: number | null, desde?: string | null): PuntoAcum[] {
   const [y, m] = mes.split('-').map(Number);
   const diasMes = new Date(y, m, 0).getDate();
   const porDia = new Array(diasMes + 1).fill(0);
   for (const g of gastosAlContado(gastosDelMes(gastos, mes))) porDia[Number(g.fecha.slice(8, 10))] += g.monto;
+  const desdeDia = desde === undefined ? 1 : !desde ? diasMes + 1 : desde.slice(0, 7) < mes ? 1 : desde.slice(0, 7) > mes ? diasMes + 1 : Number(desde.slice(8, 10));
   let acc = 0;
   return Array.from({ length: diasMes }, (_, i) => {
     const dia = i + 1;
     acc += porDia[dia];
-    return { dia, real: dia <= hastaDia ? acc : null, ideal: tope ? (tope * dia) / diasMes : null };
+    const sinDatos = dia < desdeDia;
+    return { dia, real: dia <= hastaDia && !sinDatos ? acc : null, ideal: tope ? (tope * dia) / diasMes : null, sinDatos };
   });
 }
 
