@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { mesActualDelPlan } from '../../../lib/finanzas/calc';
 import { gastosAlContado, gastosDelMes, totalGastos } from '../../../lib/finanzas/diario';
-import { fmtArs, fmtUsd, mesLargo } from '../../../lib/finanzas/format';
+import { mesLargo } from '../../../lib/finanzas/format';
 import { hoyMes, usePlan, useStore } from '../store';
 import { Fila } from './Apertura';
+import { Ojito, useOculto } from './Oculto';
 
 /** Caja de cualquier mes del plan: lo que entra, lo que sale y lo que te queda. Los detalles de pagos van plegados. */
 export function PagosMes() {
+  const { ars, usd } = useOculto();
   const { data, meses } = usePlan();
   const { gastos, topes } = useStore();
   const [sel, setSel] = useState<string | null>(null);
@@ -34,15 +36,15 @@ export function PagosMes() {
       </div>
 
       <div className={`libre ${caja < 0 ? 'neg' : ''}`} style={{ marginTop: 12 }}>
-        <div><span className="libre-l">Te queda de caja</span><small>{gastado > 0 ? <>libre <span className="num">{fmtArs(topes[m.mes] ?? m.libre)}</span> − gastado <span className="num">{fmtArs(gastado)}</span></> : 'para comida y salidas'}</small></div>
-        <b className="num">{fmtArs(caja)}</b>
+        <div><span className="libre-l">Te queda de caja</span><small>{gastado > 0 ? <>libre {ars(topes[m.mes] ?? m.libre)} − gastado {ars(gastado)}</> : 'para comida y salidas'}</small></div>
+        <b className="num ojo-n">{ars(caja)}<Ojito /></b>
       </div>
 
       <div style={{ marginTop: 8 }}>
-        <Fila nombre="Ingresos" valor={`+ ${fmtArs(m.ingresoTotal)}`} />
-        <Fila nombre="Ahorro" detalle={<span className="num">{fmtUsd(m.ahorroUsd, 0)}</span>} valor={`− ${fmtArs(m.ahorroPesos)}`} />
-        <Fila nombre="Cuotas" detalle={m.cuotasDetalle.length ? `${m.cuotasDetalle.length} activas` : 'sin cuotas'} valor={`− ${fmtArs(m.cuotas)}`} />
-        <Fila nombre="Gastos fijos" valor={`− ${fmtArs(m.gastos)}`} />
+        <Fila nombre="Ingresos" valor={`+ ${ars(m.ingresoTotal)}`} />
+        <Fila nombre="Ahorro" detalle={usd(m.ahorroUsd, 0)} valor={`− ${ars(m.ahorroPesos)}`} />
+        <Fila nombre="Cuotas" detalle={m.cuotasDetalle.length ? `${m.cuotasDetalle.length} activas` : 'sin cuotas'} valor={`− ${ars(m.cuotas)}`} />
+        <Fila nombre="Gastos fijos" valor={`− ${ars(m.gastos)}`} />
       </div>
 
       <button className="link" style={{ marginTop: 8 }} onClick={() => setDet(d => !d)} aria-expanded={det}>{det ? 'Ocultar' : 'Ver'} qué pagás ese mes {det ? '▴' : '▾'}</button>
@@ -50,10 +52,10 @@ export function PagosMes() {
         <div>
           {tarjetas.map(t => m.cuotasDetalle.filter(c => c.tarjeta === t).map(c => (
             <Fila key={c.id} nombre={c.concepto} tag={<span className="tag">{t}</span>}
-              detalle={c.numero === c.total ? 'última cuota' : `cuota ${c.numero} de ${c.total}`} valor={fmtArs(c.monto)} />
+              detalle={c.numero === c.total ? 'última cuota' : `cuota ${c.numero} de ${c.total}`} valor={ars(c.monto)} />
           )))}
-          {data.gastosFijos.map(g => <Fila key={g.id} nombre={g.concepto} valor={fmtArs(g.montoMensual)} />)}
-          {data.suscripciones.map(s => <Fila key={s.id} nombre={s.concepto} tag={<span className="tag t-c4">USD</span>} detalle={<span className="num">{fmtUsd(s.montoUsd)} × {fmtArs(dolar)}</span>} valor={fmtArs(s.montoUsd * dolar)} />)}
+          {data.gastosFijos.map(g => <Fila key={g.id} nombre={g.concepto} valor={ars(g.montoMensual)} />)}
+          {data.suscripciones.map(s => <Fila key={s.id} nombre={s.concepto} tag={<span className="tag t-c4">USD</span>} detalle={<>{usd(s.montoUsd)} × {ars(dolar)}</>} valor={ars(s.montoUsd * dolar)} />)}
         </div>
       )}
     </section>

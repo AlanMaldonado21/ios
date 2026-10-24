@@ -626,6 +626,6 @@ h2{font-size:16px;margin:0;font-weight:800}
 .sy .btn-add:disabled{opacity:.5}
 .sy-b{display:flex;justify-content:space-between}
 
-/* Ojito: oculta los montos de Inicio */
-.dash.oculto .num{filter:blur(8px);user-select:none;pointer-events:none}
-.dash.oculto .num .num{filter:none}
+/* Ojito: al lado del monto de la caja */
+.ojo-n{display:inline-flex;align-items:center;gap:8px}
+.ojito{background:none;border:0;padding:4px;color:var(--acc);display:grid;place-items:center;cursor:pointer}

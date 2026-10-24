@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { parseMonto, ritmoMes } from '../../../lib/finanzas/diario';
-import { fmtArs, mesLargo } from '../../../lib/finanzas/format';
+import { mesLargo } from '../../../lib/finanzas/format';
 import { hoyISO, useStore } from '../store';
+import { useOculto } from './Oculto';
 
 const formatear = (txt: string) => {
   const d = txt.replace(/\D/g, '');
@@ -12,6 +13,7 @@ const FRASE = { pos: 'Vas bien', warn: 'Vas rápido', neg: 'Te pasaste' } as con
 
 /** "¿Cómo voy?": gasto real del mes de hoy contra un tope (el libre del plan, o uno que ponés a mano). */
 export function ComoVoy({ librePlan }: { librePlan: number | null }) {
+  const { ars } = useOculto();
   const { gastos, topes, setTope } = useStore();
   const hoy = hoyISO();
   const mes = hoy.slice(0, 7);
@@ -33,27 +35,27 @@ export function ComoVoy({ librePlan }: { librePlan: number | null }) {
 
       {r.tope ? (
         <>
-          <b className="cv-n num">{r.quedan! >= 0 ? fmtArs(r.quedan!) : fmtArs(-r.quedan!)}</b>
-          <span className="cv-l">{r.quedan! >= 0 ? `te quedan de ${fmtArs(r.tope)}` : `de más sobre ${fmtArs(r.tope)}`}</span>
+          <b className="cv-n num">{r.quedan! >= 0 ? ars(r.quedan!) : ars(-r.quedan!)}</b>
+          <span className="cv-l">{r.quedan! >= 0 ? `te quedan de ${ars(r.tope)}` : `de más sobre ${ars(r.tope)}`}</span>
           <div className="cv-bar" role="progressbar" aria-valuenow={Math.round(Math.min(1, r.gastado / r.tope) * 100)} aria-valuemin={0} aria-valuemax={100}>
             <i className={r.nivel} style={{ width: `${Math.min(100, (r.gastado / r.tope) * 100)}%` }} />
             <em style={{ left: `${(r.ideal! / r.tope) * 100}%` }} title="Dónde deberías ir hoy" />
           </div>
           <div className="cv-f">
-            <span>Gastaste <b className="num">{fmtArs(r.gastado)}</b></span>
-            <span>{r.porDia! > 0 ? <>≈ <b className="num">{fmtArs(r.porDia!)}</b> por día</> : 'sin margen'}</span>
+            <span>Gastaste <b className="num">{ars(r.gastado)}</b></span>
+            <span>{r.porDia! > 0 ? <>≈ <b className="num">{ars(r.porDia!)}</b> por día</> : 'sin margen'}</span>
           </div>
         </>
       ) : (
         <>
-          <b className="cv-n num">{fmtArs(r.gastado)}</b>
-          <span className="cv-l">gastado este mes · ≈ {fmtArs(r.promedioDia)} por día</span>
-          {r.gastado > 0 && <p className="cv-proy">A este ritmo cerrás {mesLargo(mes).split(' ')[0]} en <b className="num">{fmtArs(r.proyeccion)}</b>.</p>}
+          <b className="cv-n num">{ars(r.gastado)}</b>
+          <span className="cv-l">gastado este mes · ≈ {ars(r.promedioDia)} por día</span>
+          {r.gastado > 0 && <p className="cv-proy">A este ritmo cerrás {mesLargo(mes).split(' ')[0]} en <b className="num">{ars(r.proyeccion)}</b>.</p>}
         </>
       )}
 
       <div className="cv-pie">
-        <span>Hoy: <b className="num">{fmtArs(r.hoy)}</b></span>
+        <span>Hoy: <b className="num">{ars(r.hoy)}</b></span>
         {!edit && <button className="link" onClick={abrir}>{manual ? 'Cambiar tope' : r.tope ? 'Poner otro tope' : 'Poner un tope'}</button>}
       </div>
 
