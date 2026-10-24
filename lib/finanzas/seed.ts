@@ -52,8 +52,11 @@ export const SEED: FinData = {
 };
 
 /**
- * Datos con los que arranca la app. Igual que SEED, salvo el ahorro en pesos:
- * los $ 1.627.500 de la planilla eran los mismos U$S 1.050 pasados a pesos (1.050 × 1.550),
- * así que el ahorro real es U$S 1.050. Se edita en Configuración.
+ * Datos con los que arranca la app: vacíos, para que no viajen números personales en el código publicado.
+ * SEED (arriba) replica la planilla y solo lo usan los tests; la app no lo importa.
+ * Todo se carga en la app (Configuración, Ingresos, Cuotas, Gastos).
  */
-export const DATOS_INICIALES: FinData = { ...SEED, settings: { ...SEED.settings, ahorroPesosActual: 0 } };
+export const DATOS_INICIALES: FinData = {
+  settings: { metaUsd: 0, fechaMeta: '2027-07', dolar: 1500, ahorroUsdActual: 0, ahorroPesosActual: 0, mesInicioPlan: '2026-11', mesesPlan: 14 },
+  ingresosFijos: [], comisionPct: 0, facturacion: [], cuotas: [], gastosFijos: [], suscripciones: [], overrides: [],
+};

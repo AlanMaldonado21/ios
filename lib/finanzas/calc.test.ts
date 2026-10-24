@@ -107,9 +107,15 @@ describe('formatos', () => {
 });
 
 describe('datos con los que arranca la app', () => {
-  it('ahorro actual real: U$S 1.050 (los pesos de la planilla eran el mismo ahorro)', () => {
-    expect(ahorroActualUsd(DATOS_INICIALES)).toBe(1050);
-    const p = calcularPlan(DATOS_INICIALES);
+  it('arrancan vacíos y el plan se calcula sin romper', () => {
+    expect(DATOS_INICIALES.ingresosFijos).toEqual([]);
+    expect(ahorroActualUsd(DATOS_INICIALES)).toBe(0);
+    expect(() => calcularPlan(DATOS_INICIALES)).not.toThrow();
+  });
+  it('la planilla (SEED): el ahorro real es U$S 1.050 y la meta se cumple', () => {
+    const d = { ...SEED, settings: { ...SEED.settings, ahorroPesosActual: 0 } };
+    expect(ahorroActualUsd(d)).toBe(1050);
+    const p = calcularPlan(d);
     expect(p.resumen.usdProyectados.toFixed(2)).toBe('18809.02');
     expect(p.resumen.cumplida).toBe(true);
   });

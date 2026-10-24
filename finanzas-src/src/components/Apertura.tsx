@@ -46,7 +46,7 @@ export function Apertura({ m, data }: { m: MesCalc; data: FinData }) {
       <Grupo ico="💵" titulo="Ingresos" signo="+" total={m.ingresoTotal} tono="tx">
         {data.ingresosFijos.map(i => <Fila key={i.id} nombre={i.nombre} detalle={i.esBaseAguinaldo ? 'Sueldo · base del aguinaldo' : 'Fijo mensual'} valor={fmtArs(i.montoMensual)} />)}
         <Fila nombre={`Comisión ${fmtPct(data.comisionPct)}`} detalle={<>sobre {fmtArs(m.facturacionBase)} facturados en {mesCorto(m.mesFacturado)}</>} valor={fmtArs(m.comision)} />
-        {m.aguinaldo > 0 && <Fila nombre="Aguinaldo" tag={<span className="tag t-pos">extra</span>} detalle="Mitad del sueldo de Yagmour" valor={fmtArs(m.aguinaldo)} />}
+        {m.aguinaldo > 0 && <Fila nombre="Aguinaldo" tag={<span className="tag t-pos">extra</span>} detalle="Mitad del sueldo base" valor={fmtArs(m.aguinaldo)} />}
       </Grupo>
 
       <Grupo ico="🏦" titulo="Ahorro" signo="−" total={m.ahorroPesos} tono="acc"
