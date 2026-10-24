@@ -19,6 +19,9 @@ export function Plan() {
   const sel = mesSel && meses.some(m => m.mes === mesSel) ? mesSel : hoy;
   const abrir = (m: string) => { setMesSel(m); location.hash = '#/mes'; };
   const grande = typeof innerWidth === 'number' && innerWidth >= 900;
+  const meta = s.metaUsd;
+  const real = ahorroReal(r.ahorroActualUsd, meses, checks).real;
+  const cumplidaReal = meta > 0 && real >= meta;
 
   return (
     <div className="dash">
@@ -34,21 +37,22 @@ export function Plan() {
 
       <section className="hero">
         <div className="hero-top">
-          <ProgressRing pct={r.usdProyectados / s.metaUsd} size={grande ? 150 : 96} stroke={grande ? 13 : 9} />
+          <ProgressRing pct={meta ? real / meta : 0} proy={meta ? r.usdProyectados / meta : 0} size={grande ? 150 : 96} stroke={grande ? 13 : 9} />
           <div className="hero-t">
-            <span className="eyebrow">Proyectado a {mesCorto(s.fechaMeta)}</span>
-            <div className="hero-n"><CountUp value={r.usdProyectados} format={n => fmtUsd(n, 0)} /></div>
-            <div className="hero-s">meta <b className="num">{fmtUsd(s.metaUsd, 0)}</b> · {r.mesesHastaMeta} meses</div>
-            <span className={`badge ${r.cumplida ? 'b-pos' : 'b-warn'}`}>
-              {r.cumplida ? '✓ META CUMPLIDA' : `Te faltan ${fmtUsd(-r.diferencia, 0)}`}
-            </span>
+            <span className="eyebrow">Ahorrado de verdad</span>
+            <div className="hero-n"><CountUp value={real} format={n => fmtUsd(n, 0)} /></div>
+            <div className="hero-s">de <b className="num">{fmtUsd(meta, 0)}</b> · meta en {mesLargo(s.fechaMeta)}</div>
+            {cumplidaReal
+              ? <span className="badge b-pos">Meta cumplida</span>
+              : <span className="badge b-warn">Faltan {fmtUsd(Math.max(0, meta - real), 0)}</span>}
           </div>
         </div>
         <div className="hero-stats">
-          <div><span>Ahorrado hoy</span><b className="num">{fmtUsd(ahorroReal(r.ahorroActualUsd, meses, checks).real, 0)}</b></div>
-          <div><span>{r.cumplida ? 'Te sobran' : 'Te faltan'}</span><b className={`num ${r.cumplida ? 'pos' : 'warn'}`}>{fmtUsd(Math.abs(r.diferencia), 0)}</b></div>
+          <div><span>Proyección a {mesCorto(s.fechaMeta)}</span><b className="num">{fmtUsd(r.usdProyectados, 0)}</b><em>si separás lo del plan</em></div>
+          <div><span>{r.cumplida ? 'La proyección sobra' : 'A la proyección le faltan'}</span><b className={`num ${r.cumplida ? 'pos' : 'warn'}`}>{fmtUsd(Math.abs(r.diferencia), 0)}</b></div>
           <div><span>Ahorro necesario</span><b className="num">{fmtPct(r.pctNecesario)}</b><em>{r.lectura}</em></div>
         </div>
+        <p className="hero-leg"><i className="lg-real" />ahorrado <i className="lg-proy" />proyección (todavía no es plata separada)</p>
       </section>
 
       <h3 className="sec">Tocá un mes para abrirlo</h3>
