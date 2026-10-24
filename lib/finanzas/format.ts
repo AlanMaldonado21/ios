@@ -3,12 +3,18 @@
 const ars0 = new Intl.NumberFormat('es-AR', { maximumFractionDigits: 0 });
 const num = (d: number) => new Intl.NumberFormat('es-AR', { minimumFractionDigits: d, maximumFractionDigits: d });
 
-export const fmtArs = (n: number) => `${n < 0 ? '−' : ''}$ ${ars0.format(Math.abs(Math.round(n)))}`;
-export const fmtUsd = (n: number, decimales = 2) => `${n < 0 ? '−' : ''}U$S ${num(decimales).format(Math.abs(n))}`;
+/** Montos ocultos (ojito de privacidad): con la máscara puesta, los formateadores devuelven "$ ***". */
+let mascara = false;
+export const setMascara = (v: boolean) => { mascara = v; };
+export const hayMascara = () => mascara;
+
+export const fmtArs = (n: number) => mascara ? '$ ***' : `${n < 0 ? '−' : ''}$ ${ars0.format(Math.abs(Math.round(n)))}`;
+export const fmtUsd = (n: number, decimales = 2) => mascara ? 'U$S ***' : `${n < 0 ? '−' : ''}U$S ${num(decimales).format(Math.abs(n))}`;
 export const fmtPct = (n: number, decimales = 0) => `${num(decimales).format(n * 100)}%`;
 
 /** Abrevia montos grandes para ejes: $ 3,7 M */
 export function fmtArsCorto(n: number) {
+  if (mascara) return '$ ***';
   const a = Math.abs(n);
   if (a >= 1e6) return `$ ${num(1).format(n / 1e6)} M`;
   if (a >= 1e3) return `$ ${num(0).format(n / 1e3)} k`;

@@ -120,3 +120,13 @@ describe('datos con los que arranca la app', () => {
     expect(p.resumen.cumplida).toBe(true);
   });
 });
+
+import { setMascara, fmtArsCorto } from './format';
+describe('máscara de montos (ojito)', () => {
+  it('oculta y vuelve', () => {
+    setMascara(true);
+    expect(fmtArs(1234)).toBe('$ ***'); expect(fmtUsd(10)).toBe('U$S ***'); expect(fmtArsCorto(3_700_000)).toBe('$ ***');
+    setMascara(false);
+    expect(fmtArs(1234)).toBe('$ 1.234');
+  });
+});
