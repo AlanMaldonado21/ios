@@ -278,7 +278,8 @@ function pct(from, to) {
   for (let d = from; d <= to; d = addDays(d, 1)) {
     const k = key(d);
     if (k > today) break;
-    const i = dayInfo(k); n += i.due; dn += i.done;
+    // El día en curso no cuenta como fallado: suma solo lo que ya hiciste, lo pendiente no baja el %.
+    const i = dayInfo(k); n += k === today ? i.done : i.due; dn += i.done;
   }
   return n ? Math.round(dn / n * 100) : null;
 }
