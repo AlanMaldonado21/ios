@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { mesActualDelPlan } from '../../../lib/finanzas/calc';
-import { usePlan, useStore } from '../store';
+import { hoyMes, usePlan, useStore } from '../store';
 import { Checklist } from '../components/Checklist';
 import { fmtArs, fmtUsd } from '../../../lib/finanzas/format';
 import { KpiCard } from '../components/KpiCard';
 import { MesBox } from '../components/MesBox';
 import { Apertura } from '../components/Apertura';
 import { DonaChart, SERIES } from '../components/Charts';
-
-export const hoyMes = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
 
 function useDesktop() {
   const q = '(min-width: 900px)';
@@ -21,7 +19,7 @@ function useDesktop() {
   return d;
 }
 
-export function Dashboard() {
+export function Mes() {
   const desktop = useDesktop();
   const { mesSel, setMesSel } = useStore();
   const { data, meses, resumen } = usePlan();
@@ -37,12 +35,12 @@ export function Dashboard() {
   return (
     <div className="dash">
       <header className="ph ph-sm">
-        <div><h1>Finanzas</h1></div>
+        <div><h1>Detalle del mes</h1><p className="sub">Ahorro, reparto y apertura</p></div>
       </header>
 
       <div className="layout">
         <div className="col-mes">
-          <MesBox m={m} ix={ix} meses={meses} meta={s.metaUsd} hoy={hoy} ir={ir} base={resumen.ahorroActualUsd} />
+          <MesBox m={m} ix={ix} meses={meses} meta={s.metaUsd} hoy={hoyMes()} ir={ir} base={resumen.ahorroActualUsd} />
           {!desktop && <Checklist meses={meses} sel={sel} onSel={setSel} base={resumen.ahorroActualUsd} />}
 
           <section className="kpis">

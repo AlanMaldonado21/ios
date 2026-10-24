@@ -1,15 +1,12 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { sumarMeses } from '../../../lib/finanzas/calc';
-import { MEDIOS, TARJETAS, agruparPorDia, gastosAlContado, gastosDelMes, parseMonto, primerPagoCredito, totalGastos, totalPorMedio, totalPorTipo, type Medio, type Tarjeta } from '../../../lib/finanzas/diario';
+import { MEDIOS, TARJETAS, acumuladoDiario, agruparPorDia, gastosAlContado, gastosDelMes, primerPagoCredito, totalGastos, totalPorMedio, totalPorTipo } from '../../../lib/finanzas/diario';
 import { fmtArs, mesCorto, mesLargo } from '../../../lib/finanzas/format';
 import { hoyISO, usePlan, useStore } from '../store';
 import { CountUp } from '../components/CountUp';
+import { RitmoChart } from '../components/Charts';
+import { icoTipo } from '../components/QuickAdd';
 
-const TIPOS = [
-  { t: 'Comida', i: '🍔' }, { t: 'Súper', i: '🛒' }, { t: 'Salidas', i: '🍻' }, { t: 'Transporte', i: '🚕' },
-  { t: 'Delivery', i: '🛵' }, { t: 'Salud', i: '💊' }, { t: 'Ropa', i: '👕' }, { t: 'Otros', i: '📦' },
-];
-const icoTipo = (t: string) => TIPOS.find(x => x.t.toLowerCase() === t.toLowerCase())?.i ?? '🧾';
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
@@ -23,27 +20,11 @@ function etiquetaDia(iso: string) {
   return `${DIAS[new Date(y, m - 1, d).getDay()]} ${d} ${MESES[m - 1]}`;
 }
 
-/** Muestra el monto con puntos de miles mientras se escribe. */
-const formatearInput = (txt: string) => {
-  const [ent, dec] = txt.replace(/[^\d,]/g, '').split(',');
-  const e = ent ? Number(ent).toLocaleString('es-AR') : '';
-  return dec !== undefined ? `${e || '0'},${dec.slice(0, 2)}` : e;
-};
-
 export function Diario() {
-  const { gastos, agregarGasto, borrarGasto } = useStore();
+  const { gastos, topes, borrarGasto, editarGasto } = useStore();
   const { meses } = usePlan();
   const [mes, setMes] = useState(hoyISO().slice(0, 7));
-  const [monto, setMonto] = useState('');
-  const [tipo, setTipo] = useState('Comida');
-  const [medio, setMedio] = useState<Medio>('debito');
-  const [tarjeta, setTarjeta] = useState<Tarjeta>('BNA Visa');
-  const [cuotas, setCuotas] = useState(1);
-  const [fecha, setFecha] = useState(hoyISO());
-  const [error, setError] = useState('');
-  const [nuevo, setNuevo] = useState('');
   const [borrando, setBorrando] = useState<string | null>(null);
-  const montoRef = useRef<HTMLInputElement>(null);
 
   const delMes = useMemo(() => gastosDelMes(gastos, mes), [gastos, mes]);
   const contado = gastosAlContado(delMes);
@@ -53,83 +34,15 @@ export function Diario() {
   const porTipo = totalPorTipo(delMes);
   const dias = agruparPorDia(delMes);
   const plan = meses.find(m => m.mes === mes);
-  const libre = plan ? plan.libre : null;
+  const libre = topes[mes] ?? (plan ? plan.libre : null);
   const usado = libre && libre > 0 ? total / libre : 0;
   const nivel = usado > 1 ? 'neg' : usado > 0.8 ? 'warn' : 'pos';
-
-  function agregar() {
-    const n = parseMonto(monto);
-    if (!(n > 0)) { setError('Poné un monto'); montoRef.current?.focus(); return; }
-    if (!tipo.trim()) { setError('Elegí o escribí el tipo de gasto'); return; }
-    agregarGasto(medio === 'credito' ? { fecha, tipo: tipo.trim(), monto: n, medio, tarjeta, cuotas } : { fecha, tipo: tipo.trim(), monto: n, medio });
-    setMonto(''); setError('');
-    setNuevo(fecha);
-    if (fecha.slice(0, 7) !== mes) setMes(fecha.slice(0, 7));
-    if (navigator.vibrate) navigator.vibrate(20);
-  }
 
   return (
     <div className="dash">
       <header className="ph">
         <div><h1>Gastos diarios</h1><p className="sub">Comida, salidas y el día a día</p></div>
       </header>
-
-      {/* Alta rápida */}
-      <section className="card add">
-        <label className="add-l" htmlFor="monto">Monto</label>
-        <div className={`add-monto ${error && !(parseMonto(monto) > 0) ? 'err' : ''}`}>
-          <span>$</span>
-          <input id="monto" ref={montoRef} inputMode="decimal" placeholder="0" value={monto} autoComplete="off"
-            onChange={e => { setMonto(formatearInput(e.target.value)); setError(''); }}
-            onKeyDown={e => { if (e.key === 'Enter') agregar(); }} />
-        </div>
-
-        <span className="add-l">Tipo de gasto</span>
-        <div className="tipos">
-          {TIPOS.map(x => (
-            <button key={x.t} className={tipo === x.t ? 'on' : ''} onClick={() => setTipo(x.t)}><span>{x.i}</span>{x.t}</button>
-          ))}
-        </div>
-        <input className="add-txt" placeholder="u otro: farmacia, regalo, nafta…" value={TIPOS.some(x => x.t === tipo) ? '' : tipo}
-          onChange={e => setTipo(e.target.value)} />
-
-        <span className="add-l">¿Con qué pagaste?</span>
-        <div className="medios">
-          {MEDIOS.map(x => (
-            <button key={x.id} className={`m-${x.id} ${medio === x.id ? 'on' : ''}`} onClick={() => setMedio(x.id)}><span>{x.ico}</span>{x.label}</button>
-          ))}
-        </div>
-
-        {medio === 'credito' && (
-          <div className="credito">
-            <span className="add-l">Tarjeta</span>
-            <div className="tarjetas">
-              {TARJETAS.map(t => (
-                <button key={t.id} className={`tj ${t.id === 'BNA Visa' ? 'cc-bna' : 'cc-mp'} ${tarjeta === t.id ? 'on' : ''}`} onClick={() => setTarjeta(t.id)}>
-                  <span className="tj-chip" />{t.label}
-                </button>
-              ))}
-            </div>
-            <span className="add-l">Cuotas</span>
-            <div className="cuotas-sel">
-              {[1, 3, 6, 9, 12, 18].map(n => (
-                <button key={n} className={cuotas === n ? 'on' : ''} onClick={() => setCuotas(n)}>{n}</button>
-              ))}
-            </div>
-            <p className="cred-prev">
-              {parseMonto(monto) > 0
-                ? <>{cuotas === 1 ? 'Un pago' : `${cuotas} cuotas`} de <b className="num">{fmtArs(parseMonto(monto) / cuotas)}</b> · {cuotas === 1 ? 'se paga' : 'la primera'} en <b>{mesLargo(primerPagoCredito(fecha, tarjeta))}</b></>
-                : <>Se suma solo a Cuotas del plan · {tarjeta === 'BNA Visa' ? 'BNA cierra el 22: lo de después pasa al otro resumen' : 'se paga el mes siguiente'}</>}
-            </p>
-          </div>
-        )}
-
-        <div className="add-f">
-          <label><span className="add-l">Fecha</span><input type="date" value={fecha} max={hoyISO()} onChange={e => setFecha(e.target.value || hoyISO())} /></label>
-          <button className="btn-add" onClick={agregar}>+ Agregar</button>
-        </div>
-        {error && <p className="add-err">{error}</p>}
-      </section>
 
       {/* Mes */}
       <div className="mes-h" style={{ margin: '18px 0 12px' }}>
@@ -145,12 +58,18 @@ export function Diario() {
           <>
             <div className="pbar big"><i className={`gs-bar ${nivel}`} style={{ width: `${Math.min(100, usado * 100)}%` }} /></div>
             <div className="gs-r">
-              <span>de {fmtArs(libre)} libres del plan</span>
+              <span>de {fmtArs(libre)} {topes[mes] ? 'de tope' : 'libres del plan'}</span>
               <b className="num">{libre - total >= 0 ? `quedan ${fmtArs(libre - total)}` : `te pasaste ${fmtArs(total - libre)}`}</b>
             </div>
           </>
-        ) : <p className="gs-r"><span>Este mes no está en el plan (nov 26 – dic 27), así que no hay "libre" para comparar.</span></p>}
+        ) : <p className="gs-r"><span>Este mes no está en el plan: poné un tope desde Inicio si querés compararlo.</span></p>}
         {enCredito > 0 && <p className="gs-cred">💳 Además, <b className="num">{fmtArs(enCredito)}</b> con crédito: no salen de este mes, se suman a Cuotas.</p>}
+        {total > 0 && (
+          <div className="gs-graf">
+            <RitmoChart puntos={acumuladoDiario(gastos, mes, mes === hoyISO().slice(0, 7) ? Number(hoyISO().slice(8)) : 31, libre)} hoy={mes === hoyISO().slice(0, 7) ? Number(hoyISO().slice(8)) : 0} />
+            {libre != null && <p className="hint">Línea punteada: el ritmo para llegar justo al tope.</p>}
+          </div>
+        )}
         <div className="gs-medios">
           {MEDIOS.map(x => (
             <div key={x.id} className={`m-${x.id}`}><span>{x.ico} {x.id === 'transferencia' ? 'Transf.' : x.label}</span><b className="num">{fmtArs(porMedio[x.id])}</b></div>
@@ -170,19 +89,21 @@ export function Diario() {
       </section>
 
       {dias.length === 0 && (
-        <div className="card empty"><span className="big">🧾</span>Todavía no cargaste gastos en {mesLargo(mes)}.<br />Arriba agregás el primero.</div>
+        <div className="card empty"><span className="big">🧾</span>Todavía no cargaste gastos en {mesLargo(mes)}.<br />Tocá <b>+</b> para cargar el primero.</div>
       )}
       {dias.map(d => (
         <section key={d.fecha} className="dia">
           <div className="dia-h"><span>{etiquetaDia(d.fecha)}</span><b className="num">{fmtArs(d.total)}</b></div>
           <div className="card pad0">
             {d.items.map(g => (
-              <div key={g.id} className={`gd ${nuevo === g.fecha && g === d.items[0] ? 'new' : ''}`}>
+              <div key={g.id} className={`gd `}>
+                <button className="gd-main" onClick={() => editarGasto(g)} aria-label={`Editar ${g.tipo}`}>
                 <span className="gd-i">{icoTipo(g.tipo)}</span>
                 <div className="gd-t"><b>{g.tipo}</b><span className={`medio-tag m-${g.medio}`}>{g.medio === 'credito' && g.tarjeta
                   ? `${TARJETAS.find(t => t.id === g.tarjeta)?.corto} · ${(g.cuotas ?? 1) === 1 ? '1 pago' : `${g.cuotas} cuotas`} · desde ${mesCorto(primerPagoCredito(g.fecha, g.tarjeta))}`
                   : MEDIOS.find(x => x.id === g.medio)?.label}</span></div>
                 <b className="gd-v num">{fmtArs(g.monto)}</b>
+                </button>
                 {borrando === g.id ? (
                   <span className="gd-del">
                     <button className="si" onClick={() => { borrarGasto(g.id); setBorrando(null); }}>Borrar</button>

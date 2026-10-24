@@ -1,24 +1,23 @@
 import { mesActualDelPlan } from '../../../lib/finanzas/calc';
 import { fmtArs, fmtPct, fmtUsd, mesCorto, mesLargo } from '../../../lib/finanzas/format';
-import { usePlan, useStore } from '../store';
+import { hoyMes, usePlan, useStore } from '../store';
 import { ProgressRing } from '../components/ProgressRing';
 import { CountUp } from '../components/CountUp';
 import { MonthStrip } from '../components/MonthStrip';
 import { AcumuladoChart, ApiladoChart, CuotasChart, SERIES, TARJETAS } from '../components/Charts';
-import { hoyMes } from './Dashboard';
 import { PlanTabla } from '../components/PlanTabla';
 import { ahorroReal } from '../../../lib/finanzas/diario';
 
 const DOLARES = [1500, 1550, 1750];
 
-/** Vista general del plan: proyección a la meta, progreso por mes y gráficos. Tocar un mes lo abre en Inicio. */
+/** Vista general del plan: proyección a la meta, progreso por mes y gráficos. Tocar un mes lo abre en Detalle del mes. */
 export function Plan() {
   const { dolar, setDolar, checks, mesSel, setMesSel } = useStore();
   const { data, meses, resumen: r } = usePlan();
   const s = data.settings;
   const hoy = mesActualDelPlan(meses.map(m => m.mes), hoyMes());
   const sel = mesSel && meses.some(m => m.mes === mesSel) ? mesSel : hoy;
-  const abrir = (m: string) => { setMesSel(m); location.hash = '#/inicio'; };
+  const abrir = (m: string) => { setMesSel(m); location.hash = '#/mes'; };
   const grande = typeof innerWidth === 'number' && innerWidth >= 900;
 
   return (

@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { aguinaldoDelMes, comisionCobrada, facturacionDe, mesActualDelPlan, sumarMeses, totalFijos } from '../../../lib/finanzas/calc';
 import { fmtArs, fmtPct, mesLargo } from '../../../lib/finanzas/format';
-import { nuevoId, usePlan, useStore } from '../store';
+import { hoyMes, nuevoId, usePlan, useStore } from '../store';
 import { MoneyInput } from '../components/MoneyInput';
 import { CountUp } from '../components/CountUp';
 
-const hoyMes = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`; };
 
 export function Ingresos() {
   const { editar } = useStore();
