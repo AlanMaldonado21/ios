@@ -40,7 +40,7 @@ export function Config() {
           <MoneyInput value={s.ahorroPesosActual} ariaLabel="Ahorro actual en pesos" onChange={n => editar(d => { d.settings.ahorroPesosActual = n; })} /></div>
         <div className="ed-total"><span>Total en USD</span><b className="num">{fmtUsd(total)}</b></div>
       </section>
-      <p className="cfg-note">Los pesos se suman a dólar {fmtArs(s.dolar)}. En la planilla figuraban $ 1.627.500, que eran los mismos U$S 1.050 pasados a pesos: por eso arranca en $ 0.</p>
+      <p className="cfg-note">Los pesos se pasan a dólares a {fmtArs(s.dolar)}.</p>
 
       <h3 className="sec">Duración del plan</h3>
       <section className="card pad0">
@@ -49,7 +49,6 @@ export function Config() {
         <div className="cfg-row"><div><b>Cantidad de meses</b><small>Termina en {mesLargo(meses[meses.length - 1])}</small></div>
           <Stepper value={s.mesesPlan} min={1} max={60} ariaLabel="Meses del plan" onChange={n => editar(d => { d.settings.mesesPlan = n; })} /></div>
       </section>
-      <p className="cfg-note">Tus datos se guardan en este dispositivo. Cuando conectemos Supabase pasan a la nube.</p>
     </div>
   );
 }

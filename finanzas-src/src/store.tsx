@@ -4,8 +4,7 @@ import { calcularPlan } from '../../lib/finanzas/calc';
 import { DATOS_INICIALES } from '../../lib/finanzas/seed';
 import type { FinData } from '../../lib/finanzas/types';
 
-// Por ahora los datos viven en este dispositivo (localStorage), igual que hábitos.
-// Cuando se conecte Supabase, esto se reemplaza por las tablas fin_*.
+// Los datos viven en este dispositivo (localStorage); si hay sesión, sync.js copia el documento a Supabase.
 const LS = 'finanzas-v1';
 
 type Estado = { data: FinData; checks: Checks; gastos: GastoDiario[]; topes: Record<string, number> };

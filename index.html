@@ -404,25 +404,35 @@ function vHab() {
   <div class="card" id="syncbox"></div>
   <h3 style="margin-top:26px">Respaldo</h3>
   <div class="rowb"><button class="btn sec" data-act="export">Exportar</button><button class="btn sec" data-act="import">Importar</button></div>
-  <p style="color:var(--mu);font-size:13px;font-weight:600">Tus datos viven solo en este dispositivo. Exportá un JSON de vez en cuando.</p>`;
+  <p id="datanote" style="color:var(--mu);font-size:13px;font-weight:600"></p>`;
   return out;
+}
+function syncText(i) {
+  if (i.status === 'ok') return { t: 'Sincronizado', c: 'var(--gd)' };
+  if (i.status === 'pending') return { t: i.pendientes && i.pendientes.length ? 'Pendiente de subir: ' + i.pendientes.join(' y ') : 'Sincronizando…', c: 'var(--ambtx)' };
+  const s = i.retryAt ? Math.max(0, Math.round((i.retryAt - Date.now()) / 1000)) : 0;
+  return { t: 'Error al sincronizar' + (i.error ? ' (' + i.error + ')' : '') + (s ? '. Reintento en ' + s + ' s' : ''), c: 'var(--redtx)' };
 }
 function renderSync(i) {
   const b = $('#syncbox'); if (!b) return;
   i = i || Sync.info();
+  const note = $('#datanote');
+  if (note) note.textContent = !i.enabled || i.status === 'out' ? 'Tus datos están solo en este dispositivo. Exportá una copia de vez en cuando.' : 'Tus datos se guardan en este dispositivo y se copian a la nube con tu cuenta. Exportar te deja una copia aparte.';
   if (!i.enabled) { b.innerHTML = '<div class="meta" style="color:var(--mu);font-weight:600">Sincronización apagada: tus datos viven solo en este dispositivo.</div>'; return; }
   if (i.status === 'out') {
-    b.innerHTML = `<div class="meta" style="color:var(--mu);font-weight:600;margin-bottom:8px">Entrá para tener tus datos en la nube y en todos tus dispositivos.</div>
-      <input type="text" id="sy-mail" inputmode="email" autocapitalize="none" autocomplete="username" placeholder="Email" style="width:100%;padding:12px;border-radius:14px;border:1px solid var(--ln);background:var(--card);margin-bottom:8px">
-      <input type="password" id="sy-pass" autocomplete="current-password" placeholder="Contraseña" style="width:100%;padding:12px;border-radius:14px;border:1px solid var(--ln);background:var(--card);margin-bottom:8px">
+    if ($('#sy-mail')) return; // no pisar lo que se está escribiendo
+    b.innerHTML = `<div class="meta" style="color:var(--mu);font-weight:600;margin-bottom:8px">Sin sesión: tus datos están solo en este dispositivo. Entrá para copiarlos a la nube.</div>
+      <input type="text" id="sy-mail" inputmode="email" autocapitalize="none" autocomplete="username" placeholder="Email" aria-label="Email" style="width:100%;padding:12px;border-radius:14px;border:1px solid var(--ln);background:var(--card);margin-bottom:8px">
+      <input type="password" id="sy-pass" autocomplete="current-password" placeholder="Contraseña" aria-label="Contraseña" style="width:100%;padding:12px;border-radius:14px;border:1px solid var(--ln);background:var(--card);margin-bottom:8px">
       <div id="sy-err" style="color:var(--redtx);font-weight:700;font-size:13px;min-height:1em"></div>
       <button class="btn" data-act="syncLogin">Entrar</button>`;
     return;
   }
-  const txt = i.status === 'ok' ? '✓ Sincronizado' : i.status === 'pending' ? 'Sincronizando…' : '⚠️ No se pudo sincronizar (' + esc(i.error) + ')';
-  b.innerHTML = `<div class="tog"><b>${esc(i.email)}</b><span style="color:var(--mu);font-weight:700;font-size:13px">${txt}</span></div>
-    <div class="rowb" style="margin-top:10px"><button class="btn sec" style="margin:0" data-act="syncNow">Sincronizar</button><button class="btn sec" style="margin:0" data-act="syncOut">Salir</button></div>`;
+  const st = syncText(i);
+  b.innerHTML = `<div class="tog"><b>${esc(i.email)}</b></div><div role="status" style="color:${st.c};font-weight:700;font-size:13px;margin-top:4px">${esc(st.t)}</div>
+    <div class="rowb" style="margin-top:10px"><button class="btn sec" style="margin:0" data-act="syncNow">${i.status === 'error' ? 'Reintentar ahora' : 'Sincronizar'}</button><button class="btn sec" style="margin:0" data-act="syncOut">Salir</button></div>`;
 }
+setInterval(() => { if (window.Sync && Sync.info().status === 'error') renderSync(); }, 1000);
 function render() {
   $('#top').innerHTML = header();
   $('#view').innerHTML = V.tab === 'hoy' ? vHoy() : V.tab === 'prog' ? vProg() : vHab();
@@ -651,7 +661,7 @@ document.addEventListener('click', e => {
       Sync.login($('#sy-mail').value.trim(), $('#sy-pass').value).then(r => { t.disabled = false; if (r.error) { const e = $('#sy-err'); if (e) e.textContent = r.error; } });
       break;
     }
-    case 'syncNow': Sync.syncAll(); break;
+    case 'syncNow': Sync.retry(); break;
     case 'syncOut': if (confirm('¿Salir? Tus datos quedan en este dispositivo y en la nube.')) Sync.logout(); break;
     case 'export': exportData(); break;
     case 'import': $('#imp').click(); break;
