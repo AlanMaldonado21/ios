@@ -21,7 +21,7 @@ function Grupo({ ico, titulo, signo, total, tono, children, extra }: {
   );
 }
 
-function Fila({ nombre, detalle, valor, tag }: { nombre: ReactNode; detalle?: ReactNode; valor: ReactNode; tag?: ReactNode }) {
+export function Fila({ nombre, detalle, valor, tag }: { nombre: ReactNode; detalle?: ReactNode; valor: ReactNode; tag?: ReactNode }) {
   return (
     <div className="fila">
       <div className="fila-n"><span>{nombre}{tag}</span>{detalle && <small>{detalle}</small>}</div>
