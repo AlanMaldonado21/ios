@@ -6,7 +6,7 @@ import type { PuntoAcum } from '../../../lib/finanzas/diario';
 import type { MesCalc } from '../../../lib/finanzas/calc';
 import { fmtArs, fmtUsd, mesCorto, mesLargo } from '../../../lib/finanzas/format';
 
-const eje = { fontSize: 11, fill: 'var(--mu)', fontWeight: 600 } as const;
+const eje = { fontSize: 12, fill: 'var(--mu)', fontWeight: 500 } as const;
 const millones = (v: number) => (v ? `${(v / 1e6).toLocaleString('es-AR', { maximumFractionDigits: 1 })}M` : '0');
 
 type TipRow = { name: string; value: number; color: string; fmt: (n: number) => string };
@@ -42,9 +42,9 @@ export function AcumuladoChart({ meses, meta, fechaMeta, sel, onSel }: { meses: 
         <XAxis dataKey="mes" tickFormatter={mesCorto} tick={eje} axisLine={false} tickLine={false} interval="preserveStartEnd" minTickGap={18} />
         <YAxis tick={eje} axisLine={false} tickLine={false} width={44} tickFormatter={v => `${Math.round(v / 1000)}k`} />
         <ReferenceLine y={meta} stroke="var(--pos)" strokeDasharray="5 5" strokeWidth={1.5}
-          label={{ value: `Meta ${fmtUsd(meta, 0)}`, position: 'insideTopLeft', fill: 'var(--pos)', fontSize: 11, fontWeight: 800 }} />
+          label={{ value: `Meta ${fmtUsd(meta, 0)}`, position: 'insideTopLeft', fill: 'var(--pos)', fontSize: 12, fontWeight: 600 }} />
         <ReferenceLine x={fechaMeta} stroke="var(--mu)" strokeDasharray="2 4"
-          label={{ value: '🎯', position: 'top', fontSize: 13 }} />
+          label={{ value: 'meta', position: 'top', fontSize: 12, fill: 'var(--mu)' }} />
         <Tooltip cursor={{ stroke: 'var(--mu)', strokeDasharray: '3 3' }}
           content={({ active, payload, label }) => active && payload?.length ? (
             <Tip titulo={mesLargo(String(label))} rows={[{ name: 'Acumulado', value: Number(payload[0].value), color: 'var(--acc)', fmt: n => fmtUsd(n) }]} />
@@ -78,8 +78,8 @@ export function ApiladoChart({ meses, sel, onSel }: { meses: MesCalc[] } & Sel) 
             <Tip titulo={mesLargo(String(label))} rows={payload.map(p => ({ name: String(p.name), value: Number(p.value), color: String(p.color), fmt: fmtArs }))}
               total={fmtArs(meses.find(m => m.mes === label)?.ingresoTotal ?? 0)} />
           ) : null} />
-        {SERIES.map((s, i) => (
-          <Bar key={s.key} dataKey={s.key} name={s.name} stackId="a" fill={s.color} radius={i === SERIES.length - 1 ? [6, 6, 0, 0] : 0} animationDuration={700}>
+        {SERIES.map(s => (
+          <Bar key={s.key} dataKey={s.key} name={s.name} stackId="a" fill={s.color} radius={0} animationDuration={700}>
             {rows.map(r => <Cell key={r.mes} fillOpacity={r.mes === sel ? 1 : r.hastaMeta ? 0.55 : 0.22} />)}
           </Bar>
         ))}
@@ -110,8 +110,8 @@ export function CuotasChart({ meses, sel, onSel }: { meses: MesCalc[] } & Sel) {
           content={({ active, payload, label }) => active && payload?.length ? (
             <Tip titulo={mesLargo(String(label))} rows={payload.filter(p => Number(p.value) > 0).map(p => ({ name: String(p.name), value: Number(p.value), color: String(p.color), fmt: fmtArs }))} />
           ) : null} />
-        {TARJETAS.map((t, i) => (
-          <Bar key={t.key} dataKey={t.key} name={t.key} stackId="c" fill={t.color} radius={i === TARJETAS.length - 1 ? [6, 6, 0, 0] : 0} animationDuration={700}>
+        {TARJETAS.map(t => (
+          <Bar key={t.key} dataKey={t.key} name={t.key} stackId="c" fill={t.color} radius={0} animationDuration={700}>
             {rows.map(r => <Cell key={String(r.mes)} fillOpacity={!sel || r.mes === sel ? 1 : 0.6} />)}
           </Bar>
         ))}
@@ -125,9 +125,9 @@ export { TARJETAS };
 export function DonaChart({ partes, centro, label }: { partes: { name: string; value: number; color: string }[]; centro: string; label: string }) {
   const visibles = partes.filter(p => p.value > 0);
   return (
-    <div className="dona-g">
+    <div className="dona-g" aria-hidden="true">
       <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
+        <PieChart accessibilityLayer={false}>
           <Pie data={visibles} dataKey="value" innerRadius="72%" outerRadius="100%" paddingAngle={2.5} cornerRadius={5} stroke="none"
             startAngle={90} endAngle={-270} animationDuration={700} isAnimationActive>
             {visibles.map(p => <Cell key={p.name} fill={p.color} />)}

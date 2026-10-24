@@ -44,13 +44,13 @@ export function Mes() {
           {!desktop && <Checklist meses={meses} sel={sel} onSel={setSel} base={resumen.ahorroActualUsd} />}
 
           <section className="kpis">
-            <KpiCard ico="🏦" label="Ahorro del mes" value={m.ahorroUsd} prev={prev?.ahorroUsd} format={n => fmtUsd(n, 0)}
+            <KpiCard ico="flag" label="Ahorro del mes" value={m.ahorroUsd} prev={prev?.ahorroUsd} format={n => fmtUsd(n, 0)}
               sub={fmtArs(m.ahorroPesos)} serie={serie(x => x.ahorroUsd)} activo={ix} />
-            <KpiCard ico="🍔" label="Te queda libre" value={m.libre} prev={prev?.libre} format={fmtArs}
+            <KpiCard ico="wallet" label="Te queda libre" value={m.libre} prev={prev?.libre} format={fmtArs}
               sub="comida y salidas" serie={serie(x => x.libre)} activo={ix} tono={m.libre < 0 ? 'neg' : 'pos'} />
-            <KpiCard ico="💵" label="Ingreso del mes" value={m.ingresoTotal} prev={prev?.ingresoTotal} format={fmtArs}
+            <KpiCard ico="landmark" label="Ingreso del mes" value={m.ingresoTotal} prev={prev?.ingresoTotal} format={fmtArs}
               sub={m.aguinaldo ? 'con aguinaldo' : `comisión ${fmtArs(m.comision)}`} serie={serie(x => x.ingresoTotal)} activo={ix} tono="c4" />
-            <KpiCard ico="💳" label="Cuotas del mes" value={m.cuotas} prev={prev?.cuotas} format={fmtArs} invertir
+            <KpiCard ico="credit-card" label="Cuotas del mes" value={m.cuotas} prev={prev?.cuotas} format={fmtArs} invertir
               sub={m.cuotasDetalle.length ? `${m.cuotasDetalle.length} cuotas activas` : 'libre de cuotas'} serie={serie(x => x.cuotas)} activo={ix} tono="warn" />
           </section>
 
@@ -70,7 +70,7 @@ export function Mes() {
             </div>
           </section>
 
-          <h3 className="sec">Apertura del mes</h3>
+          <h2 className="sec">Apertura del mes</h2>
           <section className="card pad0">
             <Apertura m={m} data={data} />
           </section>

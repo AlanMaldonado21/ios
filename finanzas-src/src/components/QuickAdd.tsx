@@ -3,12 +3,15 @@ import { MEDIOS, TARJETAS, montosFrecuentes, parseMonto, primerPagoCredito, type
 import type { GastoDiario } from '../../../lib/finanzas/diario';
 import { fmtArs, mesLargo } from '../../../lib/finanzas/format';
 import { hoyISO, useStore } from '../store';
+import { Ic, type IcNombre } from './Ic';
 
-export const TIPOS = [
-  { t: 'Comida', i: '🍔' }, { t: 'Súper', i: '🛒' }, { t: 'Salidas', i: '🍻' }, { t: 'Transporte', i: '🚕' },
-  { t: 'Delivery', i: '🛵' }, { t: 'Salud', i: '💊' }, { t: 'Ropa', i: '👕' }, { t: 'Otros', i: '📦' },
+export const TIPOS: { t: string; i: IcNombre }[] = [
+  { t: 'Comida', i: 'utensils' }, { t: 'Súper', i: 'shopping-cart' }, { t: 'Salidas', i: 'beer' }, { t: 'Transporte', i: 'car-taxi-front' },
+  { t: 'Delivery', i: 'bike' }, { t: 'Salud', i: 'pill' }, { t: 'Ropa', i: 'shirt' }, { t: 'Otros', i: 'package' },
 ];
-export const icoTipo = (t: string) => TIPOS.find(x => x.t.toLowerCase() === t.toLowerCase())?.i ?? '🧾';
+/** Ícono de la categoría; un gasto con nombre propio (detalle de "Otros") lleva la etiqueta. */
+export const icoTipo = (t: string): IcNombre => TIPOS.find(x => x.t.toLowerCase() === t.toLowerCase())?.i ?? 'tag';
+export function IcTipo({ t }: { t: string }) { return <span className="gd-i"><Ic n={icoTipo(t)} /></span>; }
 
 const LS_ULT = 'finanzas-ult';
 /** Una sola categoría para lo que no entra en las otras; se le puede escribir un detalle. */
@@ -31,24 +34,24 @@ const formatearInput = (txt: string) => {
 };
 const ayerISO = () => { const d = new Date(); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 
-/** Botón flotante + hoja de carga rápida + aviso con "Deshacer". Monto → Guardar son 2 toques: tipo y medio se acuerdan del último gasto. */
+/** Hoja de carga rápida + aviso con "Deshacer" (8 s). Se abre desde "Cargar" en la barra. Monto → Guardar: categoría y medio se acuerdan del último gasto. */
 export function QuickAdd() {
   const { sheetGasto, setSheetGasto, agregarGasto, borrarGasto, gastoEdit, guardarEdicion } = useStore();
   const [aviso, setAviso] = useState<{ id: string; msg: string; sinDeshacer?: boolean } | null>(null);
   useEffect(() => { if (sheetGasto) setAviso(null); }, [sheetGasto]);
   useEffect(() => {
+    document.body.classList.toggle('con-aviso', !!aviso);
     if (!aviso) return;
-    const t = setTimeout(() => setAviso(null), 5000);
+    const t = setTimeout(() => setAviso(null), 8000);
     return () => clearTimeout(t);
   }, [aviso]);
 
   return (
     <>
-      {!sheetGasto && <button className="fab" onClick={() => setSheetGasto(true)} aria-label="Cargar gasto"><span aria-hidden>+</span></button>}
-      {sheetGasto && <Hoja key={gastoEdit?.id ?? 'nuevo'} inicial={gastoEdit} onEditado={g => { guardarEdicion(g); setSheetGasto(false); setAviso({ id: g.id, msg: '✓ Gasto actualizado', sinDeshacer: true }); }} onClose={() => setSheetGasto(false)} onGuardado={(id, msg) => { setSheetGasto(false); setAviso({ id, msg }); }} agregar={agregarGasto} />}
-      <div className={`aviso ${aviso ? 'on' : ''}`} role="status" aria-live="polite">
+      {sheetGasto && <Hoja key={gastoEdit?.id ?? 'nuevo'} inicial={gastoEdit} onEditado={g => { guardarEdicion(g); setSheetGasto(false); setAviso({ id: g.id, msg: 'Gasto actualizado.', sinDeshacer: true }); }} onClose={() => setSheetGasto(false)} onGuardado={(id, msg) => { setSheetGasto(false); setAviso({ id, msg }); }} agregar={agregarGasto} />}
+      <div className={`toast ${aviso ? 'on' : ''}`} role="status" aria-live="polite">
         <span>{aviso?.msg}</span>
-        {!aviso?.sinDeshacer && <button onClick={() => { if (aviso) borrarGasto(aviso.id); setAviso(null); }}>Deshacer</button>}
+        {aviso && !aviso.sinDeshacer && <button onClick={() => { borrarGasto(aviso.id); setAviso(null); }}>Deshacer</button>}
       </div>
     </>
   );
@@ -99,17 +102,17 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
     }
     const id = agregar(medio === 'credito' ? { fecha, tipo: t, monto: n, medio, tarjeta, cuotas } : { fecha, tipo: t, monto: n, medio });
     guardarUlt({ tipo: cat, medio, tarjeta, cuotas });
-    if (navigator.vibrate) navigator.vibrate(20);
-    onGuardado(id, `✓ ${t} ${fmtArs(n)} · ${MEDIOS.find(m => m.id === medio)!.label.toLowerCase()}`);
+    window.Comun?.haptic(10);
+    onGuardado(id, `Guardado: ${t}, ${fmtArs(n)}, ${MEDIOS.find(m => m.id === medio)!.label.toLowerCase()}.`);
   }
 
   return (
-    <div className="ov" onClick={onClose} role="presentation">
-      <div className="qa" style={{ bottom }} role="dialog" aria-modal="true" aria-label="Cargar gasto" onClick={e => e.stopPropagation()}>
-        <div className="qa-grab" aria-hidden />
+    <div className="hoja-ov qa-ov" onClick={onClose} role="presentation">
+      <div className="qa hoja" style={{ marginBottom: bottom }} role="dialog" aria-modal="true" aria-label="Cargar gasto" onClick={e => e.stopPropagation()}>
+        <div className="qa-h"><h2>{inicial ? 'Editar gasto' : 'Cargar gasto'}</h2><button className="icon-btn" onClick={onClose} aria-label="Cerrar"><Ic n="x" /></button></div>
         <div className="add-monto">
           <span>$</span>
-          <input autoFocus inputMode="decimal" placeholder="0" aria-label="Monto" value={monto} autoComplete="off"
+          <input autoFocus={!inicial} inputMode="decimal" placeholder="0" aria-label="Monto" value={monto} autoComplete="off"
             onChange={e => setMonto(formatearInput(e.target.value))} onKeyDown={e => { if (e.key === 'Enter') guardar(); }} />
         </div>
 
@@ -121,14 +124,15 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
         <span className="add-l qa-l">Categoría{recordada ? <em> · la última que usaste</em> : null}</span>
         <div className="tipos" role="radiogroup" aria-label="Categoría">
           {TIPOS.map(x => (
-            <button key={x.t} role="radio" aria-checked={cat === x.t} className={cat === x.t ? 'on' : ''} onClick={() => setCat(x.t)}><span>{x.i}</span>{x.t}</button>
+            <button key={x.t} role="radio" aria-checked={cat === x.t} className={cat === x.t ? 'on' : ''} onClick={() => setCat(x.t)}><Ic n={x.i} size="s" />{x.t}</button>
           ))}
         </div>
         {cat === OTROS && <input className="add-txt" placeholder="Detalle (opcional): farmacia, regalo…" aria-label="Detalle del gasto" value={detalle} onChange={e => setDetalle(e.target.value)} />}
 
-        <div className="medios qa-medios">
+        <span className="add-l qa-l">Cómo pagaste</span>
+        <div className="medios qa-medios" role="radiogroup" aria-label="Cómo pagaste">
           {MEDIOS.map(x => (
-            <button key={x.id} className={`m-${x.id} ${medio === x.id ? 'on' : ''}`} onClick={() => setMedio(x.id)}><span>{x.ico}</span>{x.label}</button>
+            <button key={x.id} role="radio" aria-checked={medio === x.id} className={`m-${x.id} ${medio === x.id ? 'on' : ''}`} onClick={() => setMedio(x.id)}><Ic n={x.ico} />{x.label}</button>
           ))}
         </div>
 
@@ -160,7 +164,7 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
             <button className={!otraFecha && fecha === ayerISO() ? 'on' : ''} onClick={() => { setFecha(ayerISO()); setOtraFecha(false); }}>Ayer</button>
             {otraFecha
               ? <input type="date" aria-label="Fecha" value={fecha} max={hoyISO()} onChange={e => setFecha(e.target.value || hoyISO())} />
-              : <button aria-label="Elegir otra fecha" onClick={() => setOtraFecha(true)}>📅</button>}
+              : <button aria-label="Elegir otra fecha" onClick={() => setOtraFecha(true)}><Ic n="calendar" /></button>}
           </div>
           <button className="btn-add qa-ok" disabled={!puede} onClick={guardar}>{inicial ? 'Actualizar' : 'Guardar'}</button>
         </div>

@@ -18,10 +18,10 @@ export function Config() {
     <div className="dash">
       <header className="ph"><div><h1>Configuración</h1><p className="sub">Tu meta y tus ahorros</p></div></header>
 
-      <h3 className="sec">Cuenta y sincronización</h3>
+      <h2 className="sec">Cuenta y sincronización</h2>
       <section className="card"><CuentaSync /></section>
 
-      <h3 className="sec">Tu meta</h3>
+      <h2 className="sec">Tu meta</h2>
       <section className="card pad0">
         <div className="cfg-row"><div><b>Meta en USD</b></div>
           <MoneyInput value={s.metaUsd} prefijo="U$S" ariaLabel="Meta en dólares" onChange={n => editar(d => { d.settings.metaUsd = n; })} /></div>
@@ -32,7 +32,7 @@ export function Config() {
         <div className="cfg-chips">{DOLARES.map(d => <button key={d} className={s.dolar === d ? 'on' : ''} onClick={() => setDolar(d)}>$ {d.toLocaleString('es-AR')}</button>)}</div>
       </section>
 
-      <h3 className="sec">Lo que ya tenés ahorrado</h3>
+      <h2 className="sec">Lo que ya tenés ahorrado</h2>
       <section className="card pad0">
         <div className="cfg-row"><div><b>Ahorro en dólares</b></div>
           <MoneyInput value={s.ahorroUsdActual} prefijo="U$S" ariaLabel="Ahorro actual en dólares" onChange={n => editar(d => { d.settings.ahorroUsdActual = n; })} /></div>
@@ -42,7 +42,7 @@ export function Config() {
       </section>
       <p className="cfg-note">Los pesos se pasan a dólares a {fmtArs(s.dolar)}.</p>
 
-      <h3 className="sec">Duración del plan</h3>
+      <h2 className="sec">Duración del plan</h2>
       <section className="card pad0">
         <div className="cfg-row"><div><b>Empieza en</b></div>
           <SelectMes value={s.mesInicioPlan} meses={inicioOpts} ariaLabel="Mes de inicio" onChange={m => editar(d => { d.settings.mesInicioPlan = m; })} /></div>

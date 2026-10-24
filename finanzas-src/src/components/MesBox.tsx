@@ -1,6 +1,7 @@
 import type { MesCalc } from '../../../lib/finanzas/calc';
 import { fmtPct, fmtUsd, mesLargo } from '../../../lib/finanzas/format';
 import { CountUp } from './CountUp';
+import { Ic } from './Ic';
 import { useStore } from '../store';
 import { ahorroReal } from '../../../lib/finanzas/diario';
 
@@ -21,18 +22,18 @@ export function MesBox({ m, ix, meses, meta, hoy, ir, base }: {
   return (
     <section className={`mesbox ${ok ? 'ok' : ''}`}>
       <div className="mes-h">
-        <button className="nav-b" onClick={() => ir(-1)} disabled={ix === 0} aria-label="Mes anterior">‹</button>
+        <button className="icon-btn" onClick={() => ir(-1)} disabled={ix === 0} aria-label="Mes anterior"><Ic n="chevron-left" /></button>
         <div className="mes-t">
           <h2 key={m.mes}>{mesLargo(m.mes)}</h2>
           <div className="mes-tags">
             {m.mes === hoy ? <span className="tag t-acc">mes en curso</span> : ix === 0 && hoy < m.mes ? <span className="tag">el plan arranca acá · hoy es {mesLargo(hoy).split(' ')[0]}</span> : null}
-            {m.esMesMeta && <span className="tag t-pos">🎯 mes de la meta</span>}
+            {m.esMesMeta && <span className="tag t-pos">mes de la meta</span>}
             {!m.hastaMeta && <span className="tag">después de la meta</span>}
             {m.aguinaldo > 0 && <span className="tag t-pos">+ aguinaldo</span>}
             {m.libre < 0 && <span className="tag t-neg">libre negativo</span>}
           </div>
         </div>
-        <button className="nav-b" onClick={() => ir(1)} disabled={ix === meses.length - 1} aria-label="Mes siguiente">›</button>
+        <button className="icon-btn" onClick={() => ir(1)} disabled={ix === meses.length - 1} aria-label="Mes siguiente"><Ic n="chevron-right" /></button>
       </div>
 
       <div className="prog">
@@ -48,9 +49,9 @@ export function MesBox({ m, ix, meses, meta, hoy, ir, base }: {
           <b className="prog-pct num" title="% de la meta"><CountUp value={(cierre / meta) * 100} format={n => `${Math.round(n)}%`} ms={600} /></b>
         </div>
         <p className={`prog-si ${pendiente === 0 ? 'ok' : ''}`}>
-          {pendiente === 0 ? <>✓ Todo separado hasta {mesLargo(m.mes).split(' ')[0]}</> : <>si separás {fmtUsd(pendiente, 0)} {ix === 0 || pendiente === m.ahorroUsd ? 'de este mes' : 'que te faltan tachar'}</>}
+          {pendiente === 0 ? <>Todo separado hasta {mesLargo(m.mes).split(' ')[0]}</> : <>si separás {fmtUsd(pendiente, 0)} {ix === 0 || pendiente === m.ahorroUsd ? 'de este mes' : 'que te faltan tachar'}</>}
         </p>
-        <div className="prog-bar" role="progressbar" aria-valuenow={Math.round(pDesp * 100)} aria-valuemin={0} aria-valuemax={100}>
+        <div className="prog-bar" role="progressbar" aria-label="Ahorro al cierre del mes sobre la meta" aria-valuenow={Math.round(pDesp * 100)} aria-valuemin={0} aria-valuemax={100}>
           <i className="pb-antes" style={{ width: `${pAntes * 100}%` }} />
           <i className="pb-mes" style={{ left: `${pAntes * 100}%`, width: `${Math.max(0, pDesp - pAntes) * 100}%` }} />
           {[0.25, 0.5, 0.75].map(t => <em key={t} style={{ left: `${t * 100}%` }} className={pDesp >= t ? 'past' : ''} />)}
@@ -61,7 +62,7 @@ export function MesBox({ m, ix, meses, meta, hoy, ir, base }: {
         </div>
         <div className={`prog-msg ${ok ? 'ok' : ''}`}>
           {ok
-            ? <>🎯 Meta superada por <b className="num">{fmtUsd(cierre - meta, 0)}</b>{llega && llega.mes !== m.mes ? <> · la alcanzás en {mesLargo(llega.mes)}</> : null}</>
+            ? <>Meta superada por <b className="num">{fmtUsd(cierre - meta, 0)}</b>{llega && llega.mes !== m.mes ? <> · la alcanzás en {mesLargo(llega.mes)}</> : null}</>
             : <>Te faltan <b className="num">{fmtUsd(meta - cierre, 0)}</b> ({fmtPct(1 - cierre / meta)}){llega ? <> · llegás en <b>{mesLargo(llega.mes)}</b></> : null}</>}
         </div>
       </div>

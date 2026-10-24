@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { parseMonto, ritmoMes } from '../../../lib/finanzas/diario';
-import { mesLargo } from '../../../lib/finanzas/format';
+import { sumarMeses } from '../../../lib/finanzas/calc';
+import { gastosAlContado, gastosDelMes, parseMonto, ritmoMes, totalGastos, type GastoDiario } from '../../../lib/finanzas/diario';
+import { fmtArs, mesLargo } from '../../../lib/finanzas/format';
 import { hoyISO, useStore } from '../store';
-import { useOculto } from './Oculto';
+import { Ic } from './Ic';
 
 const formatear = (txt: string) => {
   const d = txt.replace(/\D/g, '');
@@ -11,9 +12,17 @@ const formatear = (txt: string) => {
 
 const FRASE = { pos: 'Vas bien', warn: 'Vas rápido', neg: 'Te pasaste' } as const;
 
-/** "¿Cómo voy?": gasto real del mes de hoy contra un tope (el libre del plan, o uno que ponés a mano). */
+/** Mes cerrado dentro del tope que vos pusiste (tope manual). null si no había tope o no hay datos. */
+export function cerroDentroDelTope(gastos: GastoDiario[], topes: Record<string, number>, mes: string): boolean | null {
+  const t = topes[mes];
+  if (!t) return null;
+  const del = gastosDelMes(gastos, mes);
+  if (!del.length) return null;
+  return totalGastos(gastosAlContado(del)) <= t;
+}
+
+/** Gasto real del mes en curso contra un tope (el libre del plan, o uno que ponés a mano). */
 export function ComoVoy({ librePlan }: { librePlan: number | null }) {
-  const { ars } = useOculto();
   const { gastos, topes, setTope } = useStore();
   const hoy = hoyISO();
   const mes = hoy.slice(0, 7);
@@ -22,53 +31,60 @@ export function ComoVoy({ librePlan }: { librePlan: number | null }) {
   const r = ritmoMes(gastos, tope, hoy);
   const [edit, setEdit] = useState(false);
   const [txt, setTxt] = useState('');
+  const anterior = sumarMeses(mes, -1);
+  const cerro = cerroDentroDelTope(gastos, topes, anterior);
 
   const guardar = () => { const n = parseMonto(txt); setTope(mes, n > 0 ? n : null); setEdit(false); };
   const abrir = () => { setTxt(manual ? formatear(String(manual)) : ''); setEdit(true); };
 
   return (
-    <section className={`card cv cv-${r.nivel}`}>
-      <div className="cv-h">
-        <span className="eyebrow-d">Mes en curso · {mesLargo(mes)} · día {r.dia} de {r.diasMes}</span>
-        {r.tope && <span className={`tag t-${r.nivel === 'pos' ? 'pos' : r.nivel === 'warn' ? 'warn' : 'neg'}`}>{FRASE[r.nivel]}</span>}
+    <section className={`bloque cv cv-${r.nivel}`} aria-label="Gasto del mes">
+      <div className="bloque-h">
+        <h2>Gasto de {mesLargo(mes).split(' ')[0]}</h2>
+        <span className="mu t12">mes en curso · día {r.dia} de {r.diasMes}</span>
       </div>
 
       {r.tope ? (
         <>
-          <b className="cv-n num">{r.quedan! >= 0 ? ars(r.quedan!) : ars(-r.quedan!)}</b>
-          <span className="cv-l">{r.quedan! >= 0 ? `te quedan de ${ars(r.tope)}` : `de más sobre ${ars(r.tope)}`}</span>
-          <div className="cv-bar" role="progressbar" aria-valuenow={Math.round(Math.min(1, r.gastado / r.tope) * 100)} aria-valuemin={0} aria-valuemax={100}>
+          <div className="cv-fila">
+            <span><b className="cv-n num">{fmtArs(r.gastado)}</b> <span className="mu">al contado de {fmtArs(r.tope)}</span></span>
+            <span className={`estado e-${r.nivel}`}>{FRASE[r.nivel]}</span>
+          </div>
+          <div className="regla cv-bar" role="progressbar" aria-label="Gastado sobre el tope" aria-valuenow={Math.round(Math.min(1, r.gastado / r.tope) * 100)} aria-valuemin={0} aria-valuemax={100}>
             <i className={r.nivel} style={{ width: `${Math.min(100, (r.gastado / r.tope) * 100)}%` }} />
-            <em style={{ left: `${(r.ideal! / r.tope) * 100}%` }} title="Dónde deberías ir hoy" />
+            <em className="ideal" style={{ left: `${(r.ideal! / r.tope) * 100}%` }} title="Dónde deberías ir hoy" />
           </div>
           <div className="cv-f">
-            <span>Gastaste al contado <b className="num">{ars(r.gastado)}</b></span>
-            <span>{r.porDia! > 0 ? <>≈ <b className="num">{ars(r.porDia!)}</b> por día</> : 'sin margen'}</span>
+            <span>{r.quedan! >= 0 ? <>Quedan <b className="num">{fmtArs(r.quedan!)}</b></> : <>Te pasaste <b className="num">{fmtArs(-r.quedan!)}</b></>}</span>
+            <span>{r.porDia! > 0 ? <><b className="num">{fmtArs(r.porDia!)}</b> por día</> : 'sin margen'}</span>
           </div>
         </>
       ) : (
         <>
-          <b className="cv-n num">{ars(r.gastado)}</b>
-          <span className="cv-l">gastado este mes · ≈ {ars(r.promedioDia)} por día</span>
-          {r.gastado > 0 && <p className="cv-proy">A este ritmo cerrás {mesLargo(mes).split(' ')[0]} en <b className="num">{ars(r.proyeccion)}</b>.</p>}
+          <div className="cv-fila"><span><b className="cv-n num">{fmtArs(r.gastado)}</b> <span className="mu">al contado</span></span></div>
+          <p className="cv-f"><span>≈ <b className="num">{fmtArs(r.promedioDia)}</b> por día{r.gastado > 0 ? <> · a este ritmo cerrás en <b className="num">{fmtArs(r.proyeccion)}</b></> : null}</span></p>
         </>
       )}
 
       <div className="cv-pie">
-        <span>Hoy al contado: <b className="num">{ars(r.hoy)}</b></span>
-        {!edit && <button className="link" onClick={abrir}>{manual ? 'Cambiar tope' : r.tope ? 'Poner otro tope' : 'Poner un tope'}</button>}
+        <span>Hoy al contado: <b className="num">{fmtArs(r.hoy)}</b></span>
+        {!edit && <button className="b-txt" onClick={abrir}>{manual ? 'Cambiar tope' : r.tope ? 'Poner otro tope' : 'Poner un tope'}</button>}
       </div>
 
       {edit && (
         <div className="cv-edit">
-          <span>$</span>
-          <input autoFocus inputMode="numeric" placeholder={`Tope para ${mesLargo(mes).split(' ')[0]}`} value={txt}
-            onChange={e => setTxt(formatear(e.target.value))} onKeyDown={e => { if (e.key === 'Enter') guardar(); }} />
-          <button className="btn-add" onClick={guardar}>Guardar</button>
-          <button className="link" onClick={() => setEdit(false)}>Cancelar</button>
+          <label className="money"><span>$</span>
+            <input autoFocus inputMode="numeric" aria-label={`Tope para ${mesLargo(mes)}`} placeholder={`Tope para ${mesLargo(mes).split(' ')[0]}`} value={txt}
+              onChange={e => setTxt(formatear(e.target.value))} onKeyDown={e => { if (e.key === 'Enter') guardar(); }} />
+          </label>
+          <button className="b-pri" onClick={guardar}>Guardar</button>
+          <button className="b-txt" onClick={() => setEdit(false)}>Cancelar</button>
         </div>
       )}
-      {edit && manual && <button className="link neg" onClick={() => { setTope(mes, null); setEdit(false); }}>Quitar tope manual</button>}
+      {edit && manual && <button className="b-txt neg" onClick={() => { setTope(mes, null); setEdit(false); }}>Quitar tope manual</button>}
+      {cerro === true && (
+        <p className="marca"><Ic n="circle-check" size="s" /> {mesLargo(anterior).split(' ')[0][0].toUpperCase() + mesLargo(anterior).split(' ')[0].slice(1)} cerró dentro del tope que pusiste ({fmtArs(topes[anterior])}).</p>
+      )}
     </section>
   );
 }

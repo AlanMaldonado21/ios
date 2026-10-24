@@ -23,9 +23,9 @@ export function MonthStrip({ meses, sel, onSel, hoy, meta, checks }: { meses: Me
               <span className="mp-y">{String(y).slice(2)}</span>
               <span className="mp-bar"><i style={{ height: `${Math.max(6, Math.min(1, m.usdAcumulados / meta) * 100)}%` }} /></span>
               <span className="mp-p num">{Math.round((m.usdAcumulados / meta) * 100)}%</span>
-              {!!checks[m.mes] && <span className="mp-done" aria-label="Ahorro cumplido">✓</span>}
+              {!!checks[m.mes] && <span className="mp-done" aria-label="Ahorro separado"><svg className="ic s" viewBox="0 0 24 24" aria-hidden><path d="M20 6 9 17l-5-5" /></svg></span>}
               <span className="mp-tags">
-                {m.esMesMeta && <em title="Mes de la meta">🎯</em>}
+                {m.esMesMeta && <em className="dot meta" title="Mes de la meta" />}
                 {m.aguinaldo > 0 && <em className="dot ag" title="Aguinaldo" />}
                 {m.mes === hoy && <em className="dot hoy" title="Mes actual" />}
               </span>

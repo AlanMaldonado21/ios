@@ -1,39 +1,44 @@
 import { Suspense, useEffect, useState, type ReactNode } from 'react';
 import { Inicio } from './screens/Inicio';
-const Mes = lazyConRecarga(() => import('./screens/Mes').then(m => ({ default: m.Mes })));
-const Diario = lazyConRecarga(() => import('./screens/Diario').then(m => ({ default: m.Diario })));
 import { Ingresos } from './screens/Ingresos';
-const Plan = lazyConRecarga(() => import('./screens/Plan').then(m => ({ default: m.Plan })));
-const Cuotas = lazyConRecarga(() => import('./screens/Cuotas').then(m => ({ default: m.Cuotas })));
 import { Fijos } from './screens/Fijos';
 import { Mas } from './screens/Mas';
 import { Config } from './screens/Config';
 import { ErrorBoundary, lazyConRecarga } from './components/Recuperar';
 import { QuickAdd } from './components/QuickAdd';
-import { Guardado, StoreProvider } from './store';
+import { Ic, type IcNombre } from './components/Ic';
+import { Pulso } from './components/Pulso';
+import { textoSync, useSync } from './components/CuentaSync';
+import { CopiaResumen, Guardado, StoreProvider, useStore } from './store';
+import { setMascara } from '../../lib/finanzas/format';
+
+const Mes = lazyConRecarga(() => import('./screens/Mes').then(m => ({ default: m.Mes })));
+const Diario = lazyConRecarga(() => import('./screens/Diario').then(m => ({ default: m.Diario })));
+const Plan = lazyConRecarga(() => import('./screens/Plan').then(m => ({ default: m.Plan })));
+const Cuotas = lazyConRecarga(() => import('./screens/Cuotas').then(m => ({ default: m.Cuotas })));
 
 export type Ruta = 'inicio' | 'mas' | 'mes' | 'diario' | 'plan' | 'ingresos' | 'cuotas' | 'gastos' | 'config';
 
-const NAV: { r: Ruta; ico: string; label: string }[] = [
-  { r: 'inicio', ico: '📊', label: 'Inicio' },
-  { r: 'diario', ico: '🧾', label: 'Diario' },
-  { r: 'plan', ico: '🗓️', label: 'Plan' },
-  { r: 'ingresos', ico: '💵', label: 'Ingresos' },
-  { r: 'cuotas', ico: '💳', label: 'Cuotas' },
-  { r: 'gastos', ico: '🏠', label: 'Fijos' },
+type Item = { r: Ruta; ico: IcNombre; label: string };
+/** Rail de escritorio: todas las pantallas. */
+const NAV: Item[] = [
+  { r: 'inicio', ico: 'house', label: 'Inicio' },
+  { r: 'diario', ico: 'notebook-pen', label: 'Diario' },
+  { r: 'plan', ico: 'calendar-range', label: 'Plan' },
+  { r: 'mes', ico: 'calendar-days', label: 'Detalle del mes' },
+  { r: 'ingresos', ico: 'landmark', label: 'Ingresos' },
+  { r: 'cuotas', ico: 'credit-card', label: 'Cuotas' },
+  { r: 'gastos', ico: 'receipt', label: 'Gastos fijos' },
 ];
-
-const TABS: { r: Ruta; ico: string; label: string }[] = [
-  { r: 'inicio', ico: '📊', label: 'Inicio' },
-  { r: 'diario', ico: '🧾', label: 'Diario' },
-  { r: 'plan', ico: '🗓️', label: 'Plan' },
-  { r: 'mas', ico: '☰', label: 'Más' },
-];
+/** Tab bar del celu: 2 + Cargar + 2. */
+const TABS_A: Item[] = [{ r: 'inicio', ico: 'house', label: 'Inicio' }, { r: 'diario', ico: 'notebook-pen', label: 'Diario' }];
+const TABS_B: Item[] = [{ r: 'plan', ico: 'calendar-range', label: 'Plan' }, { r: 'mas', ico: 'ellipsis', label: 'Más' }];
 /** Qué solapa del celu se ilumina para cada ruta. */
 const tabDe = (r: Ruta): Ruta => (['mes', 'ingresos', 'cuotas', 'gastos', 'config'].includes(r) ? 'mas' : r);
 
+const RUTAS: Ruta[] = ['inicio', 'mas', 'mes', 'diario', 'plan', 'ingresos', 'cuotas', 'gastos', 'config'];
 function useRuta(): Ruta {
-  const leer = () => (location.hash.replace(/^#\/?/, '') || 'inicio') as Ruta;
+  const leer = () => { const r = location.hash.replace(/^#\/?/, '') as Ruta; return RUTAS.includes(r) ? r : 'inicio'; };
   const [r, setR] = useState<Ruta>(leer);
   useEffect(() => {
     const f = () => { setR(leer()); window.scrollTo(0, 0); };
@@ -43,12 +48,44 @@ function useRuta(): Ruta {
   return r;
 }
 
+/** Ojito: oculta todos los montos en las dos apps. Se acuerda en este dispositivo. */
+function usePrivado() {
+  const [p, setP] = useState(() => window.Comun?.privado() ?? false);
+  setMascara(p);
+  useEffect(() => { window.Comun?.onPrivado(setP); }, []);
+  return [p, (v: boolean) => { window.Comun?.setPrivado(v); setP(v); }] as const;
+}
+
+function Ojo({ p, set }: { p: boolean; set: (v: boolean) => void }) {
+  return (
+    <button className="icon-btn" onClick={() => set(!p)} aria-pressed={p} aria-label={p ? 'Mostrar montos' : 'Ocultar montos'} title={p ? 'Mostrar montos' : 'Ocultar montos'}>
+      <Ic n={p ? 'eye-off' : 'eye'} />
+    </button>
+  );
+}
+
+function EstadoSync() {
+  const i = useSync();
+  if (!i || !i.enabled) return null;
+  const e = textoSync(i);
+  return (
+    <a className="icon-btn" href="#/config" aria-label={`Sincronización: ${e.t}`} title={e.t}>
+      <span className={`sync-dot ${e.nivel}`} aria-hidden />
+    </a>
+  );
+}
+
+function Cargar({ className, children }: { className: string; children: ReactNode }) {
+  const { setSheetGasto } = useStore();
+  return <button className={className} onClick={() => setSheetGasto(true)} aria-label="Cargar gasto">{children}</button>;
+}
+
 export function App() {
   const ruta = useRuta();
+  const [privado, setPrivado] = usePrivado();
   const tabActiva = tabDe(ruta);
   let vista: ReactNode;
   switch (ruta) {
-    case 'inicio': vista = <Inicio />; break;
     case 'mes': vista = <Mes />; break;
     case 'diario': vista = <Diario />; break;
     case 'ingresos': vista = <Ingresos />; break;
@@ -59,29 +96,56 @@ export function App() {
     case 'config': vista = <Config />; break;
     default: vista = <Inicio />;
   }
+  const cur = (r: Ruta, activa: Ruta) => (r === activa ? 'page' as const : undefined);
   return (
     <StoreProvider>
-    <div className="shell">
+      <CopiaResumen />
       <Guardado />
-      {ruta !== 'config' && <QuickAdd />}
-      <aside className="side">
-        <a className="side-back" href="../">‹ Hábitos</a>
-        <div className="side-brand"><span>💰</span>Finanzas</div>
-        <nav>
-          {NAV.map(n => <a key={n.r} href={`#/${n.r}`} className={ruta === n.r ? 'on' : ''}><span>{n.ico}</span>{n.label}</a>)}
-          <a href="#/mes" className={ruta === 'mes' ? 'on' : ''}><span>📅</span>Detalle del mes</a>
-          <a href="#/config" className={ruta === 'config' ? 'on' : ''}><span>⚙️</span>Configuración</a>
+      <QuickAdd />
+
+      <header className="app-top">
+        <div className="app-top-in">
+          <nav className="modsw" aria-label="Cambiar de módulo">
+            <a href="../"><Ic n="list-checks" size="s" />Hábitos</a>
+            <a href="#/inicio" aria-current="page"><Ic n="wallet" size="s" />Finanzas</a>
+          </nav>
+          <EstadoSync />
+          <Ojo p={privado} set={setPrivado} />
+          <a className="icon-btn" href="#/config" aria-label="Configuración" aria-current={cur('config', ruta)}><Ic n="settings" /></a>
+        </div>
+      </header>
+
+      <aside className="rail" aria-label="Navegación">
+        <nav className="modsw" aria-label="Cambiar de módulo">
+          <a href="../">Hábitos</a>
+          <a href="#/inicio" aria-current="page">Finanzas</a>
         </nav>
+        <nav aria-label="Finanzas">
+          <Cargar className="rail-cargar"><Ic n="plus" />Cargar gasto</Cargar>
+          {NAV.map(n => <a key={n.r} href={`#/${n.r}`} aria-current={cur(n.r, ruta)}><Ic n={n.ico} />{n.label}</a>)}
+        </nav>
+        <Pulso key={`p-${privado}`} />
+        <div className="rail-pie">
+          <Ojo p={privado} set={setPrivado} />
+          <a className="icon-btn" href="#/config" aria-label="Configuración" aria-current={cur('config', ruta)}><Ic n="settings" /></a>
+          <EstadoSync />
+        </div>
       </aside>
-      <div className="topbar">
-        <a href="../" className="chip">‹ Hábitos</a>
-        <a href="#/config" className={`chip ico ${ruta === 'config' ? 'on' : ''}`} aria-label="Configuración">⚙️</a>
+
+      <div className="con-rail con-tabbar">
+        <div className="solo-mobile"><Pulso key={`m-${privado}`} /></div>
+        <main className="content" key={`${ruta}-${privado}`}>
+          <ErrorBoundary clave={ruta}><Suspense fallback={<div className="cargando" aria-busy="true" />}>{vista}</Suspense></ErrorBoundary>
+        </main>
       </div>
-      <main className="content" key={ruta}><ErrorBoundary clave={ruta}><Suspense fallback={<div className="cargando" aria-busy="true" />}>{vista}</Suspense></ErrorBoundary></main>
-      <nav className="tabs"><div className="tabs-in">
-        {TABS.map(n => <a key={n.r} href={`#/${n.r}`} className={tabActiva === n.r ? 'on' : ''}><span>{n.ico}</span>{n.label}</a>)}
-      </div></nav>
-    </div>
+
+      <nav className="tabbar" aria-label="Finanzas">
+        <div className="tabbar-in">
+          {TABS_A.map(n => <a key={n.r} href={`#/${n.r}`} aria-current={cur(n.r, tabActiva)}><Ic n={n.ico} />{n.label}</a>)}
+          <Cargar className="tab-cargar"><span className="pill"><Ic n="plus" /></span><small>Cargar</small></Cargar>
+          {TABS_B.map(n => <a key={n.r} href={`#/${n.r}`} aria-current={cur(n.r, tabActiva)}><Ic n={n.ico} />{n.label}</a>)}
+        </div>
+      </nav>
     </StoreProvider>
   );
 }

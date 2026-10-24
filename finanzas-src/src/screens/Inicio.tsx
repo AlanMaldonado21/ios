@@ -1,65 +1,60 @@
-import { ahorroReal } from '../../../lib/finanzas/diario';
-import { mesLargo } from '../../../lib/finanzas/format';
+import { mesLargo, fmtArs } from '../../../lib/finanzas/format';
 import { HabitosHoy } from '../components/HabitosHoy';
 import { ComoVoy } from '../components/ComoVoy';
-import { OcultoProvider, useOculto } from '../components/Oculto';
 import { PagosMes } from '../components/PagosMes';
-import { icoTipo } from '../components/QuickAdd';
-import { hoyMes, usePlan, useStore } from '../store';
+import { IcTipo } from '../components/QuickAdd';
+import { MetaAhorro } from '../components/MetaAhorro';
+import { ResumenSemana } from '../components/ResumenSemana';
+import { MedioTag } from '../components/MedioTag';
+import { hoyMes, useAhorroReal, usePlan, useStore } from '../store';
 
 const diaCorto = (iso: string) => { const [, m, d] = iso.split('-'); return `${Number(d)}/${Number(m)}`; };
 
-/** Pantalla de todos los días: cómo voy este mes, lo último que cargué y cómo viene el ahorro. */
+/** Pantalla de todos los días. Una cifra protagonista: lo ahorrado de verdad. El resto, debajo y más chico. */
 export function Inicio() {
-  return <OcultoProvider><Pantalla /></OcultoProvider>;
-}
-
-/** Pantalla de todos los días: cómo voy este mes, lo último que cargué y cómo viene el ahorro. */
-function Pantalla() {
-  const { ars, usd } = useOculto();
-  const { gastos, checks, setMesSel } = useStore();
-  const { data, meses, resumen } = usePlan();
+  const { gastos, checks, setMesSel, editarGasto } = useStore();
+  const { data, meses } = usePlan();
+  const { real, meta } = useAhorroReal();
   const mes = hoyMes();
   const planMes = meses.find(m => m.mes === mes);
   const recientes = [...gastos].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 4);
-  const real = ahorroReal(resumen.ahorroActualUsd, meses, checks).real;
-  const meta = data.settings.metaUsd;
   const proximo = meses.find(m => !checks[m.mes]);
-  // Detalle del mes abre siempre en el mes en curso (o el primero del plan si todavía no arrancó).
-  const verMes = () => { setMesSel(null); };
 
   return (
     <div className="dash">
-      <header className="ph ph-sm"><div><h1>Inicio</h1></div></header>
+      <h1 className="vh">Inicio</h1>
+      <MetaAhorro real={real} meta={meta} fecha={mesLargo(data.settings.fechaMeta)} />
+      {proximo && meta > 0 && (
+        <a className="renglon-link" href="#/mes" onClick={() => setMesSel(null)}>
+          <span>{proximo.mes > mes ? 'Próximo mes del plan' : 'Pendiente'}: separar <b className="num">{fmtArs(proximo.ahorroPesos)}</b> en {mesLargo(proximo.mes)}</span>
+          <span className="mu">Detalle →</span>
+        </a>
+      )}
+
+      <ResumenSemana />
       <ComoVoy librePlan={planMes?.libre ?? null} />
       <HabitosHoy />
+
+      <section className="bloque">
+        <div className="bloque-h"><h2>Últimos gastos</h2><a className="b-txt" href="#/diario">Ver todos</a></div>
+        {recientes.length === 0
+          ? <p className="mu vacio">Todavía no cargaste nada. Tocá Cargar y anotá el primero.</p>
+          : (
+            <ul className="lista">
+              {recientes.map(g => (
+                <li key={g.id}>
+                  <button className="gd-main" onClick={() => editarGasto(g)} aria-label={`Editar ${g.tipo}`}>
+                    <IcTipo t={g.tipo} />
+                    <span className="gd-t"><b>{g.tipo}</b><span><MedioTag medio={g.medio} /> <span className="mu">{diaCorto(g.fecha)}</span></span></span>
+                    <b className="gd-v num">{fmtArs(g.monto)}</b>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+      </section>
+
       <PagosMes />
-
-      <h3 className="sec first">Últimos gastos</h3>
-      {recientes.length === 0
-        ? <div className="card empty" style={{ padding: '22px 12px' }}>Todavía no cargaste nada. Tocá <b>+</b> y anotá el primero.</div>
-        : (
-          <section className="card pad0">
-            {recientes.map(g => (
-              <div key={g.id} className="gd">
-                <span className="gd-i">{icoTipo(g.tipo)}</span>
-                <div className="gd-t"><b>{g.tipo}</b><span className={`medio-tag m-${g.medio}`}>{g.medio === 'credito' ? 'crédito' : g.medio === 'debito' ? 'débito' : 'transferencia'} · {diaCorto(g.fecha)}</span></div>
-                <b className="gd-v num">{ars(g.monto)}</b>
-              </div>
-            ))}
-            <a className="ed-add" href="#/diario">Ver todos →</a>
-          </section>
-        )}
-
-      <h3 className="sec">Ahorro</h3>
-      <a className="card ah-mini" href="#/mes" onClick={verMes}>
-        <div>
-          <span className="eyebrow-d">Ahorrado de verdad</span>
-          <b className="ah-n num">{usd(real, 0)} <small>de {usd(meta, 0)}</small></b>
-        </div>
-        <div className="pbar"><i style={{ width: `${Math.min(100, (real / meta) * 100)}%` }} /></div>
-        <span className="hint">{proximo ? <>{proximo.mes > mes ? 'Próximo mes del plan' : 'Pendiente'}: separar {usd(proximo.ahorroUsd, 0)} en {mesLargo(proximo.mes)}</> : 'Todos los meses separados'} · ver detalle →</span>
-      </a>
     </div>
   );
 }

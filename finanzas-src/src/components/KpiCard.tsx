@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
 import { CountUp } from './CountUp';
 import { Sparkline } from './Sparkline';
+import { Ic, type IcNombre } from './Ic';
 
 type Props = {
-  label: string; ico: string; value: number; format: (n: number) => string; sub?: ReactNode;
+  label: string; ico: IcNombre; value: number; format: (n: number) => string; sub?: ReactNode;
   prev?: number | null; serie: number[]; activo: number; tono?: 'acc' | 'pos' | 'warn' | 'neg' | 'c4'; invertir?: boolean;
 };
 
@@ -22,7 +23,7 @@ export function KpiCard({ label, ico, value, format, sub, prev, serie, activo, t
   }
   return (
     <div className={`kpi t-${tono}`}>
-      <div className="kpi-h"><span className="kpi-i">{ico}</span><span className="kpi-l">{label}</span></div>
+      <div className="kpi-h"><span className="kpi-i"><Ic n={ico} size="s" /></span><span className="kpi-l">{label}</span></div>
       <b className="kpi-v"><CountUp value={value} format={format} ms={650} /></b>
       <div className="kpi-f">{delta}{sub && <span className="kpi-s">{sub}</span>}</div>
       <Sparkline data={serie} color={`var(--${tono})`} activo={activo} />

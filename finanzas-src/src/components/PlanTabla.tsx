@@ -16,7 +16,7 @@ export function PlanTabla({ meses, abrir }: { meses: MesCalc[]; abrir: (m: strin
       {meses.map(m => (
         <div key={m.mes} className={`pt-row ${m.hastaMeta ? '' : 'post'} ${m.libre < 0 ? 'neg' : ''}`}>
           <div className="pt-h">
-            <button className="pt-m" onClick={() => abrir(m.mes)}>{cap(mesLargo(m.mes))}{m.esMesMeta ? ' 🎯' : ''}{m.aguinaldo ? <span className="tag t-pos">aguinaldo</span> : null}</button>
+            <button className="pt-m" onClick={() => abrir(m.mes)}>{cap(mesLargo(m.mes))}{m.esMesMeta ? <span className="tag">meta</span> : null}{m.aguinaldo ? <span className="tag t-pos">aguinaldo</span> : null}</button>
             <b className="pt-usd num">{fmtUsd(m.ahorroUsd, 0)}</b>
           </div>
           <div className="pt-s">

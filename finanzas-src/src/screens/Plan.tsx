@@ -55,14 +55,16 @@ export function Plan() {
         <p className="hero-leg"><i className="lg-real" />ahorrado <i className="lg-proy" />proyección (todavía no es plata separada)</p>
       </section>
 
-      <h3 className="sec">Tocá un mes para abrirlo</h3>
+      <h2 className="sec">Meses · tocá uno para abrirlo</h2>
       <MonthStrip meses={meses} sel={sel} onSel={abrir} hoy={hoy} meta={s.metaUsd} checks={checks} />
 
-      <h3 className="sec">Mes a mes</h3>
-      <p className="ed-help" style={{ padding: '0 4px 10px' }}>Mové el % de ahorro de cada mes. "auto" usa el {fmtPct(r.pctNecesario)} que necesitás para llegar justo.</p>
-      <PlanTabla meses={meses} abrir={abrir} />
+      <details className="bloque plegado">
+        <summary><h2>Mes a mes</h2><span className="mu t12">% de ahorro de cada mes</span></summary>
+        <p className="mu t12">Mové el % de ahorro de cada mes. "auto" usa el {fmtPct(r.pctNecesario)} que necesitás para llegar justo.</p>
+        <PlanTabla meses={meses} abrir={abrir} />
+      </details>
 
-      <h3 className="sec">Gráficos</h3>
+      <h2 className="sec">Gráficos</h2>
       <div className="grid-plan">
         <section className="card span2">
           <div className="ch"><h2>Dólares acumulados</h2><span className="hint">Línea punteada: meta</span></div>

@@ -27,7 +27,7 @@ function alternar(id: string, k: string) {
   } catch { /* sin storage */ }
 }
 
-/** Resumen de los hábitos de hoy. Tocarlo abre la app de hábitos (marcar se hace allá). */
+/** Franja chica con los hábitos de hoy; se pueden marcar acá mismo. */
 export function HabitosHoy() {
   const [, redibujar] = useState(0);
   const d = leer();
@@ -38,20 +38,19 @@ export function HabitosHoy() {
   if (deHoy.length === 0) return null;
   const hechos = deHoy.filter(h => (d.log[k] || []).includes(h.id));
   const faltan = deHoy.filter(h => !hechos.includes(h));
-  const tocar = (id: string) => { alternar(id, k); if (navigator.vibrate) navigator.vibrate(20); redibujar(n => n + 1); };
+  const tocar = (id: string) => { alternar(id, k); window.Comun?.haptic(10); redibujar(n => n + 1); };
   return (
-    <section className="card hh">
-      <div className="hh-h">
-        <span className="eyebrow-d">Hábitos de hoy</span>
-        <b className={`num ${faltan.length === 0 ? 'ok' : ''}`}>{hechos.length}/{deHoy.length}{faltan.length === 0 ? ' ✓' : ''}</b>
-      </div>
+    <section className="franja" aria-label="Hábitos de hoy">
+      <a className="franja-h" href="../"><span className="rotulo">Hábitos de hoy</span><b className="num">{hechos.length} de {deHoy.length}</b></a>
       <div className="hh-l">
         {deHoy.map(h => (
           <button key={h.id} className={hechos.includes(h) ? 'ok' : ''} aria-pressed={hechos.includes(h)} onClick={() => tocar(h.id)}>
-            <i>{h.emoji}</i>{h.name.split(' (')[0]}
+            <span className="hh-c" aria-hidden>{hechos.includes(h) ? <svg className="ic s tilde-anim" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg> : null}</span>
+            <i aria-hidden>{h.emoji}</i>{h.name.split(' (')[0]}
           </button>
         ))}
       </div>
+      {faltan.length === 0 && <p className="mu t12" style={{ margin: '6px 0 0' }}>{deHoy.length} de {deHoy.length}. Día completo.</p>}
     </section>
   );
 }
