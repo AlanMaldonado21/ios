@@ -1,13 +1,14 @@
-import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
+import { Suspense, useEffect, useState, type ReactNode } from 'react';
 import { Inicio } from './screens/Inicio';
-const Mes = lazy(() => import('./screens/Mes').then(m => ({ default: m.Mes })));
-const Diario = lazy(() => import('./screens/Diario').then(m => ({ default: m.Diario })));
+const Mes = lazyConRecarga(() => import('./screens/Mes').then(m => ({ default: m.Mes })));
+const Diario = lazyConRecarga(() => import('./screens/Diario').then(m => ({ default: m.Diario })));
 import { Ingresos } from './screens/Ingresos';
-const Plan = lazy(() => import('./screens/Plan').then(m => ({ default: m.Plan })));
-const Cuotas = lazy(() => import('./screens/Cuotas').then(m => ({ default: m.Cuotas })));
+const Plan = lazyConRecarga(() => import('./screens/Plan').then(m => ({ default: m.Plan })));
+const Cuotas = lazyConRecarga(() => import('./screens/Cuotas').then(m => ({ default: m.Cuotas })));
 import { Fijos } from './screens/Fijos';
 import { Mas } from './screens/Mas';
 import { Config } from './screens/Config';
+import { ErrorBoundary, lazyConRecarga } from './components/Recuperar';
 import { QuickAdd } from './components/QuickAdd';
 import { Guardado, StoreProvider } from './store';
 
@@ -29,7 +30,7 @@ const TABS: { r: Ruta; ico: string; label: string }[] = [
   { r: 'mas', ico: '☰', label: 'Más' },
 ];
 /** Qué solapa del celu se ilumina para cada ruta. */
-const tabDe = (r: Ruta): Ruta => (r === 'mes' ? 'plan' : ['ingresos', 'cuotas', 'gastos', 'config'].includes(r) ? 'mas' : r);
+const tabDe = (r: Ruta): Ruta => (['mes', 'ingresos', 'cuotas', 'gastos', 'config'].includes(r) ? 'mas' : r);
 
 function useRuta(): Ruta {
   const leer = () => (location.hash.replace(/^#\/?/, '') || 'inicio') as Ruta;
@@ -76,7 +77,7 @@ export function App() {
         <a href="../" className="chip">‹ Hábitos</a>
         <a href="#/config" className={`chip ico ${ruta === 'config' ? 'on' : ''}`} aria-label="Configuración">⚙️</a>
       </div>
-      <main className="content" key={ruta}><Suspense fallback={<div className="cargando" aria-busy="true" />}>{vista}</Suspense></main>
+      <main className="content" key={ruta}><ErrorBoundary clave={ruta}><Suspense fallback={<div className="cargando" aria-busy="true" />}>{vista}</Suspense></ErrorBoundary></main>
       <nav className="tabs"><div className="tabs-in">
         {TABS.map(n => <a key={n.r} href={`#/${n.r}`} className={tabActiva === n.r ? 'on' : ''}><span>{n.ico}</span>{n.label}</a>)}
       </div></nav>
