@@ -128,7 +128,7 @@ export function DonaChart({ partes, centro, label }: { partes: { name: string; v
     <div className="dona-g" aria-hidden="true">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart accessibilityLayer={false}>
-          <Pie data={visibles} dataKey="value" innerRadius="72%" outerRadius="100%" paddingAngle={2.5} cornerRadius={5} stroke="none"
+          <Pie rootTabIndex={-1} data={visibles} dataKey="value" innerRadius="72%" outerRadius="100%" paddingAngle={2.5} cornerRadius={5} stroke="none"
             startAngle={90} endAngle={-270} animationDuration={700} isAnimationActive>
             {visibles.map(p => <Cell key={p.name} fill={p.color} />)}
           </Pie>

@@ -499,7 +499,7 @@ function toggle(hid, k, fromSheet) {
   // celebración solo en hitos: semana buena o un hito nuevo
   const nuevos = Comun.hitos(S).logrados.filter(x => !antes.includes(x.id));
   const sem = Comun.semana(S, Comun.lunes(parse(k)));
-  if (sem.estado === 'buena' && semAntes !== 'buena') sello('Semana buena', Comun.fraseSemana(sem), `${Comun.rachaSemanas(S).actual} seguidas.`);
+  if (sem.estado === 'buena' && semAntes !== 'buena') { const n = Comun.rachaSemanas(S).actual; sello('Semana buena', Comun.fraseSemana(sem), n === 1 ? 'Primera de la racha.' : `${n} seguidas.`); }
   else if (nuevos.length) sello('Hito', nuevos[0].titulo + '.', nuevos.length > 1 ? `Y ${nuevos.length - 1} más.` : '');
 }
 let selloT;
