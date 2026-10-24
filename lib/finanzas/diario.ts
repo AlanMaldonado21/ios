@@ -3,10 +3,11 @@ import type { Cuota, Mes } from './types';
 import { sumarMeses } from './calc';
 
 export type Medio = 'credito' | 'debito' | 'transferencia';
-export const MEDIOS: { id: Medio; label: string; ico: string }[] = [
-  { id: 'credito', label: 'Crédito', ico: '💳' },
-  { id: 'debito', label: 'Débito', ico: '🏧' },
-  { id: 'transferencia', label: 'Transferencia', ico: '🔁' },
+/** 'debito' = al contado (débito o efectivo): sale del bolsillo este mes. El id no cambia (datos guardados). ico = nombre Lucide. */
+export const MEDIOS: { id: Medio; label: string; ico: 'banknote' | 'credit-card' | 'arrow-left-right' }[] = [
+  { id: 'debito', label: 'Contado', ico: 'banknote' },
+  { id: 'credito', label: 'Crédito', ico: 'credit-card' },
+  { id: 'transferencia', label: 'Transferencia', ico: 'arrow-left-right' },
 ];
 
 export type Tarjeta = 'BNA Visa' | 'MercadoPago';

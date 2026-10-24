@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { cuotaDesdeGasto, type Checks, type GastoDiario } from '../../lib/finanzas/diario';
+import { ahorroReal, cuotaDesdeGasto, type Checks, type GastoDiario } from '../../lib/finanzas/diario';
 import { calcularPlan } from '../../lib/finanzas/calc';
 import { DATOS_INICIALES } from '../../lib/finanzas/seed';
 import type { FinData } from '../../lib/finanzas/types';
@@ -7,7 +7,8 @@ import type { FinData } from '../../lib/finanzas/types';
 // Los datos viven en este dispositivo (localStorage); si hay sesión, sync.js copia el documento a Supabase.
 const LS = 'finanzas-v1';
 
-type Estado = { data: FinData; checks: Checks; gastos: GastoDiario[]; topes: Record<string, number> };
+/** sinGasto: días marcados "hoy no gasté" (YYYY-MM-DD). Campo nuevo y opcional: los datos viejos siguen valiendo. */
+type Estado = { data: FinData; checks: Checks; gastos: GastoDiario[]; topes: Record<string, number>; sinGasto: string[] };
 
 const copiaSeed = (): FinData => JSON.parse(JSON.stringify(DATOS_INICIALES));
 
@@ -19,10 +20,10 @@ function cargar(): Estado {
       if (!s.data && Number(s.dolar)) data.settings.dolar = Number(s.dolar); // formato viejo
       // Corrección: el ahorro en pesos de la planilla era el mismo ahorro en USD pasado a pesos.
       if (!s.fixAhorro && data.settings.ahorroUsdActual === 1050 && data.settings.ahorroPesosActual === 1627500) data.settings.ahorroPesosActual = 0;
-      return { data, checks: s.checks || {}, gastos: Array.isArray(s.gastos) ? s.gastos : [], topes: s.topes && typeof s.topes === 'object' ? s.topes : {} };
+      return { data, checks: s.checks || {}, gastos: Array.isArray(s.gastos) ? s.gastos : [], topes: s.topes && typeof s.topes === 'object' ? s.topes : {}, sinGasto: Array.isArray(s.sinGasto) ? s.sinGasto : [] };
     }
   } catch { /* sin datos */ }
-  return { data: copiaSeed(), checks: {}, gastos: [], topes: {} };
+  return { data: copiaSeed(), checks: {}, gastos: [], topes: {}, sinGasto: [] };
 }
 
 type Ctx = Estado & {
@@ -39,6 +40,8 @@ type Ctx = Estado & {
   setTope: (mes: string, monto: number | null) => void;
   /** Cambia los datos del plan (ingresos, cuotas, etc.). Se guarda y recalcula al instante. */
   editar: (fn: (d: FinData) => void) => void;
+  /** Marca/desmarca "no gasté nada" en un día (cuenta como registrado). */
+  toggleSinGasto: (dia: string) => void;
   guardado: number;
   /** Mes abierto en Inicio (no se guarda). null = mes actual. */
   /** Hoja de carga rápida de gasto abierta (no se guarda). */
@@ -108,9 +111,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (monto && monto > 0) topes[mes] = monto; else delete topes[mes];
     return { ...s, topes };
   }), []);
+  const toggleSinGasto = useCallback((dia: string) => setSt(s => ({
+    ...s, sinGasto: s.sinGasto.includes(dia) ? s.sinGasto.filter(x => x !== dia) : [...s.sinGasto, dia].sort(),
+  })), []);
   const setDolar = useCallback((dolar: number) => editar(d => { d.settings.dolar = dolar; }), [editar]);
 
-  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, marcarCheck, desmarcarCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, sheetGasto, setSheetGasto, gastoEdit, editarGasto, guardarEdicion, mesSel, setMesSel }}>{children}</C.Provider>;
+  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, toggleSinGasto, marcarCheck, desmarcarCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, sheetGasto, setSheetGasto, gastoEdit, editarGasto, guardarEdicion, mesSel, setMesSel }}>{children}</C.Provider>;
 }
 
 export function useStore() {
@@ -129,7 +135,7 @@ export function Guardado() {
     const t = setTimeout(() => setShow(false), 1400);
     return () => clearTimeout(t);
   }, [guardado]);
-  return <div className={`saved ${show ? 'on' : ''}`} aria-live="polite">✓ Guardado</div>;
+  return <div className={`saved ${show ? 'on' : ''}`} aria-live="polite">Guardado</div>;
 }
 
 /** Datos del plan + compras con crédito del Diario convertidas en cuotas + el plan calculado. */
@@ -141,4 +147,20 @@ export function usePlan() {
   }), [base, gastos]);
   const plan = useMemo(() => calcularPlan(data), [data]);
   return { data, ...plan };
+}
+
+/** Ahorro real (lo que tenías + meses tachados). */
+export function useAhorroReal() {
+  const { checks } = useStore();
+  const { meses, resumen, data } = usePlan();
+  return { real: ahorroReal(resumen.ahorroActualUsd, meses, checks).real, meta: data.settings.metaUsd };
+}
+
+/** Copia de solo lectura del ahorro real para el indicador de Hábitos (que no tiene el cálculo del plan). */
+export function CopiaResumen() {
+  const { real, meta } = useAhorroReal();
+  useEffect(() => {
+    try { localStorage.setItem(window.Comun?.RES ?? 'finanzas-resumen-v1', JSON.stringify({ real, meta, ts: Date.now() })); } catch { /* sin storage */ }
+  }, [real, meta]);
+  return null;
 }

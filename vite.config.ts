@@ -17,6 +17,6 @@ export default defineConfig({
   },
   test: {
     root: __dirname,
-    include: ['lib/**/*.test.ts'],
+    include: ['lib/**/*.test.ts', 'ui/**/*.test.ts'],
   },
 } as any);
