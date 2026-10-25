@@ -21,7 +21,7 @@ export function ProgressRing({ pct, proy, size = 140, stroke = 12 }: { pct: numb
             strokeDasharray={c} strokeDashoffset={c * (1 - p2)} transform={`rotate(-90 ${c0} ${c0})`} />
         )}
         <circle className="ring-arc" cx={c0} cy={c0} r={r} fill="none" strokeWidth={stroke}
-          strokeLinecap="butt" strokeDasharray={c} strokeDashoffset={c * (1 - lleno)} transform={`rotate(-90 ${c0} ${c0})`} />
+          strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - lleno)} transform={`rotate(-90 ${c0} ${c0})`} />
       </svg>
       <div className="ring-in">
         <b className="num">{Math.round(n)}%</b>

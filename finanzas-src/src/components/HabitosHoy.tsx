@@ -38,13 +38,17 @@ export function HabitosHoy() {
   if (deHoy.length === 0) return null;
   const hechos = deHoy.filter(h => (d.log[k] || []).includes(h.id));
   const faltan = deHoy.filter(h => !hechos.includes(h));
-  const tocar = (id: string) => { alternar(id, k); window.Comun?.haptic(10); redibujar(n => n + 1); };
+  const tocar = (id: string, el: Element) => {
+    const marca = !(d.log[k] || []).includes(id);
+    alternar(id, k); window.Comun?.haptic(10); redibujar(n => n + 1);
+    if (marca) window.Comun?.chispas(el);
+  };
   return (
     <section className="franja" aria-label="Hábitos de hoy">
       <a className="franja-h" href="../"><span className="rotulo">Hábitos de hoy</span><b className="num">{hechos.length} de {deHoy.length}</b></a>
       <div className="hh-l">
         {deHoy.map(h => (
-          <button key={h.id} className={hechos.includes(h) ? 'ok' : ''} aria-pressed={hechos.includes(h)} onClick={() => tocar(h.id)}>
+          <button key={h.id} className={hechos.includes(h) ? 'ok' : ''} aria-pressed={hechos.includes(h)} onClick={e => tocar(h.id, e.currentTarget)}>
             <span className="hh-c" aria-hidden>{hechos.includes(h) ? <svg className="ic s tilde-anim" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg> : null}</span>
             <i aria-hidden>{h.emoji}</i>{h.name.split(' (')[0]}
           </button>

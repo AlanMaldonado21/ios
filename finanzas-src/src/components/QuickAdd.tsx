@@ -11,7 +11,9 @@ export const TIPOS: { t: string; i: IcNombre }[] = [
 ];
 /** Ícono de la categoría; un gasto con nombre propio (detalle de "Otros") lleva la etiqueta. */
 export const icoTipo = (t: string): IcNombre => TIPOS.find(x => x.t.toLowerCase() === t.toLowerCase())?.i ?? 'tag';
-export function IcTipo({ t }: { t: string }) { return <span className="gd-i"><Ic n={icoTipo(t)} /></span>; }
+/** Color de la categoría (ct-0 … ct-7); lo que no es una categoría conocida va como "Otros". */
+export const colorTipo = (t: string) => { const i = TIPOS.findIndex(x => x.t.toLowerCase() === t.toLowerCase()); return `ct-${i < 0 ? TIPOS.length - 1 : i}`; };
+export function IcTipo({ t }: { t: string }) { return <span className={`gd-i ${colorTipo(t)}`}><Ic n={icoTipo(t)} /></span>; }
 
 const LS_ULT = 'finanzas-ult';
 /** Una sola categoría para lo que no entra en las otras; se le puede escribir un detalle. */
@@ -124,7 +126,7 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
         <span className="add-l qa-l">Categoría{recordada ? <em> · la última que usaste</em> : null}</span>
         <div className="tipos" role="radiogroup" aria-label="Categoría">
           {TIPOS.map(x => (
-            <button key={x.t} role="radio" aria-checked={cat === x.t} className={cat === x.t ? 'on' : ''} onClick={() => setCat(x.t)}><Ic n={x.i} size="s" />{x.t}</button>
+            <button key={x.t} role="radio" aria-checked={cat === x.t} className={cat === x.t ? 'on' : ''} onClick={() => setCat(x.t)}><span className={`ti ${colorTipo(x.t)}`}><Ic n={x.i} size="s" /></span>{x.t}</button>
           ))}
         </div>
         {cat === OTROS && <input className="add-txt" placeholder="Detalle (opcional): farmacia, regalo…" aria-label="Detalle del gasto" value={detalle} onChange={e => setDetalle(e.target.value)} />}

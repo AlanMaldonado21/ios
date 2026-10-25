@@ -24,6 +24,7 @@ export function MetaAhorro({ real, meta, fecha, compacto }: { real: number; meta
   const prox = camino.find(v => real < v);
   return (
     <section className="meta" aria-label="Meta de ahorro">
+      <span className="meta-deco" aria-hidden>🐷</span>
       <span className="rotulo">Ahorrado de verdad{fecha ? ` · meta ${fecha}` : ''}</span>
       <div className="meta-n">
         <b className="cifra"><CountUp value={real} format={n => fmtUsd(n, 0)} /></b>

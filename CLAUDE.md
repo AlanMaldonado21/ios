@@ -9,11 +9,11 @@ Se publica con GitHub Pages desde `main` (raíz), sin paso de build en el servid
 - Colores de hábito: paleta tierra; los hex viejos guardados se muestran con su equivalente (`colorDe`), el dato no se toca.
 
 ## Base compartida (`ui/`, la cargan los dos módulos sin build)
-- `base.css`: tokens claro/oscuro (papel `#F2EDE4` / tinta `#1B1A17`, acento terracota, musgo = ok, ocre = advertencia), escala 12/14/16/20/28/40, `:focus-visible`, una curva y duración (`--ease`, `--dur`), `prefers-reduced-motion`, chrome común (barra superior con switch Hábitos/Finanzas, tab bar, rail ≥ 900 px, botones, toast, hoja, sello).
-- `fonts/`: Fraunces (títulos y cifras), Instrument Sans (texto), JetBrains Mono (montos). Autohospedadas.
-- `icons.svg`: sprite de Lucide generado con `npm run iconos` (`scripts/iconos.mjs`). Emojis solo para el emoji que elige el usuario en cada hábito.
+- `base.css`: estilo amigable tipo Duolingo. Tokens claro/oscuro (fondo `#F4F6FA`, cards blancas con borde 2px y canto inferior 4px, primario verde `--acc`, selección azul `--sel`, violeta, naranja = rachas), botones 3D que se hunden al tocar, barras gordas, animaciones con rebote (`--spring`, `pop`, `rebote`, `llenar`; `.entra` = entrada escalonada), `prefers-reduced-motion`, chrome común (switch en píldora, tab bar con Cargar elevado, rail ≥ 900 px, toast, hoja, festejo).
+- `fonts/`: Nunito (única familia, redondeada; montos con `tabular-nums`). Autohospedada.
+- `icons.svg`: sprite de Lucide generado con `npm run iconos` (`scripts/iconos.mjs`). Emojis decorativos con moderación (🔥 rachas, 🐷 meta, 🎉 festejo).
 - `comun.js`: lógica compartida, todo derivado de los datos: semanas buenas, hitos por hábito, racha de registro de gastos, camino de ahorro, resumen semanal, indicador común, ojito (`finanzas-ocultar-v1`). Tests en `comun.test.ts`.
-- Prohibido: paleta Duolingo (#58cc02, #1cb0f6, #ce82ff, #ff9600), confeti, XP o premios por gastar/cargar gastos. Celebración solo en hitos (sello sobrio).
+- Festejos (chispas `Comun.chispas`, festejo con rebote) solo al cumplir: tildar un hábito, tachar un ahorro, hitos. Nunca por cargar gastos.
 
 ## Finanzas (`/finanzas`)
 - Código fuente: `finanzas-src/` (React + TypeScript + Recharts, con Vite).
@@ -26,7 +26,7 @@ Se publica con GitHub Pages desde `main` (raíz), sin paso de build en el servid
 - Tests: `npm test` (Vitest). Replican los números de la planilla; tienen que pasar siempre.
 - Estado: `finanzas-src/src/store.tsx`. Vive en `localStorage` (`finanzas-v1`) y, si hay sesión, se copia a Supabase (ver Sincronización). `sinGasto` (días "no gasté") es opcional y nuevo. `finanzas-resumen-v1` es una copia de solo lectura del ahorro real para el indicador de Hábitos.
 - Pantallas (`#/ruta`): inicio (meta de ahorro real arriba, gasto del mes, hábitos de hoy, últimos gastos, caja plegada), diario, plan (aro = ahorrado real; proyección aparte), mes (detalle), ingresos, cuotas, gastos (fijos), config, mas.
-- Estilo: usa `ui/base.css` (link con `vite-ignore`); `styles.css` solo agrega lo propio. Separación con reglas, no cards. Montos: `fmtArs`/`fmtUsd` respetan la máscara del ojito (`setMascara`).
+- Estilo: usa `ui/base.css` (link con `vite-ignore`); `styles.css` solo agrega lo propio. Cada bloque es una card; la meta de ahorro es una tarjeta verde. Categorías de gasto con color propio (`colorTipo` → `ct-0…7`). Montos: `fmtArs`/`fmtUsd` respetan la máscara del ojito (`setMascara`).
 - Chunks perezosos con `lazyConRecarga` (recarga una vez si un deploy borró el chunk) y `ErrorBoundary` con botón Recargar.
 
 ## Sincronización con Supabase (opcional)

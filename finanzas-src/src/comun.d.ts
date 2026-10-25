@@ -15,7 +15,7 @@ declare global {
     Comun?: {
       key: (d: Date) => string; parse: (k: string) => Date; addDays: (d: Date, n: number) => Date; lunes: (d: Date) => Date; hoyK: () => string;
       privado: () => boolean; setPrivado: (v: boolean) => void; onPrivado: (f: (v: boolean) => void) => void;
-      haptic: (ms?: number) => void; reduce: () => boolean;
+      haptic: (ms?: number) => void; chispas: (el: Element | null) => void; reduce: () => boolean;
       rachaRegistro: (f: unknown) => { dias: number; hoy: boolean };
       caminoAhorro: (meta: number) => number[];
       resumenSemana: (desde?: Date) => ResumenSemana;

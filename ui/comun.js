@@ -203,8 +203,29 @@
     return se.cumplidos + ' de ' + se.minimo + ' días con la meta diaria.';
   }
 
+  /** Ráfaga corta de chispas de colores desde un elemento (al tildar un hábito o un ahorro). */
+  var COLORES = ['#22C468', '#2F86F6', '#FFB020', '#FF7A2F', '#8B5CF6', '#E5484D'];
+  function chispas(el) {
+    try {
+      if (!el || reduce()) return;
+      var r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      var cont = document.createElement('div'); cont.className = 'chispas'; cont.setAttribute('aria-hidden', 'true');
+      for (var i = 0; i < 14; i++) {
+        var a = (Math.PI * 2 * i) / 14 + Math.random() * 0.4, d = 40 + Math.random() * 46;
+        var p = document.createElement('i');
+        p.style.left = cx - 5 + 'px'; p.style.top = cy - 5 + 'px';
+        p.style.background = COLORES[i % COLORES.length];
+        p.style.setProperty('--dx', Math.cos(a) * d + 'px'); p.style.setProperty('--dy', Math.sin(a) * d - 20 + 'px');
+        if (i % 3 === 0) p.style.borderRadius = '50%';
+        cont.appendChild(p);
+      }
+      document.body.appendChild(cont);
+      setTimeout(function () { cont.remove(); }, 1000);
+    } catch (e) {}
+  }
+
   window.Comun = {
-    fraseSemana: fraseSemana,
+    fraseSemana: fraseSemana, chispas: chispas,
     key: key, parse: parse, addDays: addDays, lunes: lunes, hoyK: hoyK,
     privado: privado, setPrivado: setPrivado, onPrivado: function (f) { privListeners.push(f); },
     haptic: haptic, reduce: reduce,

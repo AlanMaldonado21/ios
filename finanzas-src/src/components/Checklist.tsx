@@ -50,7 +50,7 @@ export function Checklist({ meses, sel, onSel, base }: { meses: MesCalc[]; sel: 
                   <span className="chk-ed-l">¿Cuánto separaste en {mesLargo(m.mes).split(' ')[0]}?</span>
                   <div className="chk-ed-r">
                     <MoneyInput value={ed.usd} prefijo="U$S" ariaLabel="Dólares separados" onChange={n => setEd({ mes: m.mes, usd: n })} />
-                    <button className="btn-ok" disabled={!(ed.usd > 0)} onClick={() => { marcarCheck(m.mes, ed.usd); setEd(null); }}>{ok ? 'Guardar' : 'Tachar'}</button>
+                    <button className="btn-ok" disabled={!(ed.usd > 0)} onClick={e => { if (!ok) window.Comun?.chispas(e.currentTarget); marcarCheck(m.mes, ed.usd); setEd(null); }}>{ok ? 'Guardar' : 'Tachar'}</button>
                   </div>
                   <div className="chk-ed-f">
                     <span>El plan decía {fmtUsd(m.ahorroUsd, 0)}{ed.usd > 0 && Math.abs(ed.usd - m.ahorroUsd) >= 1 ? <b className={ed.usd >= m.ahorroUsd ? 'pos' : 'neg'}> · {ed.usd >= m.ahorroUsd ? '+' : '−'}{fmtUsd(Math.abs(ed.usd - m.ahorroUsd), 0)}</b> : null}</span>
