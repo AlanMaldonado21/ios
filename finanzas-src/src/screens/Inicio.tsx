@@ -3,18 +3,17 @@ import { HabitosHoy } from '../components/HabitosHoy';
 import { ComoVoy } from '../components/ComoVoy';
 import { PagosMes } from '../components/PagosMes';
 import { IcTipo } from '../components/QuickAdd';
-import { MetaAhorro } from '../components/MetaAhorro';
 import { ResumenSemana } from '../components/ResumenSemana';
 import { MedioTag } from '../components/MedioTag';
 import { hoyMes, useAhorroReal, usePlan, useStore } from '../store';
 
 const diaCorto = (iso: string) => { const [, m, d] = iso.split('-'); return `${Number(d)}/${Number(m)}`; };
 
-/** Pantalla de todos los días. Una cifra protagonista: lo ahorrado de verdad. El resto, debajo y más chico. */
+/** Pantalla de todos los días. Protagonista: el gasto del mes (cuánto llevás y cuánto te queda). La meta de ahorro vive en Plan. */
 export function Inicio() {
   const { gastos, checks, setMesSel, editarGasto } = useStore();
-  const { data, meses } = usePlan();
-  const { real, meta } = useAhorroReal();
+  const { meses } = usePlan();
+  const { meta } = useAhorroReal();
   const mes = hoyMes();
   const planMes = meses.find(m => m.mes === mes);
   const recientes = [...gastos].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 4);
@@ -23,15 +22,6 @@ export function Inicio() {
   return (
     <div className="dash">
       <h1 className="vh">Inicio</h1>
-      <MetaAhorro real={real} meta={meta} fecha={mesLargo(data.settings.fechaMeta)} />
-      {proximo && meta > 0 && (
-        <a className="renglon-link" href="#/mes" onClick={() => setMesSel(null)}>
-          <span>{proximo.mes > mes ? 'Próximo mes del plan' : 'Pendiente'}: separar <b className="num">{fmtArs(proximo.ahorroPesos)}</b> en {mesLargo(proximo.mes)}</span>
-          <span className="mu">Detalle →</span>
-        </a>
-      )}
-
-      <ResumenSemana />
       <ComoVoy librePlan={planMes?.libre ?? null} />
       <HabitosHoy />
 
@@ -55,6 +45,14 @@ export function Inicio() {
       </section>
 
       <PagosMes />
+      {proximo && meta > 0 && (
+        <a className="renglon-link" href="#/mes" onClick={() => setMesSel(null)}>
+          <span>{proximo.mes > mes ? 'Próximo mes del plan' : 'Pendiente'}: separar <b className="num">{fmtArs(proximo.ahorroPesos)}</b> en {mesLargo(proximo.mes)}</span>
+          <span className="mu">Detalle →</span>
+        </a>
+      )}
+
+      <ResumenSemana />
     </div>
   );
 }

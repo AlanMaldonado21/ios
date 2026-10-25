@@ -25,8 +25,8 @@ Se publica con GitHub Pages desde `main` (raíz), sin paso de build en el servid
   - `format.ts`: `$ 1.234.567` y `U$S 1.234,56`.
 - Tests: `npm test` (Vitest). Replican los números de la planilla; tienen que pasar siempre.
 - Estado: `finanzas-src/src/store.tsx`. Vive en `localStorage` (`finanzas-v1`) y, si hay sesión, se copia a Supabase (ver Sincronización). `sinGasto` (días "no gasté") es opcional y nuevo. `finanzas-resumen-v1` es una copia de solo lectura del ahorro real para el indicador de Hábitos.
-- Pantallas (`#/ruta`): inicio (meta de ahorro real arriba, gasto del mes, hábitos de hoy, últimos gastos, caja plegada), diario, plan (aro = ahorrado real; proyección aparte), mes (detalle), ingresos, cuotas, gastos (fijos), config, mas.
-- Estilo: usa `ui/base.css` (link con `vite-ignore`); `styles.css` solo agrega lo propio. Cada bloque es una card; la meta de ahorro es una tarjeta verde. Categorías de gasto con color propio (`colorTipo` → `ct-0…7`). Montos: `fmtArs`/`fmtUsd` respetan la máscara del ojito (`setMascara`).
+- Pantallas (`#/ruta`): inicio (gasto del mes como tarjeta protagonista, hábitos de hoy, últimos gastos, caja plegada, próximo mes del plan; la meta de ahorro no va acá, vive en Plan), diario, plan (aro = ahorrado real; proyección aparte), mes (detalle), ingresos, cuotas, gastos (fijos), config, mas.
+- Estilo: usa `ui/base.css` (link con `vite-ignore`); `styles.css` solo agrega lo propio. Cada bloque es una card; en Inicio el gasto del mes es una tarjeta azul. Categorías de gasto con color propio (`colorTipo` → `ct-0…7`). Montos: `fmtArs`/`fmtUsd` respetan la máscara del ojito (`setMascara`).
 - Chunks perezosos con `lazyConRecarga` (recarga una vez si un deploy borró el chunk) y `ErrorBoundary` con botón Recargar.
 
 ## Sincronización con Supabase (opcional)
