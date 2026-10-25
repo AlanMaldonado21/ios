@@ -71,7 +71,6 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
   const [cuotas, setCuotas] = useState(ult.cuotas);
   const [fecha, setFecha] = useState(inicial?.fecha ?? hoyISO());
   const [otraFecha, setOtraFecha] = useState(!!inicial && inicial.fecha !== hoyISO() && inicial.fecha !== ayerISO());
-  const [bottom, setBottom] = useState(0);
   const n = parseMonto(monto);
   // Categoría elegida (chip) y detalle libre opcional para "Otros". El gasto se guarda con el detalle si hay, si no con la categoría.
   const inicialLibre = !TIPOS.some(x => x.t === ult.tipo);
@@ -82,14 +81,6 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
   const frecuentes = montosFrecuentes(gastos, tipoFinal);
   const puede = n > 0 && tipoFinal.length > 0;
 
-  // Con el teclado abierto (iOS), la hoja sube pegada al teclado.
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-    const f = () => setBottom(Math.max(0, window.innerHeight - vv.height - vv.offsetTop));
-    f(); vv.addEventListener('resize', f); vv.addEventListener('scroll', f);
-    return () => { vv.removeEventListener('resize', f); vv.removeEventListener('scroll', f); };
-  }, []);
   useEffect(() => {
     const k = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     addEventListener('keydown', k); return () => removeEventListener('keydown', k);
@@ -110,7 +101,7 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
 
   return (
     <div className="hoja-ov qa-ov" onClick={onClose} role="presentation">
-      <div className="qa hoja" style={{ marginBottom: bottom }} role="dialog" aria-modal="true" aria-label="Cargar gasto" onClick={e => e.stopPropagation()}>
+      <div className="qa hoja" role="dialog" aria-modal="true" aria-label="Cargar gasto" onClick={e => e.stopPropagation()}>
         <div className="qa-h"><h2>{inicial ? 'Editar gasto' : 'Cargar gasto'}</h2><button className="icon-btn" onClick={onClose} aria-label="Cerrar"><Ic n="x" /></button></div>
         <div className="add-monto">
           <span>$</span>

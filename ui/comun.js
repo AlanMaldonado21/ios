@@ -224,6 +224,21 @@
     } catch (e) {}
   }
 
+  /* Teclado en iOS: --kb = alto del teclado, --vvh = alto visible. Las hojas se apoyan arriba del
+     teclado y nunca son más altas que lo visible (si no, el monto queda tapado arriba). */
+  (function () {
+    var vv = window.visualViewport;
+    if (!vv) return;
+    var root = document.documentElement;
+    function f() {
+      var kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      root.style.setProperty('--kb', kb + 'px');
+      root.style.setProperty('--vvh', vv.height + 'px');
+      root.classList.toggle('teclado', kb > 80);
+    }
+    f(); vv.addEventListener('resize', f); vv.addEventListener('scroll', f);
+  })();
+
   window.Comun = {
     fraseSemana: fraseSemana, chispas: chispas,
     key: key, parse: parse, addDays: addDays, lunes: lunes, hoyK: hoyK,

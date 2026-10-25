@@ -545,3 +545,13 @@ li:nth-child(4n+4) .mas-i>.ic:first-child{background:var(--naranja-bg);color:var
 .gd-main,.fe-h{width:100%}
 .ph{flex-wrap:wrap}
 .pt{border:0}
+
+/* hoja de carga con el teclado abierto: más compacta y Guardar siempre a mano */
+.qa-pie{position:sticky;bottom:-12px;z-index:2;background:var(--bg2);padding:10px 0 4px;margin-bottom:-4px}
+html.teclado .qa .add-l{margin:10px 0 6px}
+html.teclado .qa .tipos button{min-height:56px!important;padding:4px!important;gap:3px!important}
+html.teclado .qa .ti{width:24px;height:24px;border-radius:8px}
+html.teclado .qa .ti .ic{width:14px;height:14px}
+html.teclado .qa .medios button{min-height:46px;flex-direction:row;gap:6px}
+html.teclado .qa .add-monto{padding:6px 14px}
+html.teclado .qa .add-monto input{font-size:34px}

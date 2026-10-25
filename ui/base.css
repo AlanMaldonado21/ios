@@ -186,7 +186,9 @@ body.con-aviso .con-tabbar{padding-bottom:calc(var(--tabbar-h) + env(safe-area-i
 
 /* hoja inferior */
 .hoja-ov{position:fixed;inset:0;z-index:60;background:rgba(16,24,32,.5);display:flex;align-items:flex-end;justify-content:center;animation:fade var(--dur) var(--ease)}
-.hoja{width:100%;max-width:560px;max-height:92dvh;overflow:auto;background:var(--bg2);border-radius:28px 28px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:var(--elev);animation:sube 380ms var(--spring)}
+.hoja{width:100%;max-width:560px;max-height:min(92dvh,calc(var(--vvh,100dvh) - 12px));margin-bottom:var(--kb,0px);overflow:auto;background:var(--bg2);border-radius:28px 28px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:var(--elev);animation:sube 380ms var(--spring)}
+html.teclado .hoja{padding-bottom:12px}
+html.teclado .hoja::before{display:none}
 .hoja::before{content:"";display:block;width:44px;height:5px;border-radius:5px;background:var(--ln2);margin:0 auto 12px}
 
 /* festejo: para hitos */
