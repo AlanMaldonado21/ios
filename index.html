@@ -73,6 +73,107 @@ main{max-width:640px;margin:0 auto;padding:8px 16px 0}
 .chk.anim{animation:rebote 460ms var(--spring)}
 .chk.anim svg path{stroke-dasharray:24;animation:trazo 260ms var(--ease)}
 
+/* pendientes del día (con dictado por voz) */
+.pend-form{display:flex;gap:8px;margin-bottom:14px}
+.pend-form .campo{flex:1;min-width:0}
+.pend-form .campo:focus{border-color:var(--sel);outline:none}
+.pend-b{width:50px;height:50px;flex:none;display:grid;place-items:center;padding:0;border-radius:14px;border:2px solid var(--ln2);border-bottom-width:4px;background:var(--card);color:var(--tx);transition:transform 110ms var(--ease)}
+.pend-b:active{transform:translateY(2px);border-bottom-width:2px}
+.pend-b.mas{background:var(--acc);border-color:var(--acc-sh);color:#fff}
+.pend-voz-b{width:100%;min-height:64px;display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 10px;border-radius:20px;border:2px solid var(--acc-sh);border-bottom-width:5px;background:var(--acc);color:#fff;font:900 var(--t16)/1 var(--sans);transition:transform 110ms var(--ease)}
+.pend-voz-b .ic{width:26px;height:26px}
+.pend-voz-b:active{transform:translateY(3px);border-bottom-width:2px}
+.pend-voz-b.on{background:var(--neg);border-color:var(--neg);animation:escucha 1.2s ease-in-out infinite}
+.badge{position:absolute;top:4px;left:calc(50% + 8px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--neg);color:#fff;font:900 11px/18px var(--sans);text-align:center}
+.rail .badge{position:static;margin-left:auto}
+@keyframes escucha{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--neg) 45%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
+.pend-voz{margin:-2px 4px 12px;font-weight:700}
+.pend-voz:empty{display:none}
+.pend-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.pend-it{display:flex;align-items:center;gap:10px;min-height:52px;border-top:2px solid var(--bg3);padding:4px 0}
+.pend-it:first-child{border-top:0}
+.pend-it .chk{width:40px;height:40px;border-radius:12px;border-bottom-width:4px}
+.pend-it .chk svg{width:22px;height:22px}
+.pend-tx{flex:1;min-width:0;font-weight:800;overflow-wrap:anywhere}
+.pend-tx small{display:block;color:var(--naranja);font-size:var(--t12);font-weight:800}
+.pend-it.done .pend-tx{color:var(--mu);text-decoration:line-through}
+
+.pend-dest{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.pend-dest button{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border:2px solid var(--ln2);border-bottom-width:4px;border-radius:12px;background:var(--card);color:var(--mu);font:800 var(--t14)/1 var(--sans)}
+.pend-dest button i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.pend-dest button.on{background:var(--sel-bg);border-color:var(--sel);color:var(--sel)}
+.pend-grid .bloque{margin:0 0 12px;break-inside:avoid}
+@media (min-width:760px){.pend-grid{columns:2;column-gap:12px}}
+.pcard{border-color:color-mix(in srgb,var(--c) 45%,var(--ln));border-top:8px solid var(--c);padding-top:10px}
+.pcard-h{display:flex;align-items:center;gap:8px;margin:0 -6px 2px 0}
+.pcard-h h2{flex:1;display:flex;align-items:center;gap:8px;margin:0}
+.pcard-h h2 i{width:12px;height:12px;border-radius:4px;background:var(--c)}
+.pcard.vacia{opacity:.85}
+.pcard-v{margin:2px 0 4px}
+button.pend-tx{background:none;border:0;padding:6px 0;text-align:left;color:inherit;font:inherit;font-weight:800;cursor:pointer}
+
+/* pendientes en compu: más ancho, vistas Cuentas / Semana / Mes */
+main.ancho{max-width:1320px}
+.pend-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.pend-top .sub{margin-bottom:0}
+.c-hoy{color:var(--naranja)} .c-venc{color:var(--neg)}
+.seg{display:inline-flex;gap:4px;padding:4px;border-radius:16px;background:var(--bg3)}
+.seg button{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:0;border-radius:12px;background:none;color:var(--mu);font:800 var(--t14)/1 var(--sans)}
+.seg button.on{background:var(--card);color:var(--tx);box-shadow:0 2px 0 var(--ln2)}
+.pend-carga{display:flex;gap:10px;align-items:stretch;margin-bottom:6px}
+.pend-carga .pend-voz-b{width:auto;min-height:50px;margin:0;padding:0 18px;flex:none;font-size:var(--t14)}
+.pend-carga .pend-form{flex:1;margin:0}
+.pend-form .pend-fecha{flex:none;width:170px!important;padding:0 10px!important;color-scheme:light dark}
+@media (max-width:700px){.pend-carga{flex-direction:column}.pend-fecha{width:140px!important}}
+.pend-meta{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:2px}
+.pend-meta small{display:inline}
+.vence{display:inline-flex;align-items:center;gap:4px;font-size:var(--t12);font-weight:800;color:var(--mu)}
+.vence .ic{width:13px;height:13px}
+.vence.hoy{color:var(--naranja)} .vence.venc{color:var(--neg)} .vence.pronto{color:var(--sel)}
+.sobre{outline:3px dashed var(--sel);outline-offset:2px}
+.arrastrando{opacity:.4}
+[draggable="true"]{cursor:grab}
+.cal-nav{display:flex;align-items:center;gap:6px;margin:6px 0 12px}
+.cal-nav b{font-size:var(--t18,18px)}
+.b-sec.chico{min-height:36px;padding:0 12px;font-size:var(--t14);margin-left:8px}
+.cal-h{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.cal-atras,.cal-sin{background:var(--card);border:2px solid var(--ln);border-bottom-width:4px;border-radius:var(--r-l);padding:12px 14px;margin-bottom:12px}
+.cal-atras{border-color:color-mix(in srgb,var(--neg) 45%,var(--ln))}
+.cal-sin{margin-top:12px}
+.tk-fila{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.sem-g{display:grid;grid-template-columns:repeat(7,minmax(130px,1fr));gap:8px;overflow-x:auto}
+.sem-d{display:flex;flex-direction:column;min-height:300px;background:var(--card);border:2px solid var(--ln);border-bottom-width:4px;border-radius:18px;padding:8px}
+.sem-d.hoy{border-color:var(--sel);background:color-mix(in srgb,var(--sel) 6%,var(--card))}
+.sem-d.pasado{background:color-mix(in srgb,var(--bg3) 50%,var(--card))}
+.sem-dh{display:flex;align-items:baseline;gap:6px;padding:2px 4px 8px;color:var(--mu);font-weight:800;font-size:var(--t14)}
+.sem-dh b{font-size:var(--t20,20px);color:var(--tx)}
+.sem-d.hoy .sem-dh b,.sem-d.hoy .sem-dh span{color:var(--sel)}
+.sem-dh em{margin-left:auto;font-style:normal;font-size:var(--t12);background:var(--bg3);border-radius:8px;padding:2px 7px}
+.sem-l{display:flex;flex-direction:column;gap:6px;flex:1}
+.sem-add{margin-top:6px;min-height:34px;border:2px dashed var(--ln2);border-radius:12px;background:none;color:var(--mu);display:grid;place-items:center;opacity:.6}
+.sem-d:hover .sem-add{opacity:1}
+.tk{display:flex;align-items:flex-start;gap:6px;background:var(--bg2);border:1.5px solid var(--ln);border-left:5px solid var(--c);border-radius:10px;padding:6px 6px 6px 7px}
+.tk.venc{background:color-mix(in srgb,var(--neg) 10%,var(--bg2))}
+.tk-chk{flex:none;width:22px;height:22px;margin-top:1px;border-radius:7px;border:2px solid var(--ln2);background:var(--card);display:grid;place-items:center;padding:0;color:#fff}
+.tk-chk svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.tk.done .tk-chk{background:var(--acc);border-color:var(--acc-sh)} .tk.done .tk-chk svg{opacity:1}
+.tk-tx{flex:1;min-width:0;border:0;background:none;padding:0;text-align:left;color:var(--tx);font:700 var(--t14)/1.3 var(--sans);overflow-wrap:anywhere;cursor:pointer}
+.tk-tx small{display:block;font-size:11px;font-weight:900;color:var(--c);text-transform:uppercase;letter-spacing:.03em}
+.tk.done .tk-tx{color:var(--mu);text-decoration:line-through}
+.mes-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.mes-dn{display:contents}
+.mes-dn span{text-align:center;font:900 var(--t12)/1 var(--sans);color:var(--mu);text-transform:uppercase;letter-spacing:.05em;padding:4px 0}
+.mes-c{min-height:120px;background:var(--card);border:2px solid var(--ln);border-radius:14px;padding:4px 5px 6px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.mes-c.fuera{opacity:.45}
+.mes-c.pasado{background:color-mix(in srgb,var(--bg3) 50%,var(--card))}
+.mes-c.hoy{border-color:var(--sel)}
+.mes-n{align-self:flex-start;min-width:28px;height:26px;border:0;border-radius:8px;background:none;color:var(--mu);font:900 var(--t14)/1 var(--sans);padding:0 6px}
+.mes-n:hover{background:var(--bg3);color:var(--tx)}
+.mes-c.hoy .mes-n{background:var(--sel);color:#fff}
+.tk.chico{padding:3px 5px;border-radius:7px;border-left-width:4px}
+.tk.chico .tk-tx{font-size:var(--t12);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mes-mas{border:0;background:none;color:var(--sel);font:800 var(--t12)/1 var(--sans);text-align:left;padding:2px 4px}
+
 /* botones */
 .b-fila{display:flex;gap:8px;flex-wrap:wrap}
 .b-fila>*{flex:1}
@@ -166,6 +267,7 @@ button.c:disabled{opacity:.55}
 .semana dt{color:var(--mu);font-weight:900}.semana dd{margin:0}
 .semana>.rotulo::before{content:"🗓️ "}
 .syncbox .st{font-size:var(--t14);margin:4px 0 0}
+.pend-d{display:block;color:var(--mu);font-size:var(--t14);font-weight:600;white-space:pre-line}
 .ds{display:block;color:var(--mu);font-size:var(--t14);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .play{width:44px;height:44px;flex:none;display:grid;place-items:center;padding:0;border:2px solid var(--ln2);border-bottom-width:4px;border-radius:14px;background:var(--card);color:var(--sel);transition:transform 110ms var(--ease)}
 .play:active{transform:translateY(2px);border-bottom-width:2px}
@@ -240,6 +342,7 @@ button.c:disabled{opacity:.55}
   <nav class="modsw" aria-label="Cambiar de módulo"><a href="./" aria-current="page">Hábitos</a><a href="finanzas/">Finanzas</a></nav>
   <nav aria-label="Hábitos">
     <a href="#hoy" data-act="tab" data-t="hoy"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-sun"/></svg>Hoy</a>
+    <a href="#pend" data-act="tab" data-t="pend"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-todo"/></svg>Pendientes<span class="badge" data-badge="pend" hidden></span></a>
     <a href="#prog" data-act="tab" data-t="prog"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-chart-no-axes-column"/></svg>Progreso</a>
     <a href="#hab" data-act="tab" data-t="hab"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-checks"/></svg>Hábitos</a>
   </nav>
@@ -256,6 +359,7 @@ button.c:disabled{opacity:.55}
 </div>
 <nav class="tabbar" aria-label="Hábitos"><div class="tabbar-in">
   <a href="#hoy" data-act="tab" data-t="hoy"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-sun"/></svg>Hoy</a>
+  <a href="#pend" data-act="tab" data-t="pend"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-todo"/></svg>Pendientes<span class="badge" data-badge="pend" hidden></span></a>
   <a href="#prog" data-act="tab" data-t="prog"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-chart-no-axes-column"/></svg>Progreso</a>
   <a href="#hab" data-act="tab" data-t="hab"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-checks"/></svg>Hábitos</a>
 </div></nav>
@@ -316,9 +420,13 @@ function normalize(s) {
   s.routines = Array.isArray(s.routines) ? s.routines : [];
   s.log = s.log && typeof s.log === 'object' ? s.log : {};
   s.settings = Object.assign({ goal: 2, sound: true }, s.settings);
+  // pendientes: los no hechos pasan al día siguiente; los hechos de días anteriores se van
+  const hoy = todayKey();
+  s.pend = (Array.isArray(s.pend) ? s.pend : []).filter(p => p && p.t && !(p.done && diasEntreK(p.done, hoy) > 90)); // lo hecho queda 90 días para verlo en semana y mes
   s.habits.forEach(h => { h.days = h.days || []; h.times = h.times || {}; h.time = h.time || ''; h.since = h.since || todayKey(); h.routine = h.routine || null; });
   return s;
 }
+const diasEntreK = (a, b) => Math.round((parse(b) - parse(a)) / 864e5);
 const weekMin = () => S.settings.weekMin || 4;
 function load() {
   try { const s = JSON.parse(localStorage.getItem(LS)); if (s && Array.isArray(s.habits)) return normalize(s); } catch (e) {}
@@ -420,6 +528,259 @@ function item(h, k, dow) {
     <button class="chk ${animar === h.id ? 'anim' : ''}" data-act="tick" data-id="${h.id}" aria-pressed="${d}" aria-label="${d ? 'Desmarcar' : 'Marcar'} ${esc(h.name)}">${TILDE}</button>
   </li>`;
 }
+/* ---------- pendientes del día (pestaña propia, #pend) ---------- */
+const Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
+let reco = null; // dictado en curso: { r, texto, timer, fin }
+const pendAbiertos = () => S.pend.filter(p => !p.done).length;
+// Una card por cuenta. El pendiente cae en la que nombra (también con errores típicos del dictado); si no nombra ninguna, en "Otros".
+const AREAS = [
+  { id: 'gimos', n: 'Gimos', c: COLORS[0].c, re: /\b(gimos|gimo|jimos|guimos|ximos)\b/i },
+  { id: 'yagmour', n: 'Yagmour', c: COLORS[5].c, re: /\b(y[ae]g\s?m[ou]u?r|jag\s?m[ou]u?r|yag\s?more|yamour|yagmur)\b/i },
+  { id: 'solmaint', n: 'Solmaint', c: COLORS[1].c, re: /\b(sol\s?main?t?|solmeint|solment|sol\s?mint)\b/i },
+  { id: 'midway', n: 'Midway', c: COLORS[4].c, re: /\b(mid\s?w[ae]y|midwei|mitwey|mit\s?way)\b/i },
+  { id: 'rock', n: 'Rock Stories', c: COLORS[3].c, re: /\b(rock\s?stor(y|ies|ys|is)|rock|rok\s?stor\w*|roc\s?stor\w*)\b/i },
+  { id: 'mieza', n: 'Mieza', c: COLORS[2].c, re: /\b(mi[eé]za|mi\s?eza|mieza)\b/i },
+  { id: 'otros', n: 'Otros', c: '#8B8F98', re: null }
+];
+const areaDe = t => (AREAS.find(x => x.re && x.re.test(t)) || AREAS[AREAS.length - 1]).id;
+const areaP = p => AREAS.some(x => x.id === p.a) ? p.a : areaDe(p.t);
+// Vista de pendientes: por cuenta, semana o mes (queda guardada en este navegador)
+const PV_LS = 'habitos-pend-vista';
+const pVista = () => { try { const v = localStorage.getItem(PV_LS); return ['cuentas', 'semana', 'mes'].includes(v) ? v : 'cuentas'; } catch (e) { return 'cuentas'; } };
+const areaInfo = id => AREAS.find(x => x.id === id) || AREAS[AREAS.length - 1];
+const DCORTO = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const diasEntre = (a, b) => Math.round((parse(b) - parse(a)) / 864e5);
+// Vencimiento como texto corto: Vencida · 24 oct / Hoy / Mañana / Vie 30 / 12 nov
+function venceTxt(v) {
+  const n = diasEntre(todayKey(), v), d = parse(v);
+  if (n < 0) return { t: 'Vencida · ' + fecha(v), c: 'venc' };
+  if (n === 0) return { t: 'Hoy', c: 'hoy' };
+  if (n === 1) return { t: 'Mañana', c: 'pronto' };
+  if (n < 7) return { t: `${DCORTO[d.getDay()]} ${d.getDate()}`, c: 'pronto' };
+  return { t: fecha(v), c: '' };
+}
+const venceHTML = p => { if (!p.v) return ''; const x = venceTxt(p.v); return `<span class="vence ${p.done ? '' : x.c}">${ic('calendar', 's')}${x.t}</span>`; };
+// Orden: abiertos por vencimiento (sin fecha al final), después los hechos
+const porVence = (a, b) => (!!a.done - !!b.done) || (a.v || '9999').localeCompare(b.v || '9999');
+
+// "para el viernes", "mañana", "el 30", "30 de noviembre", "30/11" → fecha; se saca del texto
+const MESES_RE = MONTHS.join('|') + '|setiembre';
+const DIAS_N = { domingo: 0, lunes: 1, martes: 2, 'miércoles': 3, miercoles: 3, jueves: 4, viernes: 5, 'sábado': 6, sabado: 6 };
+function fechaDeTexto(txt) {
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const P = '(?:\\s*,?\\s*(?:para|hasta|antes\\s+de)?\\s*(?:el|del)?\\s*)';
+  const reglas = [
+    [new RegExp(P + '\\bpasado\\s+mañana\\b', 'i'), () => addDays(hoy, 2)],
+    [new RegExp(P + '(?<!\\b(?:la|de|esta|por)\\s)\\bmañana\\b', 'i'), () => addDays(hoy, 1)],
+    [new RegExp('\\s*,?\\s*(?:para\\s+)?(?<!\\bde\\s)\\bhoy\\b', 'i'), () => hoy],
+    [new RegExp(P + '(?:fin\\s+de\\s+mes|[úu]ltimo\\s+d[íi]a\\s+del\\s+mes|[úu]ltimo\\s+d[íi]a\\s+de\\s+(' + MESES_RE + '))\\b', 'i'), m => {
+      const mes = m[1] ? (m[1].toLowerCase() === 'setiembre' ? 8 : MONTHS.indexOf(m[1].toLowerCase())) : hoy.getMonth();
+      let d = new Date(hoy.getFullYear(), mes + 1, 0); if (d < hoy) d = new Date(hoy.getFullYear() + 1, mes + 1, 0); return d; }],
+    [new RegExp('\\s*,?\\s*(?:para|hasta|antes\\s+del?)?\\s*\\bel\\s+(domingo|lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado)(\\s+que\\s+viene)?\\b', 'i'), m => {
+      const dw = DIAS_N[m[1].toLowerCase()]; let n = (dw - hoy.getDay() + 7) % 7 || 7; if (m[2] && n < 7) n += 0; return addDays(hoy, n); }],
+    [new RegExp('\\s*,?\\s*(?:para\\s+)?(?:el\\s+)?\\b(\\d{1,2})\\s+de\\s+(' + MESES_RE + ')\\b', 'i'), m => {
+      const mes = m[2].toLowerCase() === 'setiembre' ? 8 : MONTHS.indexOf(m[2].toLowerCase());
+      let d = new Date(hoy.getFullYear(), mes, +m[1]); if (d < hoy) d = new Date(hoy.getFullYear() + 1, mes, +m[1]); return d; }],
+    [/\s*,?\s*(?:para\s+)?(?:el\s+)?\b(\d{1,2})\/(\d{1,2})\b/i, m => {
+      let d = new Date(hoy.getFullYear(), +m[2] - 1, +m[1]); if (d < hoy) d = new Date(hoy.getFullYear() + 1, +m[2] - 1, +m[1]); return d; }],
+    [/\s*,?\s*(?:para|hasta|antes\s+del?)\s+el\s+(\d{1,2})\b(?!\s*(?:de\s+\D|%|unidades|productos|piezas))/i, m => {
+      let d = new Date(hoy.getFullYear(), hoy.getMonth(), +m[1]); if (d < hoy) d = new Date(hoy.getFullYear(), hoy.getMonth() + 1, +m[1]); return d; }]
+  ];
+  for (const [re, f] of reglas) {
+    const m = txt.match(re); if (!m) continue;
+    const d = f(m); if (!d || isNaN(d)) continue;
+    const t = (txt.slice(0, m.index) + ' ' + txt.slice(m.index + m[0].length)).replace(/\s+/g, ' ').replace(/\s+([,.])/g, '$1').replace(/[\s,\-–]+$/, '').trim();
+    return { t: t || txt, v: key(d) };
+  }
+  return { t: txt, v: null };
+}
+
+function vPend() {
+  const now = new Date(), hoy = todayKey(), vista = V.pvista || (V.pvista = pVista());
+  const dest = V.parea || 'auto';
+  const abiertos = S.pend.filter(p => !p.done), vencidas = abiertos.filter(p => p.v && p.v < hoy).length, paraHoy = abiertos.filter(p => p.v === hoy).length;
+  let out = `<div class="pend-top"><div><h1>Pendientes</h1><p class="sub">${DFULL[now.getDay()]} ${now.getDate()} de ${MONTHS[now.getMonth()]} · ${abiertos.length} ${abiertos.length === 1 ? 'abierto' : 'abiertos'}${paraHoy ? ` · <b class="c-hoy">${paraHoy} para hoy</b>` : ''}${vencidas ? ` · <b class="c-venc">${vencidas} ${vencidas === 1 ? 'vencida' : 'vencidas'}</b>` : ''}</p></div>
+    <div class="seg" role="tablist" aria-label="Vista">${[['cuentas', 'Cuentas', 'folder'], ['semana', 'Semana', 'calendar-range'], ['mes', 'Mes', 'calendar-days']].map(([id, n, i]) => `<button role="tab" aria-selected="${vista === id}" class="${vista === id ? 'on' : ''}" data-act="pvista" data-v="${id}">${ic(i, 's')}${n}</button>`).join('')}</div></div>`;
+  out += `<div class="pend-carga">`;
+  if (Reco) out += `<button type="button" class="pend-voz-b" id="pend-mic" data-act="voz" aria-pressed="false">${ic('mic')}<span>Dictar pendientes</span></button>`;
+  out += `<form class="pend-form" id="pend-form">
+      <input class="campo" type="text" id="pend-in" placeholder="Escribí un pendiente (ej: fotos de Gimos para el viernes)" aria-label="Nuevo pendiente" autocomplete="off" enterkeyhint="done" maxlength="200">
+      <input class="campo pend-fecha" type="date" id="pend-v" value="${esc(V.pfecha || '')}" aria-label="Vence el (opcional)" title="Vence el (opcional)">
+      <button type="submit" class="pend-b mas" aria-label="Agregar pendiente">${ic('plus')}</button>
+    </form></div>
+    ${Reco ? `<p class="pend-voz mu t14" id="pend-voz" aria-live="polite"></p>` : ''}
+    <div class="pend-dest" role="radiogroup" aria-label="¿En qué cuenta va?">${[{ id: 'auto', n: 'Automático' }, ...AREAS].map(x => `<button type="button" role="radio" aria-checked="${dest === x.id}" class="${dest === x.id ? 'on' : ''}" data-act="parea" data-a="${x.id}" ${x.c ? `style="--c:${x.c}"` : ''}>${x.c ? '<i></i>' : ''}${x.n}</button>`).join('')}</div>`;
+  out += vista === 'semana' ? pSemana() : vista === 'mes' ? pMes() : pCuentas();
+  return out;
+}
+function pCuentas() {
+  const hoy = todayKey(), now = new Date();
+  // en cuentas se ven los abiertos y lo tachado hoy
+  const L = S.pend.filter(p => !p.done || p.done === hoy).sort(porVence);
+  const desde = k => k === key(addDays(now, -1)) ? 'Desde ayer' : 'Desde el ' + fecha(k);
+  const fila = p => `<li class="pend-it ${p.done ? 'done' : ''}" draggable="true" data-drag="${p.id}">
+      <button class="chk ${animar === p.id ? 'anim' : ''}" data-act="ptick" data-id="${p.id}" aria-pressed="${!!p.done}" aria-label="${p.done ? 'Desmarcar' : 'Marcar'} ${esc(p.t)}">${TILDE}</button>
+      <button class="pend-tx" data-act="pedit" data-id="${p.id}" aria-label="Editar ${esc(p.t)}">${esc(p.t)}${p.d ? `<span class="pend-d">${esc(p.d)}</span>` : ''}<span class="pend-meta">${venceHTML(p)}${!p.done && !p.v && p.k < hoy ? `<small>${desde(p.k)}</small>` : ''}</span></button>
+      ${p.done ? '' : `<button class="play" data-act="arcade" data-tipo="p" data-id="${p.id}" aria-label="Temporizador de ${esc(p.t)}">${ic('play', 's')}</button>`}
+      <button class="icon-btn" data-act="pdel" data-id="${p.id}" aria-label="Borrar ${esc(p.t)}">${ic('x')}</button>
+    </li>`;
+  return `<div class="pend-grid">${AREAS.map(ar => {
+    const ps = L.filter(p => areaP(p) === ar.id);
+    if (ar.id === 'otros' && !ps.length) return '';
+    const ab = ps.filter(p => !p.done).length, ve = ps.filter(p => !p.done && p.v && p.v < hoy).length;
+    return `<section class="bloque pcard ${ab ? '' : 'vacia'}" style="--c:${ar.c}" aria-label="${ar.n}" data-drop-a="${ar.id}">
+      <div class="pcard-h"><h2><i aria-hidden="true"></i>${ar.n}</h2><span class="mu t14">${ve ? `<b class="c-venc">${ve} ${ve === 1 ? 'vencida' : 'vencidas'}</b> · ` : ''}${ps.length ? (ab ? `${ab} ${ab === 1 ? 'pendiente' : 'pendientes'}` : 'Todo hecho') : ''}</span>
+        <button class="icon-btn" data-act="padd" data-a="${ar.id}" aria-label="Agregar pendiente en ${ar.n}">${ic('plus')}</button></div>
+      ${ps.length ? `<ul class="pend-l">${ps.map(fila).join('')}</ul>` : `<p class="mu t14 pcard-v">Nada pendiente.</p>`}
+    </section>`;
+  }).join('')}</div>`;
+}
+// Tarjetita de tarea para semana y mes (se arrastra a otro día)
+const tk = (p, chico) => {
+  const ar = areaInfo(areaP(p)), hoy = todayKey(), venc = !p.done && p.v && p.v < hoy;
+  return `<div class="tk ${p.done ? 'done' : ''} ${venc ? 'venc' : ''} ${chico ? 'chico' : ''}" style="--c:${ar.c}" draggable="true" data-drag="${p.id}">
+    ${chico ? '' : `<button class="tk-chk" data-act="ptick" data-id="${p.id}" aria-pressed="${!!p.done}" aria-label="${p.done ? 'Desmarcar' : 'Marcar'} ${esc(p.t)}">${TILDE}</button>`}
+    <button class="tk-tx" data-act="pedit" data-id="${p.id}" title="${esc(p.t)} · ${ar.n}">${chico ? '' : `<small>${ar.n}</small>`}${esc(p.t)}</button></div>`;
+};
+function pSemana() {
+  const ws = weekStart(V.psem || 0), we = addDays(ws, 6), hoy = todayKey(), wsk = key(ws), wek = key(we);
+  const dias = [...Array(7)].map((_, i) => addDays(ws, i));
+  const atras = S.pend.filter(p => !p.done && p.v && p.v < wsk && (V.psem || 0) >= 0).sort(porVence);
+  const sin = S.pend.filter(p => !p.v && (!p.done || p.done === hoy)).sort(porVence);
+  const lbl = `${ws.getDate()} ${MONTHS[ws.getMonth()].slice(0, 3)} al ${we.getDate()} ${MONTHS[we.getMonth()].slice(0, 3)}`;
+  let out = `<div class="cal-nav"><button class="icon-btn" data-act="psem" data-n="-1" aria-label="Semana anterior">${ic('chevron-left')}</button>
+    <b>${(V.psem || 0) === 0 ? 'Esta semana' : (V.psem === 1 ? 'Semana que viene' : (V.psem === -1 ? 'Semana pasada' : 'Semana'))} <span class="mu">· ${lbl}</span></b>
+    <button class="icon-btn" data-act="psem" data-n="1" aria-label="Semana siguiente">${ic('chevron-right')}</button>
+    ${(V.psem || 0) !== 0 ? `<button class="b-sec chico" data-act="psem" data-n="0">Hoy</button>` : ''}</div>`;
+  if (atras.length) out += `<section class="cal-atras" data-drop="${hoy}"><div class="cal-h"><b class="c-venc">Vencidas de antes</b><span class="mu t12">Arrastralas a un día</span></div><div class="tk-fila">${atras.map(p => tk(p)).join('')}</div></section>`;
+  out += `<div class="sem-g">${dias.map(d => {
+    const k = key(d), ps = S.pend.filter(p => p.v === k).sort(porVence);
+    return `<section class="sem-d ${k === hoy ? 'hoy' : ''} ${k < hoy ? 'pasado' : ''}" data-drop="${k}" aria-label="${DFULL[d.getDay()]} ${d.getDate()}">
+      <div class="sem-dh"><span>${DCORTO[d.getDay()]}</span><b>${d.getDate()}</b>${ps.filter(p => !p.done).length ? `<em>${ps.filter(p => !p.done).length}</em>` : ''}</div>
+      <div class="sem-l">${ps.map(p => tk(p)).join('')}</div>
+      <button class="sem-add" data-act="pdia" data-v="${k}" aria-label="Agregar para el ${DFULL[d.getDay()]} ${d.getDate()}">${ic('plus', 's')}</button>
+    </section>`;
+  }).join('')}</div>`;
+  out += `<section class="cal-sin" data-drop=""><div class="cal-h"><b>Sin fecha</b><span class="mu t12">${sin.length ? 'Arrastrá una tarea a un día para ponerle fecha' : 'Todo tiene fecha'}</span></div>${sin.length ? `<div class="tk-fila">${sin.map(p => tk(p)).join('')}</div>` : ''}</section>`;
+  return out;
+}
+function pMes() {
+  const ref = monthRef(V.pmes || 0), hoy = todayKey(), mes = ref.getMonth();
+  const ini = Comun.lunes(new Date(ref.getFullYear(), mes, 1)), fin = new Date(ref.getFullYear(), mes + 1, 0);
+  const semanas = Math.ceil((diasEntre(key(ini), key(fin)) + 1) / 7);
+  const delMes = S.pend.filter(p => p.v && parse(p.v).getMonth() === mes && parse(p.v).getFullYear() === ref.getFullYear());
+  let out = `<div class="cal-nav"><button class="icon-btn" data-act="pmes" data-n="-1" aria-label="Mes anterior">${ic('chevron-left')}</button>
+    <b>${MONTHS[mes].charAt(0).toUpperCase() + MONTHS[mes].slice(1)} ${ref.getFullYear()} <span class="mu">· ${(n => n + (n === 1 ? ' abierta' : ' abiertas'))(delMes.filter(p => !p.done).length)}, ${(n => n + (n === 1 ? ' hecha' : ' hechas'))(delMes.filter(p => p.done).length)}</span></b>
+    <button class="icon-btn" data-act="pmes" data-n="1" aria-label="Mes siguiente">${ic('chevron-right')}</button>
+    ${(V.pmes || 0) !== 0 ? `<button class="b-sec chico" data-act="pmes" data-n="0">Hoy</button>` : ''}</div>
+    <div class="mes-g"><div class="mes-dn">${ORDER.map(d => `<span>${DCORTO[d]}</span>`).join('')}</div>`;
+  for (let i = 0; i < semanas * 7; i++) {
+    const d = addDays(ini, i), k = key(d), ps = S.pend.filter(p => p.v === k).sort(porVence);
+    const MAX = 4, extra = ps.length - MAX;
+    out += `<div class="mes-c ${d.getMonth() !== mes ? 'fuera' : ''} ${k === hoy ? 'hoy' : ''} ${k < hoy ? 'pasado' : ''}" data-drop="${k}">
+      <button class="mes-n" data-act="pdia" data-v="${k}" aria-label="Agregar para el ${d.getDate()} de ${MONTHS[d.getMonth()]}">${d.getDate()}</button>
+      ${ps.slice(0, extra > 0 ? MAX - 1 : MAX).map(p => tk(p, true)).join('')}
+      ${extra > 0 ? `<button class="mes-mas" data-act="pirsem" data-v="${k}">+${extra + 1} más</button>` : ''}
+    </div>`;
+  }
+  return out + `</div>`;
+}
+function editPend(id) {
+  const p = S.pend.find(x => x.id === id); if (!p) return;
+  ED = { pid: id, a: areaP(p) };
+  openSheet(`<div class="bloque-h"><h2>Pendiente</h2><button class="icon-btn" data-act="closeSheet" aria-label="Cerrar">${ic('x')}</button></div>
+    <label class="lb" for="pe-t">Texto</label><input type="text" id="pe-t" maxlength="200" value="${esc(p.t)}">
+    <label class="lb" for="pe-d">Descripción (opcional)</label><textarea id="pe-d" maxlength="600" placeholder="Detalle para el modo arcade">${esc(p.d || '')}</textarea>
+    <label class="lb" for="pe-v">Vence el</label><div class="er"><input type="date" id="pe-v" value="${esc(p.v || '')}"><button type="button" class="b-sec" data-act="peSinFecha">Sin fecha</button></div>
+    <span class="lb" id="lb-pa">Cuenta</span><div class="pend-dest" role="radiogroup" aria-labelledby="lb-pa" id="pe-a">${AREAS.map(x => `<button type="button" role="radio" aria-checked="${ED.a === x.id}" class="${ED.a === x.id ? 'on' : ''}" data-act="peArea" data-a="${x.id}" style="--c:${x.c}"><i></i>${x.n}</button>`).join('')}</div>
+    <div class="form-pie"><button class="b-sec" data-act="closeSheet">Cancelar</button><button class="b-pri" data-act="pSave">Guardar</button></div>
+    <div class="zona-borrar"><button class="b-txt neg" data-act="pDelS">${ic('trash-2', 's')}Borrar pendiente</button></div>`, 'Editar pendiente');
+}
+// Arrastrar (compu): a un día cambia el vencimiento, a "Sin fecha" lo saca, a una cuenta la cambia
+let arrastra = null;
+document.addEventListener('dragstart', e => { const el = e.target.closest && e.target.closest('[data-drag]'); if (!el) return; arrastra = el.dataset.drag; e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', arrastra); } catch (er) {} el.classList.add('arrastrando'); });
+document.addEventListener('dragend', () => { arrastra = null; $$('.arrastrando,.sobre').forEach(x => x.classList.remove('arrastrando', 'sobre')); });
+document.addEventListener('dragover', e => { if (!arrastra) return; const z = e.target.closest('[data-drop],[data-drop-a]'); if (!z) return; e.preventDefault(); $$('.sobre').forEach(x => x !== z && x.classList.remove('sobre')); z.classList.add('sobre'); });
+document.addEventListener('drop', e => {
+  if (!arrastra) return; const z = e.target.closest('[data-drop],[data-drop-a]'); if (!z) return; e.preventDefault();
+  const p = S.pend.find(x => x.id === arrastra); arrastra = null; if (!p) return;
+  if ('dropA' in z.dataset) { if (p.a === z.dataset.dropA) return render(); p.a = z.dataset.dropA; save(); render(); return toast(`Movido a ${areaInfo(p.a).n}.`); }
+  const v = z.dataset.drop || null; if (p.v === v) return render();
+  const antes = p.v; p.v = v; save(); render();
+  toast(v ? `Vence ${venceTxt(v).t.toLowerCase().replace(/^vencida · /, 'el ')}.` : 'Sin fecha.', () => { p.v = antes; save(); render(); });
+});
+// "comprar pan punto llamar a Juan" → dos pendientes
+function partirDictado(txt) {
+  return txt.split(/[.;\n]+|\s+punto(?!\s+(?:de|del|com)\b)\s+(?:y\s+)?(?:aparte\s+)?/i).map(x => x.trim().replace(/[\s,]+$/, '').replace(/\s+punto$/i, ''))
+    .filter(Boolean).map(x => x.charAt(0).toUpperCase() + x.slice(1));
+}
+function addPend(textos) {
+  const k = todayKey(), dest = V.parea && V.parea !== 'auto' ? V.parea : null;
+  const fi = $('#pend-v'), fija = (fi && fi.value) || V.pfecha || null;
+  const nuevos = textos.map(t0 => { const f = fechaDeTexto(t0), t = f.t.charAt(0).toUpperCase() + f.t.slice(1); return { id: uid(), t: t.slice(0, 200), k, done: null, a: dest || areaDe(t0), v: fija || f.v }; });
+  if (!nuevos.length) return [];
+  S.pend.push(...nuevos); V.parea = 'auto'; V.pfecha = ''; save(); render();
+  return nuevos;
+}
+function tickPend(id) {
+  const p = S.pend.find(x => x.id === id); if (!p) return;
+  p.done = p.done ? null : todayKey(); save();
+  if (p.done) animar = id;
+  render();
+  if (p.done) { click(); Comun.haptic(10); Comun.chispas(document.querySelector(T && !$('#arcade').hidden ? '#arcade .ar-emo' : `[data-act="ptick"][data-id="${id}"]`)); }
+}
+function delPend(id) {
+  const ix = S.pend.findIndex(x => x.id === id); if (ix < 0) return;
+  const [p] = S.pend.splice(ix, 1); save(); render();
+  toast('Pendiente borrado.', () => { S.pend.splice(Math.min(ix, S.pend.length), 0, p); save(); render(); });
+}
+// Mientras escucha no se redibuja la pantalla: solo cambian el botón y el texto de ayuda.
+function vozUI() {
+  const b = $('#pend-mic'), t = $('#pend-voz'); if (!b) return;
+  b.classList.toggle('on', !!reco); b.setAttribute('aria-pressed', !!reco);
+  b.querySelector('span').textContent = reco ? 'Listo' : 'Dictar pendientes';
+  if (t) t.textContent = reco ? (reco.texto ? '“' + reco.texto + '”' : 'Te escucho… Decí “punto” entre uno y otro.') : '';
+}
+function vozFin(error) {
+  const d = reco; if (!d || d.fin) return;
+  d.fin = true; reco = null; clearTimeout(d.timer); clearTimeout(d.tope);
+  try { d.r.abort(); } catch (e) {}
+  vozUI();
+  if (error) return toast(error);
+  const n = addPend(partirDictado(d.texto));
+  if (n.length) toast(n.length === 1 ? `Agregado: ${n[0].t}.` : `Agregados ${n.length} pendientes.`, () => { S.pend = S.pend.filter(p => !n.includes(p)); save(); render(); });
+  else toast('No te escuché. Probá de nuevo o escribilo.');
+}
+function voz() {
+  if (reco) { // segundo toque: termina y guarda lo que escuchó
+    try { reco.r.stop(); } catch (e) {}
+    const d = reco; setTimeout(() => { if (reco === d) vozFin(); }, 800);
+    return;
+  }
+  let r;
+  try { r = new Reco(); } catch (e) { return toast('El dictado no anda acá. Usá el micrófono del teclado.'); }
+  const d = reco = { r, texto: '', fin: false, timer: null, tope: null };
+  r.lang = 'es-AR'; r.interimResults = true; r.continuous = false; // en iPhone el modo continuo repite frases r.maxAlternatives = 1;
+  r.onresult = e => {
+    if (d.fin) return;
+    let t = '';
+    for (let i = 0; i < e.results.length; i++) t += ' ' + e.results[i][0].transcript;
+    d.texto = t.replace(/\s+/g, ' ').trim();
+    vozUI();
+    clearTimeout(d.timer); d.timer = setTimeout(() => vozFin(), 2500); // 2,5 s de silencio y corta
+  };
+  r.onerror = e => {
+    if (d.fin) return;
+    if (e.error === 'no-speech' || e.error === 'aborted') return vozFin();
+    vozFin({ 'not-allowed': 'Sin permiso para el micrófono. Habilitalo en Ajustes del navegador.', 'service-not-allowed': 'El dictado no anda acá. Usá el micrófono del teclado.', 'audio-capture': 'No encuentro el micrófono.', network: 'El dictado necesita internet.' }[e.error] || 'El dictado falló. Usá el micrófono del teclado.');
+  };
+  r.onend = () => { if (!d.fin) vozFin(); };
+  d.timer = setTimeout(() => vozFin(), 8000); // si no llega nada (Safari a veces se queda colgado), corta igual
+  d.tope = setTimeout(() => vozFin(), 30000);
+  try { r.start(); } catch (e) { return vozFin('El dictado no anda acá. Usá el micrófono del teclado.'); }
+  vozUI(); Comun.haptic(10);
+}
+
 function vHoy() {
   const now = new Date(), k = key(now), dow = now.getDay();
   const i = dayInfo(k);
@@ -553,7 +914,11 @@ let tabPintada = null;
 function render() {
   const view = $('#view');
   view.classList.toggle('entra', V.tab !== tabPintada); tabPintada = V.tab;
-  view.innerHTML = V.tab === 'hoy' ? vHoy() : V.tab === 'prog' ? vProg() : vHab();
+  if (reco && V.tab !== 'pend') vozFin();
+  view.classList.toggle('ancho', V.tab === 'pend');
+  view.innerHTML = V.tab === 'hoy' ? vHoy() : V.tab === 'pend' ? vPend() : V.tab === 'prog' ? vProg() : vHab();
+  const np = pendAbiertos(); $$('[data-badge="pend"]').forEach(x => { x.textContent = np || ''; x.hidden = !np; });
+  if (reco) vozUI();
   $$('[data-act="tab"][data-t]').forEach(b => { if (!b.dataset.ancla) { if (b.dataset.t === V.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); } });
   if (openDay) fillDay();
   if (window.Sync) renderSync();
@@ -707,8 +1072,8 @@ $('#imp').addEventListener('change', async e => {
   } catch (err) { toast('Ese archivo no sirve.'); }
 });
 
-/* ---------- navegación por hash (#hoy, #prog, #hab) ---------- */
-function leerHash() { const t = location.hash.replace('#', '').split('-')[0]; return ['hoy', 'prog', 'hab'].includes(t) ? t : 'hoy'; }
+/* ---------- navegación por hash (#hoy, #pend, #prog, #hab) ---------- */
+function leerHash() { const t = location.hash.replace('#', '').split('-')[0]; return ['hoy', 'pend', 'prog', 'hab'].includes(t) ? t : 'hoy'; }
 function irTab(t, ancla) {
   V.tab = t;
   const h = ancla ? t + '-' + ancla : t;
@@ -734,9 +1099,29 @@ document.addEventListener('click', e => {
   const a = t.dataset.act, d = t.dataset;
   if (a.startsWith('ar') && a !== 'arcade') return accionArcade(a, d, t);
   switch (a) {
-    case 'arcade': abrirArcade(d.id); break;
+    case 'arcade': abrirArcade(d.id, d.tipo); break;
     case 'tab': e.preventDefault(); irTab(d.t, d.ancla); break;
     case 'tick': toggle(d.id, todayKey()); break;
+    case 'voz': voz(); break;
+    case 'ptick': tickPend(d.id); break;
+    case 'pdel': delPend(d.id); break;
+    case 'pedit': editPend(d.id); break;
+    case 'parea': V.parea = d.a; render(); break;
+    case 'padd': V.parea = d.a; render(); { const i = $('#pend-in'); if (i) { i.scrollIntoView({ block: 'center', behavior: 'smooth' }); i.focus({ preventScroll: true }); } } break;
+    case 'peArea': ED.a = d.a; $$('#pe-a button').forEach(b => { b.classList.toggle('on', b === t); b.setAttribute('aria-checked', b === t); }); break;
+    case 'pSave': {
+      const p = S.pend.find(x => x.id === ED.pid), txt = $('#pe-t').value.trim();
+      if (!txt) return toast('Escribí algo.');
+      if (p) { const dsc = $('#pe-d').value.trim(); p.t = txt.slice(0, 200); p.a = ED.a; p.v = $('#pe-v').value || null; if (dsc) p.d = dsc.slice(0, 600); else delete p.d; save(); }
+      closeSheet(); render(); break;
+    }
+    case 'pvista': V.pvista = d.v; try { localStorage.setItem(PV_LS, d.v); } catch (er) {} render(); break;
+    case 'psem': V.psem = +d.n === 0 ? 0 : (V.psem || 0) + +d.n; render(); break;
+    case 'pmes': V.pmes = +d.n === 0 ? 0 : (V.pmes || 0) + +d.n; render(); break;
+    case 'pirsem': V.pvista = 'semana'; V.psem = Math.round((Comun.lunes(parse(d.v)) - weekStart(0)) / (7 * 864e5)); render(); break;
+    case 'pdia': V.pfecha = d.v; render(); { const i = $('#pend-in'); if (i) { i.scrollIntoView({ block: 'center', behavior: 'smooth' }); i.focus({ preventScroll: true }); } } break;
+    case 'peSinFecha': $('#pe-v').value = ''; break;
+    case 'pDelS': { const id = ED.pid; closeSheet(); delPend(id); break; }
     case 'dtick': toggle(d.id, openDay, true); break;
     case 'day': openDaySheet(d.k); break;
     case 'wk': V.week += +d.n; render(); break;
@@ -787,6 +1172,12 @@ document.addEventListener('click', e => {
     case 'import': $('#imp').click(); break;
   }
 });
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'pend-form') return;
+  e.preventDefault();
+  const i = $('#pend-in'), t = i.value.trim();
+  if (t) addPend([t]);
+});
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { S = load(); render(); if (T) { tickArcade(); if (T && T.fase === 'juego') pedirWake(); } } });
 addEventListener('pageshow', e => { if (e.persisted) { S = load(); render(); } });
 
@@ -806,7 +1197,9 @@ let T = null, tInt = null, wake = null, cuentaT = [], focoAntes = null;
 const minDe = h => h.min > 0 ? h.min : 25;
 const restante = () => !T ? 0 : T.fin ? Math.max(0, T.fin - Date.now()) : T.rest;
 const mmss = ms => { const s = Math.ceil(ms / 1000); return `${pad(Math.floor(s / 60))}:${pad(s % 60)}`; };
-const habT = () => T && S.habits.find(x => x.id === T.id);
+const esP = () => T && T.tipo === 'p';
+const habT = () => T && (esP() ? S.pend.find(x => x.id === T.id) : S.habits.find(x => x.id === T.id));
+const datosT = o => esP() ? { nm: o.t, desc: o.d, emoji: '📌', hecho: !!o.done, hoy: true } : { nm: o.name, desc: o.desc, emoji: o.emoji, hecho: isDone(o, todayKey()), hoy: due(o, todayKey()) };
 function guardarT() { try { if (T) localStorage.setItem(LS_T, JSON.stringify(T)); else localStorage.removeItem(LS_T); } catch (e) {} }
 async function pedirWake() { try { if (!wake && 'wakeLock' in navigator && !document.hidden) { wake = await navigator.wakeLock.request('screen'); wake.addEventListener('release', () => { wake = null; }); } } catch (e) {} }
 function soltarWake() { try { if (wake) wake.release(); } catch (e) {} wake = null; }
@@ -819,9 +1212,9 @@ function pantallaCompleta(on) {
 }
 function temaArcade(on) { $$('meta[name="theme-color"]').forEach(m => { if (!m.dataset.orig) m.dataset.orig = m.content; m.content = on ? '#0B0F1E' : m.dataset.orig; }); }
 
-function abrirArcade(id) {
-  const h = S.habits.find(x => x.id === id); if (!h) return;
-  T = { id, total: minDe(h) * 60000, rest: minDe(h) * 60000, fin: null, fase: 'listo' };
+function abrirArcade(id, tipo) {
+  const h = (tipo === 'p' ? S.pend : S.habits).find(x => x.id === id); if (!h) return;
+  T = { id, tipo: tipo === 'p' ? 'p' : 'h', total: minDe(h) * 60000, rest: minDe(h) * 60000, fin: null, fase: 'listo' };
   guardarT(); mostrarArcade(); pantallaCompleta(true);
 }
 function mostrarArcade() {
@@ -842,7 +1235,7 @@ function cerrarArcade() {
 }
 function pintarArcade() {
   const h = habT(); if (!h) return cerrarArcade();
-  const k = todayKey(), hecho = isDone(h, k), hoy = due(h, k), n = sesiones(h), f = T.fase, min = Math.round(T.total / 60000);
+  const { nm, desc, emoji, hecho, hoy } = datosT(h), n = esP() ? 0 : sesiones(h), f = T.fase, min = Math.round(T.total / 60000);
   const estado = { listo: 'READY?', cuenta: '', juego: '¡DALE!', pausa: 'PAUSA', fin: '' }[f];
   let ctl = '';
   if (f === 'listo') ctl = `<div class="ar-pre" role="group" aria-label="Minutos">${PRESETS.map(m => `<button data-act="arMin" data-n="${m}" class="${m === min ? 'on' : ''}" aria-pressed="${m === min}">${m}'</button>`).join('')}</div>
@@ -850,10 +1243,10 @@ function pintarArcade() {
   else if (f === 'juego' || f === 'pausa') ctl = `<div class="ar-fila"><button class="ar-b azul chico" data-act="arReset">${ic('rotate-ccw')}Reset</button><button class="ar-b ${f === 'juego' ? 'oro' : 'verde'} grande" data-act="arPausa" id="ar-main">${ic(f === 'juego' ? 'pause' : 'play')}${f === 'juego' ? 'Pausa' : 'Seguir'}</button><button class="ar-b verde chico" data-act="arFin">${ic('check')}Listo</button></div>`;
   else if (f === 'fin') ctl = `<div class="ar-fila">${hoy && !hecho ? `<button class="ar-b verde grande" data-act="arHecho" id="ar-main">${ic('check')}Marcar</button>` : ''}<button class="ar-b azul chico" data-act="arOtra" ${hoy && !hecho ? '' : 'id="ar-main"'}>${ic('rotate-ccw')}Otra</button><button class="ar-b rojo chico" data-act="arSalir">${ic('x')}Salir</button></div>`;
   const centro = f === 'fin'
-    ? `<p class="ar-gano">${T.marcado ? '+1 sesión' : T.temprano ? '¡Nivel superado!' : '¡Tiempo!'}</p><p class="ar-estado blink">${T.marcado ? `${n} ${n === 1 ? 'sesión' : 'sesiones'} en total` : hecho ? 'Ya estaba hecho hoy' : hoy ? 'Marcalo como hecho' : 'Hoy no estaba programado'}</p>`
+    ? `<p class="ar-gano">${T.marcado ? (esP() ? '¡Tarea hecha!' : '+1 sesión') : T.temprano ? '¡Nivel superado!' : '¡Tiempo!'}</p><p class="ar-estado blink">${T.marcado && esP() ? 'Tachada de pendientes' : T.marcado ? `${n} ${n === 1 ? 'sesión' : 'sesiones'} en total` : hecho ? 'Ya estaba hecho hoy' : hoy ? 'Marcalo como hecho' : 'Hoy no estaba programado'}</p>`
     : `<div class="ar-reloj" id="ar-reloj" role="timer" aria-label="Tiempo restante">${mmss(restante())}</div><div class="ar-vida" id="ar-vida" aria-hidden="true">${'<i></i>'.repeat(SEG)}</div><p class="ar-estado ${f === 'listo' || f === 'pausa' ? 'blink' : ''}">${estado}</p>`;
-  $('#arcade').innerHTML = `<header class="ar-top"><span class="p1">1UP</span><span class="pts">Sesiones ${String(n).padStart(3, '0')}</span><button class="ar-x" data-act="arSalir" aria-label="Salir del modo arcade">${ic('x')}</button></header>
-    <div class="ar-centro"><span class="ar-emo" aria-hidden="true">${esc(h.emoji)}</span><h2 class="ar-nm">${esc(h.name)}</h2>${h.desc ? `<p class="ar-desc">${esc(h.desc)}</p>` : ''}${centro}</div>
+  $('#arcade').innerHTML = `<header class="ar-top"><span class="p1">1UP</span><span class="pts">${esP() ? esc(areaInfo(areaP(h)).n) : `Sesiones ${String(n).padStart(3, '0')}`}</span><button class="ar-x" data-act="arSalir" aria-label="Salir del modo arcade">${ic('x')}</button></header>
+    <div class="ar-centro"><span class="ar-emo" aria-hidden="true">${esc(emoji)}</span><h2 class="ar-nm">${esc(nm)}</h2>${desc ? `<p class="ar-desc">${esc(desc)}</p>` : ''}${centro}</div>
     <div class="ar-ctl">${ctl}</div>`;
   tickArcade(true);
   const m = $('#ar-main'); if (m) m.focus({ preventScroll: true });
@@ -870,7 +1263,7 @@ function tickArcade(soloPintar) {
   a.classList.toggle('bajo', T.fase !== 'listo' && r <= Math.min(60000, T.total * .2));
   a.classList.toggle('critico', T.fase === 'juego' && r <= 10000);
   const h = habT();
-  document.title = T.fase === 'juego' || T.fase === 'pausa' ? `${mmss(r)} · ${h ? h.name : ''}` : 'Hábitos';
+  document.title = T.fase === 'juego' || T.fase === 'pausa' ? `${mmss(r)} · ${h ? datosT(h).nm : ''}` : 'Hábitos';
 }
 function arrancar() {
   const h = habT();
@@ -907,7 +1300,7 @@ function accionArcade(a, d, t) {
     case 'arFin': finArcade(true); break;
     case 'arOtra': T.rest = T.total; T.fase = 'listo'; T.marcado = false; guardarT(); pintarArcade(); break;
     case 'arHecho':
-      if (h && !isDone(h, todayKey())) { T.marcado = true; toggle(h.id, todayKey(), true); }
+      if (h && !datosT(h).hecho) { T.marcado = true; if (esP()) tickPend(h.id); else toggle(h.id, todayKey(), true); }
       pintarArcade(); break;
     case 'arSalir': cerrarArcade(); break;
   }
@@ -915,7 +1308,7 @@ function accionArcade(a, d, t) {
 (function retomarArcade() {
   try {
     const t = JSON.parse(localStorage.getItem(LS_T));
-    if (!t || !S.habits.some(h => h.id === t.id) || !(t.total > 0)) { localStorage.removeItem(LS_T); return; }
+    if (!t || !(t.tipo === 'p' ? S.pend : S.habits).some(h => h.id === t.id) || !(t.total > 0)) { localStorage.removeItem(LS_T); return; }
     T = t;
     if (T.fase === 'cuenta') T.fase = 'listo';
     if (T.fase === 'juego' && restante() <= 0) { T.rest = 0; T.fin = null; T.fase = 'fin'; }
