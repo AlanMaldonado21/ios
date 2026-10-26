@@ -98,6 +98,20 @@ main{max-width:640px;margin:0 auto;padding:8px 16px 0}
 .pend-tx small{display:block;color:var(--naranja);font-size:var(--t12);font-weight:800}
 .pend-it.done .pend-tx{color:var(--mu);text-decoration:line-through}
 
+.pend-dest{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.pend-dest button{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border:2px solid var(--ln2);border-bottom-width:4px;border-radius:12px;background:var(--card);color:var(--mu);font:800 var(--t14)/1 var(--sans)}
+.pend-dest button i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.pend-dest button.on{background:var(--sel-bg);border-color:var(--sel);color:var(--sel)}
+.pend-grid .bloque{margin:0 0 12px;break-inside:avoid}
+@media (min-width:760px){.pend-grid{columns:2;column-gap:12px}}
+.pcard{border-color:color-mix(in srgb,var(--c) 45%,var(--ln));border-top:8px solid var(--c);padding-top:10px}
+.pcard-h{display:flex;align-items:center;gap:8px;margin:0 -6px 2px 0}
+.pcard-h h2{flex:1;display:flex;align-items:center;gap:8px;margin:0}
+.pcard-h h2 i{width:12px;height:12px;border-radius:4px;background:var(--c)}
+.pcard.vacia{opacity:.85}
+.pcard-v{margin:2px 0 4px}
+button.pend-tx{background:none;border:0;padding:6px 0;text-align:left;color:inherit;font:inherit;font-weight:800;cursor:pointer}
+
 /* botones */
 .b-fila{display:flex;gap:8px;flex-wrap:wrap}
 .b-fila>*{flex:1}
@@ -397,9 +411,20 @@ function item(h, k, dow) {
 const Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
 let reco = null; // dictado en curso: { r, texto, timer, fin }
 const pendAbiertos = () => S.pend.filter(p => !p.done).length;
+// Una card por cuenta. El pendiente cae en la que nombra (también con errores típicos del dictado); si no nombra ninguna, en "Otros".
+const AREAS = [
+  { id: 'gimos', n: 'Gimos', c: COLORS[0].c, re: /\b(gimos|gimo|jimos|guimos|ximos)\b/i },
+  { id: 'yagmour', n: 'Yagmour', c: COLORS[5].c, re: /\b(y[ae]g\s?m[ou]u?r|jag\s?m[ou]u?r|yag\s?more|yamour|yagmur)\b/i },
+  { id: 'solmaint', n: 'Solmaint', c: COLORS[1].c, re: /\b(sol\s?main?t?|solmeint|solment|sol\s?mint)\b/i },
+  { id: 'midway', n: 'Midway', c: COLORS[4].c, re: /\b(mid\s?w[ae]y|midwei|mitwey|mit\s?way)\b/i },
+  { id: 'mieza', n: 'Mieza', c: COLORS[2].c, re: /\b(mi[eé]za|mi\s?eza|mieza)\b/i },
+  { id: 'otros', n: 'Otros', c: '#8B8F98', re: null }
+];
+const areaDe = t => (AREAS.find(x => x.re && x.re.test(t)) || AREAS[AREAS.length - 1]).id;
+const areaP = p => AREAS.some(x => x.id === p.a) ? p.a : areaDe(p.t);
 function vPend() {
   const now = new Date(), hoy = todayKey(), L = S.pend.slice().sort((a, b) => !!a.done - !!b.done);
-  const hechos = L.filter(p => p.done).length;
+  const hechos = L.filter(p => p.done).length, dest = V.parea || 'auto';
   const desde = k => k === key(addDays(now, -1)) ? 'Desde ayer' : 'Desde el ' + fecha(k);
   let out = `<h1>Pendientes</h1><p class="sub">${DFULL[now.getDay()]} ${now.getDate()} de ${MONTHS[now.getMonth()]}${L.length ? ` · ${hechos} de ${L.length} hechos` : ''}</p>`;
   if (Reco) out += `<button type="button" class="pend-voz-b" id="pend-mic" data-act="voz" aria-pressed="false">${ic('mic')}<span>Dictar pendientes</span></button>
@@ -407,13 +432,33 @@ function vPend() {
   out += `<form class="pend-form" id="pend-form">
       <input class="campo" type="text" id="pend-in" placeholder="Escribí un pendiente" aria-label="Nuevo pendiente" autocomplete="off" enterkeyhint="done" maxlength="200">
       <button type="submit" class="pend-b mas" aria-label="Agregar pendiente">${ic('plus')}</button>
-    </form>`;
-  out += L.length ? `<section class="bloque"><ul class="pend-l">${L.map(p => `<li class="pend-it ${p.done ? 'done' : ''}">
+    </form>
+    <div class="pend-dest" role="radiogroup" aria-label="¿En qué card va?">${[{ id: 'auto', n: 'Automático' }, ...AREAS].map(x => `<button type="button" role="radio" aria-checked="${dest === x.id}" class="${dest === x.id ? 'on' : ''}" data-act="parea" data-a="${x.id}" ${x.c ? `style="--c:${x.c}"` : ''}>${x.c ? '<i></i>' : ''}${x.n}</button>`).join('')}</div>`;
+  const fila = p => `<li class="pend-it ${p.done ? 'done' : ''}">
       <button class="chk ${animar === p.id ? 'anim' : ''}" data-act="ptick" data-id="${p.id}" aria-pressed="${!!p.done}" aria-label="${p.done ? 'Desmarcar' : 'Marcar'} ${esc(p.t)}">${TILDE}</button>
-      <span class="pend-tx">${esc(p.t)}${!p.done && p.k < hoy ? `<small>${desde(p.k)}</small>` : ''}</span>
+      <button class="pend-tx" data-act="pedit" data-id="${p.id}" aria-label="Editar o mover ${esc(p.t)}">${esc(p.t)}${!p.done && p.k < hoy ? `<small>${desde(p.k)}</small>` : ''}</button>
       <button class="icon-btn" data-act="pdel" data-id="${p.id}" aria-label="Borrar ${esc(p.t)}">${ic('x')}</button>
-    </li>`).join('')}</ul></section>` : `<p class="vacio">Nada pendiente. ${Reco ? 'Tocá “Dictar” y decilo, o escribilo.' : 'Escribilo abajo (podés usar el micrófono del teclado).'}</p>`;
+    </li>`;
+  out += `<div class="pend-grid">${AREAS.map(ar => {
+    const ps = L.filter(p => areaP(p) === ar.id);
+    if (ar.id === 'otros' && !ps.length) return '';
+    const ab = ps.filter(p => !p.done).length;
+    return `<section class="bloque pcard ${ab ? '' : 'vacia'}" style="--c:${ar.c}" aria-label="${ar.n}">
+      <div class="pcard-h"><h2><i aria-hidden="true"></i>${ar.n}</h2><span class="mu t14">${ps.length ? (ab ? `${ab} ${ab === 1 ? 'pendiente' : 'pendientes'}` : 'Todo hecho') : ''}</span>
+        <button class="icon-btn" data-act="padd" data-a="${ar.id}" aria-label="Agregar pendiente en ${ar.n}">${ic('plus')}</button></div>
+      ${ps.length ? `<ul class="pend-l">${ps.map(fila).join('')}</ul>` : `<p class="mu t14 pcard-v">Nada pendiente.</p>`}
+    </section>`;
+  }).join('')}</div>`;
   return out;
+}
+function editPend(id) {
+  const p = S.pend.find(x => x.id === id); if (!p) return;
+  ED = { pid: id, a: areaP(p) };
+  openSheet(`<div class="bloque-h"><h2>Pendiente</h2><button class="icon-btn" data-act="closeSheet" aria-label="Cerrar">${ic('x')}</button></div>
+    <label class="lb" for="pe-t">Texto</label><input type="text" id="pe-t" maxlength="200" value="${esc(p.t)}">
+    <span class="lb" id="lb-pa">Card</span><div class="pend-dest" role="radiogroup" aria-labelledby="lb-pa" id="pe-a">${AREAS.map(x => `<button type="button" role="radio" aria-checked="${ED.a === x.id}" class="${ED.a === x.id ? 'on' : ''}" data-act="peArea" data-a="${x.id}" style="--c:${x.c}"><i></i>${x.n}</button>`).join('')}</div>
+    <div class="form-pie"><button class="b-sec" data-act="closeSheet">Cancelar</button><button class="b-pri" data-act="pSave">Guardar</button></div>
+    <div class="zona-borrar"><button class="b-txt neg" data-act="pDelS">${ic('trash-2', 's')}Borrar pendiente</button></div>`, 'Editar pendiente');
 }
 // "comprar pan punto llamar a Juan" → dos pendientes
 function partirDictado(txt) {
@@ -421,9 +466,10 @@ function partirDictado(txt) {
     .filter(Boolean).map(x => x.charAt(0).toUpperCase() + x.slice(1));
 }
 function addPend(textos) {
-  const k = todayKey(), nuevos = textos.map(t => ({ id: uid(), t: t.slice(0, 200), k, done: null }));
+  const k = todayKey(), dest = V.parea && V.parea !== 'auto' ? V.parea : null;
+  const nuevos = textos.map(t => ({ id: uid(), t: t.slice(0, 200), k, done: null, a: dest || areaDe(t) }));
   if (!nuevos.length) return [];
-  S.pend.push(...nuevos); save(); render();
+  S.pend.push(...nuevos); V.parea = 'auto'; save(); render();
   return nuevos;
 }
 function tickPend(id) {
@@ -793,6 +839,17 @@ document.addEventListener('click', e => {
     case 'voz': voz(); break;
     case 'ptick': tickPend(d.id); break;
     case 'pdel': delPend(d.id); break;
+    case 'pedit': editPend(d.id); break;
+    case 'parea': V.parea = d.a; render(); break;
+    case 'padd': V.parea = d.a; render(); { const i = $('#pend-in'); if (i) { i.scrollIntoView({ block: 'center', behavior: 'smooth' }); i.focus({ preventScroll: true }); } } break;
+    case 'peArea': ED.a = d.a; $$('#pe-a button').forEach(b => { b.classList.toggle('on', b === t); b.setAttribute('aria-checked', b === t); }); break;
+    case 'pSave': {
+      const p = S.pend.find(x => x.id === ED.pid), txt = $('#pe-t').value.trim();
+      if (!txt) return toast('Escribí algo.');
+      if (p) { p.t = txt.slice(0, 200); p.a = ED.a; save(); }
+      closeSheet(); render(); break;
+    }
+    case 'pDelS': { const id = ED.pid; closeSheet(); delPend(id); break; }
     case 'dtick': toggle(d.id, openDay, true); break;
     case 'day': openDaySheet(d.k); break;
     case 'wk': V.week += +d.n; render(); break;
