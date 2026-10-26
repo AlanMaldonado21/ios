@@ -166,6 +166,61 @@ button.c:disabled{opacity:.55}
 .semana dt{color:var(--mu);font-weight:900}.semana dd{margin:0}
 .semana>.rotulo::before{content:"🗓️ "}
 .syncbox .st{font-size:var(--t14);margin:4px 0 0}
+.ds{display:block;color:var(--mu);font-size:var(--t14);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.play{width:44px;height:44px;flex:none;display:grid;place-items:center;padding:0;border:2px solid var(--ln2);border-bottom-width:4px;border-radius:14px;background:var(--card);color:var(--sel);transition:transform 110ms var(--ease)}
+.play:active{transform:translateY(2px);border-bottom-width:2px}
+.done .play{color:var(--mu)}
+.hoja textarea{width:100%;min-height:88px;padding:12px 14px;border-radius:14px;border:2px solid var(--ln2);background:var(--card);font-size:var(--t16);font-weight:600;color:var(--tx);resize:vertical}
+.hoja textarea:focus{border-color:var(--sel)}
+
+/* modo arcade: temporizador a pantalla completa */
+.arcade{--cian:#3DF2FF;--rosa:#FF2E88;--oro:#FFD23F;--rojo:#FF4D6D;position:fixed;inset:0;z-index:74;display:flex;flex-direction:column;overflow:auto;color:#E9F1FF;background:radial-gradient(120% 70% at 50% 0%,#24306A 0%,#0B0F1E 62%) #0B0F1E;padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 18px) calc(env(safe-area-inset-left) + 16px);animation:fade 200ms var(--ease)}
+.arcade[hidden]{display:none}
+.arcade::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px)}
+.arcade::after{content:"";position:fixed;left:-50%;right:-50%;bottom:-10%;height:46%;pointer-events:none;z-index:0;opacity:.45;transform:perspective(260px) rotateX(62deg);transform-origin:bottom;background:linear-gradient(var(--rosa) 2px,transparent 2px) 0 0/100% 40px,linear-gradient(90deg,var(--rosa) 2px,transparent 2px) 0 0/40px 100%;-webkit-mask:linear-gradient(transparent,#000 60%);mask:linear-gradient(transparent,#000 60%);animation:ar-piso 1.2s linear infinite}
+.arcade>*{position:relative;z-index:2}
+.ar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;font:900 var(--t14)/1 var(--sans);letter-spacing:.14em;text-transform:uppercase}
+.ar-top .p1{color:var(--rosa);animation:parpadeo 1.2s steps(2) infinite}
+.ar-top .pts{color:var(--oro);font-variant-numeric:tabular-nums}
+.ar-x{width:44px;height:44px;display:grid;place-items:center;padding:0;border-radius:50%;border:2px solid rgba(233,241,255,.35);background:rgba(11,15,30,.6);color:#E9F1FF}
+.ar-centro{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:16px 0}
+.ar-emo{font-size:60px;line-height:1;animation:flota 3s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(61,242,255,.45))}
+.ar-nm{margin:0;max-width:22ch;font:900 clamp(26px,6.5vw,46px)/1.1 var(--sans);text-transform:uppercase;letter-spacing:.03em;color:#fff;overflow-wrap:anywhere;text-shadow:0 0 14px var(--cian),3px 3px 0 var(--rosa)}
+.ar-desc{width:100%;max-width:560px;max-height:28vh;overflow:auto;margin:0;padding:12px 16px;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;font:700 var(--t16)/1.45 var(--sans);background:rgba(13,20,48,.88);border:3px solid var(--cian);border-radius:6px;box-shadow:0 0 0 3px #0B0F1E,0 0 0 6px var(--rosa),0 0 24px rgba(61,242,255,.25)}
+.ar-desc::before{content:"▶ MISIÓN";display:block;margin-bottom:4px;font:900 var(--t12)/1 var(--sans);letter-spacing:.2em;color:var(--oro)}
+.ar-reloj{font:900 clamp(84px,25vw,230px)/1 var(--sans);font-variant-numeric:tabular-nums;letter-spacing:.02em;color:var(--oro);text-shadow:0 0 22px rgba(255,210,63,.55),5px 5px 0 var(--rosa)}
+.ar-vida{display:grid;grid-template-columns:repeat(20,1fr);gap:3px;width:min(560px,100%)}
+.ar-vida i{height:16px;border-radius:2px;background:var(--cian);box-shadow:0 0 8px var(--cian);transition:background 200ms,box-shadow 200ms}
+.ar-vida i.off{background:rgba(255,255,255,.08);box-shadow:none}
+.bajo .ar-reloj{color:var(--rojo);text-shadow:0 0 22px rgba(255,77,109,.6),5px 5px 0 #6A1030}
+.bajo .ar-vida i:not(.off){background:var(--rojo);box-shadow:0 0 8px var(--rojo)}
+.critico .ar-reloj{animation:parpadeo 1s steps(2) infinite}
+.ar-estado{margin:0;min-height:1.2em;font:900 var(--t16)/1.2 var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--cian)}
+.ar-estado.blink{animation:parpadeo 1.2s steps(2) infinite}
+.ar-ctl{display:flex;flex-direction:column;align-items:center;gap:14px}
+.ar-pre{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.ar-pre button{min-width:56px;min-height:44px;padding:0 10px;border-radius:8px;border:2px solid var(--cian);background:transparent;color:var(--cian);font:900 var(--t16)/1 var(--sans);font-variant-numeric:tabular-nums}
+.ar-pre button.on{background:var(--cian);color:#0B0F1E;box-shadow:0 0 14px var(--cian)}
+.ar-fila{display:flex;align-items:flex-end;justify-content:center;gap:18px;flex-wrap:wrap}
+.ar-b{width:84px;height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0;border:0;border-radius:50%;color:#fff;font:900 var(--t12)/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;background:radial-gradient(circle at 35% 28%,var(--l),var(--b) 70%);box-shadow:0 6px 0 var(--s),0 12px 20px rgba(0,0,0,.5);transition:transform 90ms var(--ease),box-shadow 90ms var(--ease)}
+.ar-b:active{transform:translateY(5px);box-shadow:0 1px 0 var(--s),0 4px 8px rgba(0,0,0,.5)}
+.ar-b .ic{width:26px;height:26px}
+.ar-b.grande{width:124px;height:124px;font-size:var(--t16)}
+.ar-b.grande .ic{width:38px;height:38px}
+.ar-b.verde{--l:#6CF0A0;--b:#18B85E;--s:#0B6E37}
+.ar-b.oro{--l:#FFE89A;--b:#F5B800;--s:#9C7400;color:#2A1E00}
+.ar-b.rojo{--l:#FF9AAE;--b:#E8304F;--s:#8E1229}
+.ar-b.azul{--l:#9CC6FF;--b:#2F7BF0;--s:#163F8C}
+.ar-b.chico{width:64px;height:64px;font-size:11px}
+.ar-b.chico .ic{width:22px;height:22px}
+.ar-cuenta{position:fixed;inset:0;z-index:4;display:grid;place-items:center;background:rgba(11,15,30,.55);font:900 clamp(120px,40vw,320px)/1 var(--sans);color:var(--oro);text-shadow:0 0 30px rgba(255,210,63,.6),8px 8px 0 var(--rosa)}
+.ar-cuenta span{animation:ar-zoom 700ms var(--ease) both}
+.ar-cuenta span.ya{font-size:.55em;color:var(--cian);text-shadow:0 0 30px rgba(61,242,255,.7),6px 6px 0 var(--rosa)}
+.ar-gano{font:900 clamp(30px,8vw,56px)/1.1 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--cian);text-shadow:0 0 18px var(--cian),4px 4px 0 var(--rosa);animation:rebote 600ms var(--spring)}
+@keyframes ar-zoom{0%{transform:scale(2.2);opacity:0}30%{transform:scale(1);opacity:1}80%{opacity:1}100%{transform:scale(.85);opacity:0}}
+@keyframes ar-piso{to{background-position:0 40px,0 0}}
+@keyframes parpadeo{50%{opacity:0}}
+@media (max-height:560px){.ar-emo{font-size:40px}.ar-centro{gap:8px;padding:8px 0}.ar-reloj{font-size:clamp(64px,18vh,140px)}.ar-desc{max-height:22vh}.ar-b{width:64px;height:64px}.ar-b.grande{width:88px;height:88px}}
 @media (min-width:900px){main{max-width:760px;margin:0;padding:24px 40px 48px}}
 </style>
 </head>
@@ -207,6 +262,7 @@ button.c:disabled{opacity:.55}
 <div class="hoja-ov" id="ov" hidden><div class="hoja" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"><span></span><button hidden>Deshacer</button></div>
 <div id="sello-slot" aria-live="polite"></div>
+<div class="arcade" id="arcade" role="dialog" aria-modal="true" aria-label="Modo arcade" hidden></div>
 <input type="file" id="imp" accept="application/json,.json,text/plain" hidden aria-label="Archivo de respaldo">
 
 <script src="config.js"></script>
@@ -359,7 +415,8 @@ function item(h, k, dow) {
   const d = isDone(h, k);
   return `<li class="item ${d ? 'done' : ''}" data-id="${h.id}" style="--c:${colorDe(h)}">
     <span class="emo-i" aria-hidden="true">${esc(h.emoji)}</span>
-    <div class="txt"><span class="nm">${esc(h.name)}</span><span class="meta">${metaLine(h, dow)}</span></div>
+    <div class="txt"><span class="nm">${esc(h.name)}</span>${h.desc ? `<span class="ds">${esc(h.desc)}</span>` : ''}<span class="meta">${metaLine(h, dow)}</span></div>
+    <button class="play" data-act="arcade" data-id="${h.id}" aria-label="Temporizador de ${esc(h.name)}">${ic('play', 's')}</button>
     <button class="chk ${animar === h.id ? 'anim' : ''}" data-act="tick" data-id="${h.id}" aria-pressed="${d}" aria-label="${d ? 'Desmarcar' : 'Marcar'} ${esc(h.name)}">${TILDE}</button>
   </li>`;
 }
@@ -518,7 +575,7 @@ function toggle(hid, k, fromSheet) {
   if (!on) { hideToast(); return; }
   // feedback mínimo: el tilde se dibuja, un clic corto y una vibración breve
   click(); Comun.haptic(10);
-  Comun.chispas(document.querySelector(`.item[data-id="${hid}"] .chk`));
+  Comun.chispas(document.querySelector(T && !$('#arcade').hidden ? '#arcade .ar-emo' : `.item[data-id="${hid}"] .chk`));
   const h = S.habits.find(x => x.id === hid);
   if (!fromSheet) toast(`Marcado: ${h.name}.`, () => toggle(hid, k, fromSheet));
   // celebración solo en hitos: semana buena o un hito nuevo
@@ -535,15 +592,16 @@ function sello(rot, titulo, det) {
   clearTimeout(selloT); selloT = setTimeout(() => { s.innerHTML = ''; }, 6000);
 }
 let ac;
-function chime(notes) {
-  if (!S.settings.sound) return;
+function chime(notes, op) {
+  op = op || {};
+  if (!S.settings.sound && !op.siempre) return;
   try {
     ac = ac || new (window.AudioContext || window.webkitAudioContext)();
     if (ac.state === 'suspended') ac.resume();
     notes.forEach((f, i) => {
-      const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + i * .1;
-      o.type = 'sine'; o.frequency.value = f;
-      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.12, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + .18);
+      const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + i * (op.paso || .1);
+      o.type = op.onda || 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(op.vol || .12, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + .18);
       o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + .2);
     });
   } catch (e) {}
@@ -579,6 +637,8 @@ function editHabit(id) {
     <label class="lb" for="e-name">Nombre</label>
     <div class="er"><input type="text" class="emo" id="e-emoji" maxlength="8" value="${esc(h.emoji)}" aria-label="Emoji del hábito"><input type="text" id="e-name" placeholder="Nombre del hábito" value="${esc(h.name)}"></div>
     <div class="quick" role="group" aria-label="Emojis rápidos">${QUICK.map(e => `<button type="button" data-act="emo" data-e="${e}" aria-label="Usar ${e}">${e}</button>`).join('')}</div>
+    <label class="lb" for="e-desc">Descripción (opcional)</label><textarea id="e-desc" maxlength="600" placeholder="Qué vas a hacer en esta sesión">${esc(h.desc || '')}</textarea>
+    <label class="lb" for="e-min">Temporizador (minutos)</label><input type="number" id="e-min" min="1" max="180" inputmode="numeric" placeholder="25" value="${h.min > 0 ? h.min : ''}">
     <span class="lb" id="lb-dias">Días</span><div class="chips" id="e-days" role="group" aria-labelledby="lb-dias">${ORDER.map(d => `<button type="button" class="dchip ${h.days.includes(d) ? 'on' : ''}" data-act="dchip" data-d="${d}" aria-pressed="${h.days.includes(d)}" aria-label="${DFULL[d]}">${DAYS[d]}</button>`).join('')}</div>
     <label class="lb" for="e-time">Horario (opcional)</label>
     <div id="e-main"><input type="time" id="e-time" value="${esc(h.time)}"></div>
@@ -605,10 +665,13 @@ function saveHabit() {
   const per = $('#e-per').checked, times = {};
   if (per) $$('.trow').forEach(r => { const d = +r.dataset.d, v = r.querySelector('input').value; if (days.includes(d) && v) times[d] = v; });
   const hito = Math.round(+$('#e-hito').value) || 0;
+  const desc = $('#e-desc').value.trim(), min = Math.min(180, Math.round(+$('#e-min').value) || 0);
   const o = { name, emoji: $('#e-emoji').value.trim() || '⭐', color: ED.color, days, time: per ? '' : $('#e-time').value, times,
     since: $('#e-since').value || todayKey(), routine: $('#e-routine').value || null };
   if (hito > 0) o.hito = hito;
-  if (ED.id) { const h = S.habits.find(h => h.id === ED.id); Object.assign(h, o); if (!(hito > 0)) delete h.hito; }
+  if (desc) o.desc = desc;
+  if (min > 0) o.min = min;
+  if (ED.id) { const h = S.habits.find(h => h.id === ED.id); Object.assign(h, o); if (!(hito > 0)) delete h.hito; if (!desc) delete h.desc; if (!(min > 0)) delete h.min; }
   else S.habits.push({ id: uid(), ...o });
   save(); closeSheet(); render(); toast('Guardado.');
 }
@@ -656,13 +719,22 @@ function irTab(t, ancla) {
 addEventListener('hashchange', () => { const t = leerHash(); if (t !== V.tab) irTab(t); });
 
 /* ---------- eventos ---------- */
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#ov').hidden) closeSheet(); });
+document.addEventListener('keydown', e => {
+  if (T && !$('#arcade').hidden) {
+    if (e.key === 'Escape') { e.preventDefault(); if (T.fase === 'juego') accionArcade('arPausa', {}); else if (T.fase !== 'cuenta') cerrarArcade(); }
+    else if (e.key === ' ' && !e.target.closest('button')) { e.preventDefault(); if (T.fase === 'listo') accionArcade('arStart', {}); else if (T.fase === 'juego' || T.fase === 'pausa') accionArcade('arPausa', {}); }
+    return;
+  }
+  if (e.key === 'Escape' && !$('#ov').hidden) closeSheet();
+});
 document.addEventListener('click', e => {
   if (e.target.id === 'ov') return closeSheet();
   const t = e.target.closest('[data-act]');
   if (!t) return;
   const a = t.dataset.act, d = t.dataset;
+  if (a.startsWith('ar') && a !== 'arcade') return accionArcade(a, d, t);
   switch (a) {
+    case 'arcade': abrirArcade(d.id); break;
     case 'tab': e.preventDefault(); irTab(d.t, d.ancla); break;
     case 'tick': toggle(d.id, todayKey()); break;
     case 'dtick': toggle(d.id, openDay, true); break;
@@ -715,13 +787,142 @@ document.addEventListener('click', e => {
     case 'import': $('#imp').click(); break;
   }
 });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { S = load(); render(); } });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { S = load(); render(); if (T) { tickArcade(); if (T && T.fase === 'juego') pedirWake(); } } });
 addEventListener('pageshow', e => { if (e.persisted) { S = load(); render(); } });
 
 V.tab = leerHash();
 render();
 if (location.hash.includes('-')) irTab(V.tab, location.hash.split('-').slice(1).join('-'));
 if (window.Sync) { Sync.onStatus(renderSync); Sync.register('habitos', () => { S = load(); render(); }); }
+
+/* ---------- modo arcade: temporizador a pantalla completa ----------
+   Cuenta con la hora de fin (no con ticks), así sigue bien si la pantalla se apaga o la app queda de fondo.
+   El temporizador en curso se guarda en habitos-timer-v1: si se recarga la página, vuelve donde estaba. */
+const LS_T = 'habitos-timer-v1';
+const PRESETS = [5, 10, 15, 25, 45, 60];
+const SEG = 20;
+const BEEP = { onda: 'square', vol: .06 };
+let T = null, tInt = null, wake = null, cuentaT = [], focoAntes = null;
+const minDe = h => h.min > 0 ? h.min : 25;
+const restante = () => !T ? 0 : T.fin ? Math.max(0, T.fin - Date.now()) : T.rest;
+const mmss = ms => { const s = Math.ceil(ms / 1000); return `${pad(Math.floor(s / 60))}:${pad(s % 60)}`; };
+const habT = () => T && S.habits.find(x => x.id === T.id);
+function guardarT() { try { if (T) localStorage.setItem(LS_T, JSON.stringify(T)); else localStorage.removeItem(LS_T); } catch (e) {} }
+async function pedirWake() { try { if (!wake && 'wakeLock' in navigator && !document.hidden) { wake = await navigator.wakeLock.request('screen'); wake.addEventListener('release', () => { wake = null; }); } } catch (e) {} }
+function soltarWake() { try { if (wake) wake.release(); } catch (e) {} wake = null; }
+function pantallaCompleta(on) {
+  try {
+    const d = document, el = d.documentElement, ya = d.fullscreenElement || d.webkitFullscreenElement;
+    const p = on ? !ya && (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el) : ya && (d.exitFullscreen || d.webkitExitFullscreen)?.call(d);
+    if (p && p.catch) p.catch(() => {});
+  } catch (e) {}
+}
+function temaArcade(on) { $$('meta[name="theme-color"]').forEach(m => { if (!m.dataset.orig) m.dataset.orig = m.content; m.content = on ? '#0B0F1E' : m.dataset.orig; }); }
+
+function abrirArcade(id) {
+  const h = S.habits.find(x => x.id === id); if (!h) return;
+  T = { id, total: minDe(h) * 60000, rest: minDe(h) * 60000, fin: null, fase: 'listo' };
+  guardarT(); mostrarArcade(); pantallaCompleta(true);
+}
+function mostrarArcade() {
+  focoAntes = document.activeElement;
+  $('#arcade').hidden = false; document.body.classList.add('lock'); temaArcade(true);
+  pintarArcade();
+  clearInterval(tInt); tInt = setInterval(tickArcade, 250);
+  if (T.fase === 'juego') pedirWake();
+}
+function cerrarArcade() {
+  cuentaT.forEach(clearTimeout); cuentaT = [];
+  T = null; guardarT(); clearInterval(tInt); soltarWake();
+  const el = $('#arcade'); el.hidden = true; el.innerHTML = '';
+  if ($('#ov').hidden) document.body.classList.remove('lock');
+  temaArcade(false); pantallaCompleta(false); document.title = 'Hábitos';
+  render();
+  if (focoAntes && focoAntes.isConnected && focoAntes.focus) focoAntes.focus();
+}
+function pintarArcade() {
+  const h = habT(); if (!h) return cerrarArcade();
+  const k = todayKey(), hecho = isDone(h, k), hoy = due(h, k), n = sesiones(h), f = T.fase, min = Math.round(T.total / 60000);
+  const estado = { listo: 'READY?', cuenta: '', juego: '¡DALE!', pausa: 'PAUSA', fin: '' }[f];
+  let ctl = '';
+  if (f === 'listo') ctl = `<div class="ar-pre" role="group" aria-label="Minutos">${PRESETS.map(m => `<button data-act="arMin" data-n="${m}" class="${m === min ? 'on' : ''}" aria-pressed="${m === min}">${m}'</button>`).join('')}</div>
+    <div class="ar-fila"><button class="ar-b azul chico" data-act="arMas" data-n="-1" aria-label="Un minuto menos">−1'</button><button class="ar-b verde grande" data-act="arStart" id="ar-main">${ic('play')}Start</button><button class="ar-b azul chico" data-act="arMas" data-n="1" aria-label="Un minuto más">+1'</button></div>`;
+  else if (f === 'juego' || f === 'pausa') ctl = `<div class="ar-fila"><button class="ar-b azul chico" data-act="arReset">${ic('rotate-ccw')}Reset</button><button class="ar-b ${f === 'juego' ? 'oro' : 'verde'} grande" data-act="arPausa" id="ar-main">${ic(f === 'juego' ? 'pause' : 'play')}${f === 'juego' ? 'Pausa' : 'Seguir'}</button><button class="ar-b verde chico" data-act="arFin">${ic('check')}Listo</button></div>`;
+  else if (f === 'fin') ctl = `<div class="ar-fila">${hoy && !hecho ? `<button class="ar-b verde grande" data-act="arHecho" id="ar-main">${ic('check')}Marcar</button>` : ''}<button class="ar-b azul chico" data-act="arOtra" ${hoy && !hecho ? '' : 'id="ar-main"'}>${ic('rotate-ccw')}Otra</button><button class="ar-b rojo chico" data-act="arSalir">${ic('x')}Salir</button></div>`;
+  const centro = f === 'fin'
+    ? `<p class="ar-gano">${T.marcado ? '+1 sesión' : T.temprano ? '¡Nivel superado!' : '¡Tiempo!'}</p><p class="ar-estado blink">${T.marcado ? `${n} ${n === 1 ? 'sesión' : 'sesiones'} en total` : hecho ? 'Ya estaba hecho hoy' : hoy ? 'Marcalo como hecho' : 'Hoy no estaba programado'}</p>`
+    : `<div class="ar-reloj" id="ar-reloj" role="timer" aria-label="Tiempo restante">${mmss(restante())}</div><div class="ar-vida" id="ar-vida" aria-hidden="true">${'<i></i>'.repeat(SEG)}</div><p class="ar-estado ${f === 'listo' || f === 'pausa' ? 'blink' : ''}">${estado}</p>`;
+  $('#arcade').innerHTML = `<header class="ar-top"><span class="p1">1UP</span><span class="pts">Sesiones ${String(n).padStart(3, '0')}</span><button class="ar-x" data-act="arSalir" aria-label="Salir del modo arcade">${ic('x')}</button></header>
+    <div class="ar-centro"><span class="ar-emo" aria-hidden="true">${esc(h.emoji)}</span><h2 class="ar-nm">${esc(h.name)}</h2>${h.desc ? `<p class="ar-desc">${esc(h.desc)}</p>` : ''}${centro}</div>
+    <div class="ar-ctl">${ctl}</div>`;
+  tickArcade(true);
+  const m = $('#ar-main'); if (m) m.focus({ preventScroll: true });
+}
+function tickArcade(soloPintar) {
+  if (!T) return;
+  const r = restante();
+  if (T.fase === 'juego' && r <= 0 && !soloPintar) return finArcade(false);
+  const rel = $('#ar-reloj'); if (!rel) return;
+  rel.textContent = mmss(r);
+  const on = Math.ceil(r / T.total * SEG);
+  $$('#ar-vida i').forEach((i, ix) => i.classList.toggle('off', ix >= on));
+  const a = $('#arcade');
+  a.classList.toggle('bajo', T.fase !== 'listo' && r <= Math.min(60000, T.total * .2));
+  a.classList.toggle('critico', T.fase === 'juego' && r <= 10000);
+  const h = habT();
+  document.title = T.fase === 'juego' || T.fase === 'pausa' ? `${mmss(r)} · ${h ? h.name : ''}` : 'Hábitos';
+}
+function arrancar() {
+  const h = habT();
+  if (h && Math.round(T.total / 60000) !== h.min) { h.min = Math.round(T.total / 60000); save(); } // recuerda el último tiempo
+  T.fase = 'cuenta'; guardarT(); pintarArcade();
+  const caja = document.createElement('div'); caja.className = 'ar-cuenta'; caja.setAttribute('aria-live', 'assertive'); $('#arcade').appendChild(caja);
+  const pasos = Comun.reduce() ? ['¡YA!'] : ['3', '2', '1', '¡YA!'];
+  pasos.forEach((p, i) => cuentaT.push(setTimeout(() => {
+    caja.innerHTML = `<span class="${p === '¡YA!' ? 'ya' : ''}">${p}</span>`;
+    chime([p === '¡YA!' ? 880 : 440], BEEP);
+  }, i * 700)));
+  cuentaT.push(setTimeout(() => {
+    cuentaT = []; caja.remove();
+    T.fase = 'juego'; T.fin = Date.now() + T.rest; guardarT(); pedirWake(); pintarArcade();
+  }, pasos.length * 700));
+}
+function finArcade(temprano) {
+  T.rest = 0; T.fin = null; T.fase = 'fin'; T.temprano = temprano; guardarT(); soltarWake();
+  if (!temprano) { chime([523, 659, 784, 1047, 784, 1047, 1319], Object.assign({ siempre: true, paso: .13 }, BEEP)); Comun.haptic([200, 100, 200, 100, 400]); }
+  pintarArcade();
+}
+function accionArcade(a, d, t) {
+  if (!T) return;
+  const h = habT();
+  switch (a) {
+    case 'arMin': T.total = T.rest = +d.n * 60000; guardarT(); pintarArcade(); break;
+    case 'arMas': { const m = Math.max(1, Math.min(180, Math.round(T.total / 60000) + +d.n)); T.total = T.rest = m * 60000; guardarT(); pintarArcade(); break; }
+    case 'arStart': pantallaCompleta(true); arrancar(); break;
+    case 'arPausa':
+      if (T.fase === 'juego') { T.rest = restante(); T.fin = null; T.fase = 'pausa'; soltarWake(); }
+      else { T.fin = Date.now() + T.rest; T.fase = 'juego'; pedirWake(); }
+      chime([T.fase === 'juego' ? 660 : 330], BEEP); guardarT(); pintarArcade(); break;
+    case 'arReset': T.rest = T.total; T.fin = null; T.fase = 'listo'; soltarWake(); guardarT(); pintarArcade(); break;
+    case 'arFin': finArcade(true); break;
+    case 'arOtra': T.rest = T.total; T.fase = 'listo'; T.marcado = false; guardarT(); pintarArcade(); break;
+    case 'arHecho':
+      if (h && !isDone(h, todayKey())) { T.marcado = true; toggle(h.id, todayKey(), true); }
+      pintarArcade(); break;
+    case 'arSalir': cerrarArcade(); break;
+  }
+}
+(function retomarArcade() {
+  try {
+    const t = JSON.parse(localStorage.getItem(LS_T));
+    if (!t || !S.habits.some(h => h.id === t.id) || !(t.total > 0)) { localStorage.removeItem(LS_T); return; }
+    T = t;
+    if (T.fase === 'cuenta') T.fase = 'listo';
+    if (T.fase === 'juego' && restante() <= 0) { T.rest = 0; T.fin = null; T.fase = 'fin'; }
+    mostrarArcade();
+  } catch (e) {}
+})();
+
 </script>
 </body>
 </html>
