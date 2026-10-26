@@ -74,15 +74,20 @@ main{max-width:640px;margin:0 auto;padding:8px 16px 0}
 .chk.anim svg path{stroke-dasharray:24;animation:trazo 260ms var(--ease)}
 
 /* pendientes del día (con dictado por voz) */
-.pend-form{display:flex;gap:8px;margin-bottom:10px}
+.pend-form{display:flex;gap:8px;margin-bottom:14px}
 .pend-form .campo{flex:1;min-width:0}
 .pend-form .campo:focus{border-color:var(--sel);outline:none}
 .pend-b{width:50px;height:50px;flex:none;display:grid;place-items:center;padding:0;border-radius:14px;border:2px solid var(--ln2);border-bottom-width:4px;background:var(--card);color:var(--tx);transition:transform 110ms var(--ease)}
 .pend-b:active{transform:translateY(2px);border-bottom-width:2px}
 .pend-b.mas{background:var(--acc);border-color:var(--acc-sh);color:#fff}
-.pend-b.on{background:var(--neg);border-color:var(--neg);color:#fff;animation:escucha 1.2s ease-in-out infinite}
+.pend-voz-b{width:100%;min-height:64px;display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 10px;border-radius:20px;border:2px solid var(--acc-sh);border-bottom-width:5px;background:var(--acc);color:#fff;font:900 var(--t16)/1 var(--sans);transition:transform 110ms var(--ease)}
+.pend-voz-b .ic{width:26px;height:26px}
+.pend-voz-b:active{transform:translateY(3px);border-bottom-width:2px}
+.pend-voz-b.on{background:var(--neg);border-color:var(--neg);animation:escucha 1.2s ease-in-out infinite}
+.badge{position:absolute;top:4px;left:calc(50% + 8px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--neg);color:#fff;font:900 11px/18px var(--sans);text-align:center}
+.rail .badge{position:static;margin-left:auto}
 @keyframes escucha{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--neg) 45%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
-.pend-voz{margin:-4px 2px 8px;min-height:0}
+.pend-voz{margin:-2px 4px 12px;font-weight:700}
 .pend-voz:empty{display:none}
 .pend-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .pend-it{display:flex;align-items:center;gap:10px;min-height:52px;border-top:2px solid var(--bg3);padding:4px 0}
@@ -205,6 +210,7 @@ button.c:disabled{opacity:.55}
   <nav class="modsw" aria-label="Cambiar de módulo"><a href="./" aria-current="page">Hábitos</a><a href="finanzas/">Finanzas</a></nav>
   <nav aria-label="Hábitos">
     <a href="#hoy" data-act="tab" data-t="hoy"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-sun"/></svg>Hoy</a>
+    <a href="#pend" data-act="tab" data-t="pend"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-todo"/></svg>Pendientes<span class="badge" data-badge="pend" hidden></span></a>
     <a href="#prog" data-act="tab" data-t="prog"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-chart-no-axes-column"/></svg>Progreso</a>
     <a href="#hab" data-act="tab" data-t="hab"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-checks"/></svg>Hábitos</a>
   </nav>
@@ -221,6 +227,7 @@ button.c:disabled{opacity:.55}
 </div>
 <nav class="tabbar" aria-label="Hábitos"><div class="tabbar-in">
   <a href="#hoy" data-act="tab" data-t="hoy"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-sun"/></svg>Hoy</a>
+  <a href="#pend" data-act="tab" data-t="pend"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-todo"/></svg>Pendientes<span class="badge" data-badge="pend" hidden></span></a>
   <a href="#prog" data-act="tab" data-t="prog"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-chart-no-axes-column"/></svg>Progreso</a>
   <a href="#hab" data-act="tab" data-t="hab"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-checks"/></svg>Hábitos</a>
 </div></nav>
@@ -386,27 +393,27 @@ function item(h, k, dow) {
     <button class="chk ${animar === h.id ? 'anim' : ''}" data-act="tick" data-id="${h.id}" aria-pressed="${d}" aria-label="${d ? 'Desmarcar' : 'Marcar'} ${esc(h.name)}">${TILDE}</button>
   </li>`;
 }
-/* ---------- pendientes del día ---------- */
+/* ---------- pendientes del día (pestaña propia, #pend) ---------- */
 const Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
-let reco = null;
-function pendHTML() {
-  const hoy = todayKey(), L = S.pend.slice().sort((a, b) => !!a.done - !!b.done);
+let reco = null; // dictado en curso: { r, texto, timer, fin }
+const pendAbiertos = () => S.pend.filter(p => !p.done).length;
+function vPend() {
+  const now = new Date(), hoy = todayKey(), L = S.pend.slice().sort((a, b) => !!a.done - !!b.done);
   const hechos = L.filter(p => p.done).length;
-  const desde = k => k === key(addDays(new Date(), -1)) ? 'Desde ayer' : 'Desde el ' + fecha(k);
-  return `<section class="bloque" aria-label="Pendientes de hoy" id="pendientes">
-    <div class="bloque-h"><h2>Pendientes</h2>${L.length ? `<span class="mu t14">${hechos} de ${L.length}</span>` : ''}</div>
-    <form class="pend-form" id="pend-form">
-      <input class="campo" type="text" id="pend-in" placeholder="${reco ? 'Escuchando…' : 'Agregar pendiente'}" aria-label="Nuevo pendiente" autocomplete="off" enterkeyhint="done" maxlength="200">
-      ${Reco ? `<button type="button" class="pend-b ${reco ? 'on' : ''}" data-act="voz" aria-pressed="${!!reco}" aria-label="${reco ? 'Dejar de escuchar' : 'Dictar pendientes por voz'}">${ic('mic')}</button>` : ''}
+  const desde = k => k === key(addDays(now, -1)) ? 'Desde ayer' : 'Desde el ' + fecha(k);
+  let out = `<h1>Pendientes</h1><p class="sub">${DFULL[now.getDay()]} ${now.getDate()} de ${MONTHS[now.getMonth()]}${L.length ? ` · ${hechos} de ${L.length} hechos` : ''}</p>`;
+  if (Reco) out += `<button type="button" class="pend-voz-b" id="pend-mic" data-act="voz" aria-pressed="false">${ic('mic')}<span>Dictar pendientes</span></button>
+    <p class="pend-voz mu t14" id="pend-voz" aria-live="polite"></p>`;
+  out += `<form class="pend-form" id="pend-form">
+      <input class="campo" type="text" id="pend-in" placeholder="Escribí un pendiente" aria-label="Nuevo pendiente" autocomplete="off" enterkeyhint="done" maxlength="200">
       <button type="submit" class="pend-b mas" aria-label="Agregar pendiente">${ic('plus')}</button>
-    </form>
-    <p class="pend-voz mu t14" id="pend-voz" aria-live="polite">${reco ? 'Hablá. Para dictar varios, decí “punto” entre uno y otro.' : ''}</p>
-    ${L.length ? `<ul class="pend-l">${L.map(p => `<li class="pend-it ${p.done ? 'done' : ''}">
+    </form>`;
+  out += L.length ? `<section class="bloque"><ul class="pend-l">${L.map(p => `<li class="pend-it ${p.done ? 'done' : ''}">
       <button class="chk ${animar === p.id ? 'anim' : ''}" data-act="ptick" data-id="${p.id}" aria-pressed="${!!p.done}" aria-label="${p.done ? 'Desmarcar' : 'Marcar'} ${esc(p.t)}">${TILDE}</button>
       <span class="pend-tx">${esc(p.t)}${!p.done && p.k < hoy ? `<small>${desde(p.k)}</small>` : ''}</span>
       <button class="icon-btn" data-act="pdel" data-id="${p.id}" aria-label="Borrar ${esc(p.t)}">${ic('x')}</button>
-    </li>`).join('')}</ul>` : `<p class="mu t14" style="margin:0">Nada pendiente. Escribilo o tocá el micrófono y dictalo.</p>`}
-  </section>`;
+    </li>`).join('')}</ul></section>` : `<p class="vacio">Nada pendiente. ${Reco ? 'Tocá “Dictar” y decilo, o escribilo.' : 'Escribilo abajo (podés usar el micrófono del teclado).'}</p>`;
+  return out;
 }
 // "comprar pan punto llamar a Juan" → dos pendientes
 function partirDictado(txt) {
@@ -415,9 +422,8 @@ function partirDictado(txt) {
 }
 function addPend(textos) {
   const k = todayKey(), nuevos = textos.map(t => ({ id: uid(), t: t.slice(0, 200), k, done: null }));
-  if (!nuevos.length) return;
+  if (!nuevos.length) return [];
   S.pend.push(...nuevos); save(); render();
-  const i = $('#pend-in'); if (i && !reco) i.focus({ preventScroll: true });
   return nuevos;
 }
 function tickPend(id) {
@@ -432,32 +438,51 @@ function delPend(id) {
   const [p] = S.pend.splice(ix, 1); save(); render();
   toast('Pendiente borrado.', () => { S.pend.splice(Math.min(ix, S.pend.length), 0, p); save(); render(); });
 }
+// Mientras escucha no se redibuja la pantalla: solo cambian el botón y el texto de ayuda.
+function vozUI() {
+  const b = $('#pend-mic'), t = $('#pend-voz'); if (!b) return;
+  b.classList.toggle('on', !!reco); b.setAttribute('aria-pressed', !!reco);
+  b.querySelector('span').textContent = reco ? 'Listo' : 'Dictar pendientes';
+  if (t) t.textContent = reco ? (reco.texto ? '“' + reco.texto + '”' : 'Te escucho… Decí “punto” entre uno y otro.') : '';
+}
+function vozFin(error) {
+  const d = reco; if (!d || d.fin) return;
+  d.fin = true; reco = null; clearTimeout(d.timer); clearTimeout(d.tope);
+  try { d.r.abort(); } catch (e) {}
+  vozUI();
+  if (error) return toast(error);
+  const n = addPend(partirDictado(d.texto));
+  if (n.length) toast(n.length === 1 ? `Agregado: ${n[0].t}.` : `Agregados ${n.length} pendientes.`, () => { S.pend = S.pend.filter(p => !n.includes(p)); save(); render(); });
+  else toast('No te escuché. Probá de nuevo o escribilo.');
+}
 function voz() {
-  if (reco) { reco.stop(); return; }
-  if (!Reco) return;
-  const r = new Reco();
-  r.lang = 'es-AR'; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
-  let final = '';
+  if (reco) { // segundo toque: termina y guarda lo que escuchó
+    try { reco.r.stop(); } catch (e) {}
+    const d = reco; setTimeout(() => { if (reco === d) vozFin(); }, 800);
+    return;
+  }
+  let r;
+  try { r = new Reco(); } catch (e) { return toast('El dictado no anda acá. Usá el micrófono del teclado.'); }
+  const d = reco = { r, texto: '', fin: false, timer: null, tope: null };
+  r.lang = 'es-AR'; r.interimResults = true; r.continuous = false; // en iPhone el modo continuo repite frases r.maxAlternatives = 1;
   r.onresult = e => {
-    let parcial = ''; final = '';
-    for (const res of e.results) { if (res.isFinal) final += res[0].transcript; else parcial += res[0].transcript; }
-    const i = $('#pend-in'); if (i) i.value = (final + parcial).trim();
+    if (d.fin) return;
+    let t = '';
+    for (let i = 0; i < e.results.length; i++) t += ' ' + e.results[i][0].transcript;
+    d.texto = t.replace(/\s+/g, ' ').trim();
+    vozUI();
+    clearTimeout(d.timer); d.timer = setTimeout(() => vozFin(), 2500); // 2,5 s de silencio y corta
   };
   r.onerror = e => {
-    const m = { 'not-allowed': 'Sin permiso para el micrófono. Habilitalo en el navegador.', 'service-not-allowed': 'El dictado no está disponible acá. Usá el micrófono del teclado.', 'no-speech': 'No te escuché. Probá de nuevo.', 'audio-capture': 'No encuentro el micrófono.', network: 'El dictado necesita internet.' }[e.error];
-    if (m) toast(m);
+    if (d.fin) return;
+    if (e.error === 'no-speech' || e.error === 'aborted') return vozFin();
+    vozFin({ 'not-allowed': 'Sin permiso para el micrófono. Habilitalo en Ajustes del navegador.', 'service-not-allowed': 'El dictado no anda acá. Usá el micrófono del teclado.', 'audio-capture': 'No encuentro el micrófono.', network: 'El dictado necesita internet.' }[e.error] || 'El dictado falló. Usá el micrófono del teclado.');
   };
-  r.onend = () => {
-    reco = null;
-    const t = partirDictado(final);
-    if (t.length) {
-      const n = addPend(t);
-      toast(n.length === 1 ? `Agregado: ${n[0].t}.` : `Agregados ${n.length} pendientes.`, () => { S.pend = S.pend.filter(p => !n.includes(p)); save(); render(); });
-    } else render();
-  };
-  reco = r;
-  try { r.start(); } catch (err) { reco = null; toast('No pude empezar a escuchar.'); return; }
-  render(); Comun.haptic(10);
+  r.onend = () => { if (!d.fin) vozFin(); };
+  d.timer = setTimeout(() => vozFin(), 8000); // si no llega nada (Safari a veces se queda colgado), corta igual
+  d.tope = setTimeout(() => vozFin(), 30000);
+  try { r.start(); } catch (e) { return vozFin('El dictado no anda acá. Usá el micrófono del teclado.'); }
+  vozUI(); Comun.haptic(10);
 }
 
 function vHoy() {
@@ -465,8 +490,8 @@ function vHoy() {
   const i = dayInfo(k);
   let out = `<h1>Hoy</h1><p class="sub">${DFULL[dow]} ${now.getDate()} de ${MONTHS[now.getMonth()]}</p>`;
   if (dow === 0) out += resumenSemanaHTML();
-  if (!S.habits.length) return out + pendHTML() + `<p class="vacio">Todavía no tenés hábitos. Creá el primero.</p><a class="b-pri" href="#hab" data-act="tab" data-t="hab">Crear hábito</a>`;
-  if (!i.due) return out + `<section class="dia-estado"><span class="rotulo">Hoy</span><p>No hay nada programado. Descanso.</p></section>` + pendHTML() + semanaHTML(Comun.semana(S, weekStart(0)), 'Esta semana');
+  if (!S.habits.length) return out + `<p class="vacio">Todavía no tenés hábitos. Creá el primero.</p><a class="b-pri" href="#hab" data-act="tab" data-t="hab">Crear hábito</a>`;
+  if (!i.due) return out + `<section class="dia-estado"><span class="rotulo">Hoy</span><p>No hay nada programado. Descanso.</p></section>` + semanaHTML(Comun.semana(S, weekStart(0)), 'Esta semana');
   const goal = Math.min(S.settings.goal, i.due), ok = met(i), full = complete(i);
   const falta = goal - i.done;
   const msg = full ? `${i.done} de ${i.due}. Día completo.` : ok ? `Meta del día cumplida (${goal}). Lo que sigue suma.` : `${falta === 1 ? 'Falta 1' : 'Faltan ' + falta} para la meta del día (${goal}).`;
@@ -482,7 +507,6 @@ function vHoy() {
   const loose = list.filter(h => !S.routines.some(r => r.id === h.routine));
   if (loose.length) groups.push({ name: groups.length ? 'Otros' : null, hs: loose });
   out += groups.map(gr => `${gr.name ? `<div class="grp"><span class="rotulo">${esc(gr.name)}</span><span class="mu t14">${gr.hs.filter(h => isDone(h, k)).length} de ${gr.hs.length}</span></div>` : ''}<ul class="lista">${gr.hs.map(h => item(h, k, dow)).join('')}</ul>`).join('');
-  out += pendHTML();
   out += semanaHTML(Comun.semana(S, weekStart(0)), 'Esta semana');
   return out;
 }
@@ -594,7 +618,10 @@ let tabPintada = null;
 function render() {
   const view = $('#view');
   view.classList.toggle('entra', V.tab !== tabPintada); tabPintada = V.tab;
-  view.innerHTML = V.tab === 'hoy' ? vHoy() : V.tab === 'prog' ? vProg() : vHab();
+  if (reco && V.tab !== 'pend') vozFin();
+  view.innerHTML = V.tab === 'hoy' ? vHoy() : V.tab === 'pend' ? vPend() : V.tab === 'prog' ? vProg() : vHab();
+  const np = pendAbiertos(); $$('[data-badge="pend"]').forEach(x => { x.textContent = np || ''; x.hidden = !np; });
+  if (reco) vozUI();
   $$('[data-act="tab"][data-t]').forEach(b => { if (!b.dataset.ancla) { if (b.dataset.t === V.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); } });
   if (openDay) fillDay();
   if (window.Sync) renderSync();
@@ -742,8 +769,8 @@ $('#imp').addEventListener('change', async e => {
   } catch (err) { toast('Ese archivo no sirve.'); }
 });
 
-/* ---------- navegación por hash (#hoy, #prog, #hab) ---------- */
-function leerHash() { const t = location.hash.replace('#', '').split('-')[0]; return ['hoy', 'prog', 'hab'].includes(t) ? t : 'hoy'; }
+/* ---------- navegación por hash (#hoy, #pend, #prog, #hab) ---------- */
+function leerHash() { const t = location.hash.replace('#', '').split('-')[0]; return ['hoy', 'pend', 'prog', 'hab'].includes(t) ? t : 'hoy'; }
 function irTab(t, ancla) {
   V.tab = t;
   const h = ancla ? t + '-' + ancla : t;
