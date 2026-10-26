@@ -73,6 +73,26 @@ main{max-width:640px;margin:0 auto;padding:8px 16px 0}
 .chk.anim{animation:rebote 460ms var(--spring)}
 .chk.anim svg path{stroke-dasharray:24;animation:trazo 260ms var(--ease)}
 
+/* pendientes del día (con dictado por voz) */
+.pend-form{display:flex;gap:8px;margin-bottom:10px}
+.pend-form .campo{flex:1;min-width:0}
+.pend-form .campo:focus{border-color:var(--sel);outline:none}
+.pend-b{width:50px;height:50px;flex:none;display:grid;place-items:center;padding:0;border-radius:14px;border:2px solid var(--ln2);border-bottom-width:4px;background:var(--card);color:var(--tx);transition:transform 110ms var(--ease)}
+.pend-b:active{transform:translateY(2px);border-bottom-width:2px}
+.pend-b.mas{background:var(--acc);border-color:var(--acc-sh);color:#fff}
+.pend-b.on{background:var(--neg);border-color:var(--neg);color:#fff;animation:escucha 1.2s ease-in-out infinite}
+@keyframes escucha{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--neg) 45%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
+.pend-voz{margin:-4px 2px 8px;min-height:0}
+.pend-voz:empty{display:none}
+.pend-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.pend-it{display:flex;align-items:center;gap:10px;min-height:52px;border-top:2px solid var(--bg3);padding:4px 0}
+.pend-it:first-child{border-top:0}
+.pend-it .chk{width:40px;height:40px;border-radius:12px;border-bottom-width:4px}
+.pend-it .chk svg{width:22px;height:22px}
+.pend-tx{flex:1;min-width:0;font-weight:800;overflow-wrap:anywhere}
+.pend-tx small{display:block;color:var(--naranja);font-size:var(--t12);font-weight:800}
+.pend-it.done .pend-tx{color:var(--mu);text-decoration:line-through}
+
 /* botones */
 .b-fila{display:flex;gap:8px;flex-wrap:wrap}
 .b-fila>*{flex:1}
@@ -260,6 +280,9 @@ function normalize(s) {
   s.routines = Array.isArray(s.routines) ? s.routines : [];
   s.log = s.log && typeof s.log === 'object' ? s.log : {};
   s.settings = Object.assign({ goal: 2, sound: true }, s.settings);
+  // pendientes: los no hechos pasan al día siguiente; los hechos de días anteriores se van
+  const hoy = todayKey();
+  s.pend = (Array.isArray(s.pend) ? s.pend : []).filter(p => p && p.t && !(p.done && p.done < hoy));
   s.habits.forEach(h => { h.days = h.days || []; h.times = h.times || {}; h.time = h.time || ''; h.since = h.since || todayKey(); h.routine = h.routine || null; });
   return s;
 }
@@ -363,13 +386,87 @@ function item(h, k, dow) {
     <button class="chk ${animar === h.id ? 'anim' : ''}" data-act="tick" data-id="${h.id}" aria-pressed="${d}" aria-label="${d ? 'Desmarcar' : 'Marcar'} ${esc(h.name)}">${TILDE}</button>
   </li>`;
 }
+/* ---------- pendientes del día ---------- */
+const Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
+let reco = null;
+function pendHTML() {
+  const hoy = todayKey(), L = S.pend.slice().sort((a, b) => !!a.done - !!b.done);
+  const hechos = L.filter(p => p.done).length;
+  const desde = k => k === key(addDays(new Date(), -1)) ? 'Desde ayer' : 'Desde el ' + fecha(k);
+  return `<section class="bloque" aria-label="Pendientes de hoy" id="pendientes">
+    <div class="bloque-h"><h2>Pendientes</h2>${L.length ? `<span class="mu t14">${hechos} de ${L.length}</span>` : ''}</div>
+    <form class="pend-form" id="pend-form">
+      <input class="campo" type="text" id="pend-in" placeholder="${reco ? 'Escuchando…' : 'Agregar pendiente'}" aria-label="Nuevo pendiente" autocomplete="off" enterkeyhint="done" maxlength="200">
+      ${Reco ? `<button type="button" class="pend-b ${reco ? 'on' : ''}" data-act="voz" aria-pressed="${!!reco}" aria-label="${reco ? 'Dejar de escuchar' : 'Dictar pendientes por voz'}">${ic('mic')}</button>` : ''}
+      <button type="submit" class="pend-b mas" aria-label="Agregar pendiente">${ic('plus')}</button>
+    </form>
+    <p class="pend-voz mu t14" id="pend-voz" aria-live="polite">${reco ? 'Hablá. Para dictar varios, decí “punto” entre uno y otro.' : ''}</p>
+    ${L.length ? `<ul class="pend-l">${L.map(p => `<li class="pend-it ${p.done ? 'done' : ''}">
+      <button class="chk ${animar === p.id ? 'anim' : ''}" data-act="ptick" data-id="${p.id}" aria-pressed="${!!p.done}" aria-label="${p.done ? 'Desmarcar' : 'Marcar'} ${esc(p.t)}">${TILDE}</button>
+      <span class="pend-tx">${esc(p.t)}${!p.done && p.k < hoy ? `<small>${desde(p.k)}</small>` : ''}</span>
+      <button class="icon-btn" data-act="pdel" data-id="${p.id}" aria-label="Borrar ${esc(p.t)}">${ic('x')}</button>
+    </li>`).join('')}</ul>` : `<p class="mu t14" style="margin:0">Nada pendiente. Escribilo o tocá el micrófono y dictalo.</p>`}
+  </section>`;
+}
+// "comprar pan punto llamar a Juan" → dos pendientes
+function partirDictado(txt) {
+  return txt.split(/[.;\n]+|\s+punto(?!\s+(?:de|del|com)\b)\s+(?:y\s+)?(?:aparte\s+)?/i).map(x => x.trim().replace(/[\s,]+$/, '').replace(/\s+punto$/i, ''))
+    .filter(Boolean).map(x => x.charAt(0).toUpperCase() + x.slice(1));
+}
+function addPend(textos) {
+  const k = todayKey(), nuevos = textos.map(t => ({ id: uid(), t: t.slice(0, 200), k, done: null }));
+  if (!nuevos.length) return;
+  S.pend.push(...nuevos); save(); render();
+  const i = $('#pend-in'); if (i && !reco) i.focus({ preventScroll: true });
+  return nuevos;
+}
+function tickPend(id) {
+  const p = S.pend.find(x => x.id === id); if (!p) return;
+  p.done = p.done ? null : todayKey(); save();
+  if (p.done) animar = id;
+  render();
+  if (p.done) { click(); Comun.haptic(10); Comun.chispas(document.querySelector(`[data-act="ptick"][data-id="${id}"]`)); }
+}
+function delPend(id) {
+  const ix = S.pend.findIndex(x => x.id === id); if (ix < 0) return;
+  const [p] = S.pend.splice(ix, 1); save(); render();
+  toast('Pendiente borrado.', () => { S.pend.splice(Math.min(ix, S.pend.length), 0, p); save(); render(); });
+}
+function voz() {
+  if (reco) { reco.stop(); return; }
+  if (!Reco) return;
+  const r = new Reco();
+  r.lang = 'es-AR'; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
+  let final = '';
+  r.onresult = e => {
+    let parcial = ''; final = '';
+    for (const res of e.results) { if (res.isFinal) final += res[0].transcript; else parcial += res[0].transcript; }
+    const i = $('#pend-in'); if (i) i.value = (final + parcial).trim();
+  };
+  r.onerror = e => {
+    const m = { 'not-allowed': 'Sin permiso para el micrófono. Habilitalo en el navegador.', 'service-not-allowed': 'El dictado no está disponible acá. Usá el micrófono del teclado.', 'no-speech': 'No te escuché. Probá de nuevo.', 'audio-capture': 'No encuentro el micrófono.', network: 'El dictado necesita internet.' }[e.error];
+    if (m) toast(m);
+  };
+  r.onend = () => {
+    reco = null;
+    const t = partirDictado(final);
+    if (t.length) {
+      const n = addPend(t);
+      toast(n.length === 1 ? `Agregado: ${n[0].t}.` : `Agregados ${n.length} pendientes.`, () => { S.pend = S.pend.filter(p => !n.includes(p)); save(); render(); });
+    } else render();
+  };
+  reco = r;
+  try { r.start(); } catch (err) { reco = null; toast('No pude empezar a escuchar.'); return; }
+  render(); Comun.haptic(10);
+}
+
 function vHoy() {
   const now = new Date(), k = key(now), dow = now.getDay();
   const i = dayInfo(k);
   let out = `<h1>Hoy</h1><p class="sub">${DFULL[dow]} ${now.getDate()} de ${MONTHS[now.getMonth()]}</p>`;
   if (dow === 0) out += resumenSemanaHTML();
-  if (!S.habits.length) return out + `<p class="vacio">Todavía no tenés hábitos. Creá el primero.</p><a class="b-pri" href="#hab" data-act="tab" data-t="hab">Crear hábito</a>`;
-  if (!i.due) return out + `<section class="dia-estado"><span class="rotulo">Hoy</span><p>No hay nada programado. Descanso.</p></section>` + semanaHTML(Comun.semana(S, weekStart(0)), 'Esta semana');
+  if (!S.habits.length) return out + pendHTML() + `<p class="vacio">Todavía no tenés hábitos. Creá el primero.</p><a class="b-pri" href="#hab" data-act="tab" data-t="hab">Crear hábito</a>`;
+  if (!i.due) return out + `<section class="dia-estado"><span class="rotulo">Hoy</span><p>No hay nada programado. Descanso.</p></section>` + pendHTML() + semanaHTML(Comun.semana(S, weekStart(0)), 'Esta semana');
   const goal = Math.min(S.settings.goal, i.due), ok = met(i), full = complete(i);
   const falta = goal - i.done;
   const msg = full ? `${i.done} de ${i.due}. Día completo.` : ok ? `Meta del día cumplida (${goal}). Lo que sigue suma.` : `${falta === 1 ? 'Falta 1' : 'Faltan ' + falta} para la meta del día (${goal}).`;
@@ -385,6 +482,7 @@ function vHoy() {
   const loose = list.filter(h => !S.routines.some(r => r.id === h.routine));
   if (loose.length) groups.push({ name: groups.length ? 'Otros' : null, hs: loose });
   out += groups.map(gr => `${gr.name ? `<div class="grp"><span class="rotulo">${esc(gr.name)}</span><span class="mu t14">${gr.hs.filter(h => isDone(h, k)).length} de ${gr.hs.length}</span></div>` : ''}<ul class="lista">${gr.hs.map(h => item(h, k, dow)).join('')}</ul>`).join('');
+  out += pendHTML();
   out += semanaHTML(Comun.semana(S, weekStart(0)), 'Esta semana');
   return out;
 }
@@ -665,6 +763,9 @@ document.addEventListener('click', e => {
   switch (a) {
     case 'tab': e.preventDefault(); irTab(d.t, d.ancla); break;
     case 'tick': toggle(d.id, todayKey()); break;
+    case 'voz': voz(); break;
+    case 'ptick': tickPend(d.id); break;
+    case 'pdel': delPend(d.id); break;
     case 'dtick': toggle(d.id, openDay, true); break;
     case 'day': openDaySheet(d.k); break;
     case 'wk': V.week += +d.n; render(); break;
@@ -714,6 +815,12 @@ document.addEventListener('click', e => {
     case 'export': exportData(); break;
     case 'import': $('#imp').click(); break;
   }
+});
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'pend-form') return;
+  e.preventDefault();
+  const i = $('#pend-in'), t = i.value.trim();
+  if (t) addPend([t]);
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { S = load(); render(); } });
 addEventListener('pageshow', e => { if (e.persisted) { S = load(); render(); } });

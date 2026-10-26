@@ -6,6 +6,7 @@ Se publica con GitHub Pages desde `main` (raíz), sin paso de build en el servid
 - `index.html`: app de hábitos en un solo archivo (HTML + CSS propio + JS sin librerías). Datos en `localStorage` (`habitos-v1`). No pasa por Vite.
 - Rutas por hash: `#hoy`, `#prog`, `#hab` (`#hab-ajustes`, `#hab-syncbox` llevan a esa sección).
 - Campos opcionales nuevos (no rompen datos viejos): `settings.weekMin` (días para una semana buena, 4 por defecto) y `hito` por hábito (sesiones).
+- Pendientes del día (`S.pend`, opcional: `{id, t, k, done}`; `k` = día que se cargó, `done` = día que se tachó o null): sección en `#hoy` (`pendHTML`). Los no hechos pasan al día siguiente con "Desde ayer"; los hechos de días anteriores se borran al cargar (`normalize`). Se cargan escribiendo o por voz con la Web Speech API (`SpeechRecognition`/`webkitSpeechRecognition`, `es-AR`); diciendo "punto" se dictan varios de una (`partirDictado`). Sin soporte, el botón del micrófono no aparece (queda el dictado del teclado).
 - Colores de hábito: paleta tierra; los hex viejos guardados se muestran con su equivalente (`colorDe`), el dato no se toca.
 
 ## Base compartida (`ui/`, la cargan los dos módulos sin build)
