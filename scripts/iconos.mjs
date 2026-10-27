@@ -7,7 +7,7 @@ const USADOS = [
   'house', 'notebook-pen', 'calendar-range', 'ellipsis', 'plus', 'sun', 'chart-no-axes-column', 'list-checks', 'wallet',
   'settings', 'eye', 'eye-off', 'chevron-left', 'chevron-right', 'chevron-down', 'x', 'check', 'trash-2', 'calendar',
   'landmark', 'credit-card', 'receipt', 'calendar-days', 'arrow-left-right', 'banknote', 'refresh-cw', 'cloud', 'cloud-off',
-  'triangle-alert', 'pencil', 'flag', 'clock', 'folder', 'award', 'download', 'upload', 'circle-check', 'milestone', 'undo-2', 'log-out', 'target', 'mic', 'list-todo',
+  'triangle-alert', 'pencil', 'flag', 'clock', 'folder', 'award', 'download', 'upload', 'circle-check', 'milestone', 'undo-2', 'log-out', 'target', 'list-todo',
   'timer', 'play', 'pause', 'rotate-ccw',
   // categorías de gasto
   'utensils', 'shopping-cart', 'beer', 'car-taxi-front', 'bike', 'pill', 'shirt', 'package', 'tag',

@@ -73,22 +73,15 @@ main{max-width:640px;margin:0 auto;padding:8px 16px 0}
 .chk.anim{animation:rebote 460ms var(--spring)}
 .chk.anim svg path{stroke-dasharray:24;animation:trazo 260ms var(--ease)}
 
-/* pendientes del día (con dictado por voz) */
+/* pendientes del día */
 .pend-form{display:flex;gap:8px;margin-bottom:14px}
 .pend-form .campo{flex:1;min-width:0}
 .pend-form .campo:focus{border-color:var(--sel);outline:none}
 .pend-b{width:50px;height:50px;flex:none;display:grid;place-items:center;padding:0;border-radius:14px;border:2px solid var(--ln2);border-bottom-width:4px;background:var(--card);color:var(--tx);transition:transform 110ms var(--ease)}
 .pend-b:active{transform:translateY(2px);border-bottom-width:2px}
 .pend-b.mas{background:var(--acc);border-color:var(--acc-sh);color:#fff}
-.pend-voz-b{width:100%;min-height:64px;display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 10px;border-radius:20px;border:2px solid var(--acc-sh);border-bottom-width:5px;background:var(--acc);color:#fff;font:900 var(--t16)/1 var(--sans);transition:transform 110ms var(--ease)}
-.pend-voz-b .ic{width:26px;height:26px}
-.pend-voz-b:active{transform:translateY(3px);border-bottom-width:2px}
-.pend-voz-b.on{background:var(--neg);border-color:var(--neg);animation:escucha 1.2s ease-in-out infinite}
 .badge{position:absolute;top:4px;left:calc(50% + 8px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--neg);color:#fff;font:900 11px/18px var(--sans);text-align:center}
 .rail .badge{position:static;margin-left:auto}
-@keyframes escucha{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--neg) 45%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
-.pend-voz{margin:-2px 4px 12px;font-weight:700}
-.pend-voz:empty{display:none}
 .pend-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .pend-it{display:flex;align-items:center;gap:10px;min-height:52px;border-top:2px solid var(--bg3);padding:4px 0}
 .pend-it:first-child{border-top:0}
@@ -120,11 +113,17 @@ main.ancho{max-width:1320px}
 .seg{display:inline-flex;gap:4px;padding:4px;border-radius:16px;background:var(--bg3)}
 .seg button{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:0;border-radius:12px;background:none;color:var(--mu);font:800 var(--t14)/1 var(--sans)}
 .seg button.on{background:var(--card);color:var(--tx);box-shadow:0 2px 0 var(--ln2)}
+.phoy{border-color:var(--sel);border-bottom-color:var(--sel)}
+.phoy .pcard-h h2 .ic{width:22px;height:22px;color:var(--naranja)}
+.phoy .barra{height:14px;margin:8px 0 4px;border-radius:999px;background:var(--bg3);overflow:hidden}
+.phoy .barra>i{display:block;height:100%;border-radius:999px;background:var(--acc);transition:width 500ms var(--spring)}
+.phoy-sub{margin:12px 0 0;font-size:var(--t12);font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--mu)}
+.pend-cta{display:inline-flex;align-items:center;gap:5px;font-size:var(--t12);font-weight:800;color:var(--mu)}
+.pend-cta i{width:8px;height:8px;border-radius:50%;background:var(--c)}
 .pend-carga{display:flex;gap:10px;align-items:stretch;margin-bottom:6px}
-.pend-carga .pend-voz-b{width:auto;min-height:50px;margin:0;padding:0 18px;flex:none;font-size:var(--t14)}
 .pend-carga .pend-form{flex:1;margin:0}
 .pend-form .pend-fecha{flex:none;width:170px!important;padding:0 10px!important;color-scheme:light dark}
-@media (max-width:700px){.pend-carga{flex-direction:column}.pend-fecha{width:140px!important}}
+@media (max-width:700px){.pend-carga{flex-direction:column}.pend-form{flex-wrap:wrap}.pend-form #pend-in{flex:1 1 100%}.pend-form .pend-fecha{flex:1;width:auto!important}}
 .pend-meta{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:2px}
 .pend-meta small{display:inline}
 .vence{display:inline-flex;align-items:center;gap:4px;font-size:var(--t12);font-weight:800;color:var(--mu)}
@@ -531,10 +530,8 @@ function item(h, k, dow) {
   </li>`;
 }
 /* ---------- pendientes del día (pestaña propia, #pend) ---------- */
-const Reco = window.SpeechRecognition || window.webkitSpeechRecognition;
-let reco = null; // dictado en curso: { r, texto, timer, fin }
 const pendAbiertos = () => S.pend.filter(p => !p.done).length;
-// Una card por cuenta. El pendiente cae en la que nombra (también con errores típicos del dictado); si no nombra ninguna, en "Otros".
+// Una card por cuenta. El pendiente cae en la que nombra (también con errores de tipeo); si no nombra ninguna, en "Otros".
 const AREAS = [
   { id: 'gimos', n: 'Gimos', c: COLORS[0].c, re: /\b(gimos|gimo|jimos|guimos|ximos)\b/i },
   { id: 'yagmour', n: 'Yagmour', c: COLORS[5].c, re: /\b(y[ae]g\s?m[ou]u?r|jag\s?m[ou]u?r|yag\s?more|yamour|yagmur)\b/i },
@@ -546,9 +543,7 @@ const AREAS = [
 ];
 const areaDe = t => (AREAS.find(x => x.re && x.re.test(t)) || AREAS[AREAS.length - 1]).id;
 const areaP = p => AREAS.some(x => x.id === p.a) ? p.a : areaDe(p.t);
-// Vista de pendientes: por cuenta, semana o mes (queda guardada en este navegador)
-const PV_LS = 'habitos-pend-vista';
-const pVista = () => { try { const v = localStorage.getItem(PV_LS); return ['cuentas', 'semana', 'mes'].includes(v) ? v : 'cuentas'; } catch (e) { return 'cuentas'; } };
+// Vista de pendientes: hoy, por cuenta, semana o mes. Siempre abre en Hoy.
 const areaInfo = id => AREAS.find(x => x.id === id) || AREAS[AREAS.length - 1];
 const DCORTO = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const diasEntre = (a, b) => Math.round((parse(b) - parse(a)) / 864e5);
@@ -598,34 +593,55 @@ function fechaDeTexto(txt) {
 }
 
 function vPend() {
-  const now = new Date(), hoy = todayKey(), vista = V.pvista || (V.pvista = pVista());
+  const now = new Date(), hoy = todayKey(), vista = V.pvista || (V.pvista = 'hoy');
   const dest = V.parea || 'auto';
   const abiertos = S.pend.filter(p => !p.done), vencidas = abiertos.filter(p => p.v && p.v < hoy).length, paraHoy = abiertos.filter(p => p.v === hoy).length;
   let out = `<div class="pend-top"><div><h1>Pendientes</h1><p class="sub">${DFULL[now.getDay()]} ${now.getDate()} de ${MONTHS[now.getMonth()]} · ${abiertos.length} ${abiertos.length === 1 ? 'abierto' : 'abiertos'}${paraHoy ? ` · <b class="c-hoy">${paraHoy} para hoy</b>` : ''}${vencidas ? ` · <b class="c-venc">${vencidas} ${vencidas === 1 ? 'vencida' : 'vencidas'}</b>` : ''}</p></div>
-    <div class="seg" role="tablist" aria-label="Vista">${[['cuentas', 'Cuentas', 'folder'], ['semana', 'Semana', 'calendar-range'], ['mes', 'Mes', 'calendar-days']].map(([id, n, i]) => `<button role="tab" aria-selected="${vista === id}" class="${vista === id ? 'on' : ''}" data-act="pvista" data-v="${id}">${ic(i, 's')}${n}</button>`).join('')}</div></div>`;
+    <div class="seg" role="tablist" aria-label="Vista">${[['hoy', 'Hoy', 'sun'], ['cuentas', 'Cuentas', 'folder'], ['semana', 'Semana', 'calendar-range'], ['mes', 'Mes', 'calendar-days']].map(([id, n, i]) => `<button role="tab" aria-selected="${vista === id}" class="${vista === id ? 'on' : ''}" data-act="pvista" data-v="${id}">${ic(i, 's')}${n}</button>`).join('')}</div></div>`;
   out += `<div class="pend-carga">`;
-  if (Reco) out += `<button type="button" class="pend-voz-b" id="pend-mic" data-act="voz" aria-pressed="false">${ic('mic')}<span>Dictar pendientes</span></button>`;
   out += `<form class="pend-form" id="pend-form">
-      <input class="campo" type="text" id="pend-in" placeholder="Escribí un pendiente (ej: fotos de Gimos para el viernes)" aria-label="Nuevo pendiente" autocomplete="off" enterkeyhint="done" maxlength="200">
+      <input class="campo" type="text" id="pend-in" placeholder="${vista === 'hoy' ? 'Escribí un pendiente para hoy' : 'Escribí un pendiente (ej: fotos de Gimos para el viernes)'}" aria-label="Nuevo pendiente" autocomplete="off" enterkeyhint="done" maxlength="200">
       <input class="campo pend-fecha" type="date" id="pend-v" value="${esc(V.pfecha || '')}" aria-label="Vence el (opcional)" title="Vence el (opcional)">
       <button type="submit" class="pend-b mas" aria-label="Agregar pendiente">${ic('plus')}</button>
     </form></div>
-    ${Reco ? `<p class="pend-voz mu t14" id="pend-voz" aria-live="polite"></p>` : ''}
     <div class="pend-dest" role="radiogroup" aria-label="¿En qué cuenta va?">${[{ id: 'auto', n: 'Automático' }, ...AREAS].map(x => `<button type="button" role="radio" aria-checked="${dest === x.id}" class="${dest === x.id ? 'on' : ''}" data-act="parea" data-a="${x.id}" ${x.c ? `style="--c:${x.c}"` : ''}>${x.c ? '<i></i>' : ''}${x.n}</button>`).join('')}</div>`;
-  out += vista === 'semana' ? pSemana() : vista === 'mes' ? pMes() : pCuentas();
+  out += vista === 'hoy' ? pHoy() : vista === 'semana' ? pSemana() : vista === 'mes' ? pMes() : pCuentas();
   return out;
 }
-function pCuentas() {
-  const hoy = todayKey(), now = new Date();
-  // en cuentas se ven los abiertos y lo tachado hoy
-  const L = S.pend.filter(p => !p.done || p.done === hoy).sort(porVence);
-  const desde = k => k === key(addDays(now, -1)) ? 'Desde ayer' : 'Desde el ' + fecha(k);
-  const fila = p => `<li class="pend-it ${p.done ? 'done' : ''}" draggable="true" data-drag="${p.id}">
+// Fila de pendiente (vistas Hoy y Cuentas). conCuenta: muestra de qué cuenta es; aHoy: botón para pasarlo a hoy.
+function filaPend(p, o = {}) {
+  const hoy = todayKey(), ar = areaInfo(areaP(p));
+  const desde = k => k === key(addDays(new Date(), -1)) ? 'Desde ayer' : 'Desde el ' + fecha(k);
+  return `<li class="pend-it ${p.done ? 'done' : ''}" draggable="true" data-drag="${p.id}">
       <button class="chk ${animar === p.id ? 'anim' : ''}" data-act="ptick" data-id="${p.id}" aria-pressed="${!!p.done}" aria-label="${p.done ? 'Desmarcar' : 'Marcar'} ${esc(p.t)}">${TILDE}</button>
-      <button class="pend-tx" data-act="pedit" data-id="${p.id}" aria-label="Editar ${esc(p.t)}">${esc(p.t)}${p.d ? `<span class="pend-d">${esc(p.d)}</span>` : ''}<span class="pend-meta">${venceHTML(p)}${!p.done && !p.v && p.k < hoy ? `<small>${desde(p.k)}</small>` : ''}</span></button>
+      <button class="pend-tx" data-act="pedit" data-id="${p.id}" aria-label="Editar ${esc(p.t)}">${esc(p.t)}${p.d ? `<span class="pend-d">${esc(p.d)}</span>` : ''}<span class="pend-meta">${o.conCuenta ? `<span class="pend-cta" style="--c:${ar.c}"><i></i>${ar.n}</span>` : ''}${venceHTML(p)}${!p.done && !p.v && p.k < hoy ? `<small>${desde(p.k)}</small>` : ''}</span></button>
+      ${o.aHoy && !p.done ? `<button class="icon-btn" data-act="phoy" data-id="${p.id}" aria-label="Pasar ${esc(p.t)} a hoy" title="Para hoy">${ic('sun', 's')}</button>` : ''}
       ${p.done ? '' : `<button class="play" data-act="arcade" data-tipo="p" data-id="${p.id}" aria-label="Temporizador de ${esc(p.t)}">${ic('play', 's')}</button>`}
       <button class="icon-btn" data-act="pdel" data-id="${p.id}" aria-label="Borrar ${esc(p.t)}">${ic('x')}</button>
     </li>`;
+}
+function pHoy() {
+  const hoy = todayKey(), o = { conCuenta: true };
+  const venc = S.pend.filter(p => !p.done && p.v && p.v < hoy).sort(porVence);
+  const deHoy = S.pend.filter(p => p.v === hoy || (p.done === hoy && (!p.v || p.v < hoy))).sort(porVence);
+  const sin = S.pend.filter(p => !p.done && !p.v).sort((a, b) => a.k.localeCompare(b.k));
+  const hechas = deHoy.filter(p => p.done).length, total = deHoy.length + venc.length;
+  let out = `<section class="bloque phoy">
+    <div class="pcard-h"><h2>${ic('sun')}Para hoy</h2><span class="mu t14">${total ? `${hechas} de ${total} hechos` : ''}</span></div>
+    ${total ? `<div class="barra" aria-hidden="true"><i style="width:${hechas / total * 100}%"></i></div>` : ''}
+    ${venc.length ? `<p class="phoy-sub c-venc">${venc.length === 1 ? 'Vencida' : 'Vencidas'}</p><ul class="pend-l">${venc.map(p => filaPend(p, o)).join('')}</ul>` : ''}
+    ${deHoy.length ? `${venc.length ? '<p class="phoy-sub">De hoy</p>' : ''}<ul class="pend-l">${deHoy.map(p => filaPend(p, o)).join('')}</ul>` : ''}
+    ${total ? '' : `<p class="mu pcard-v">Nada para hoy. Escribí uno arriba o pasá alguno sin fecha con ${ic('sun', 's')}.</p>`}
+  </section>`;
+  if (sin.length) out += `<section class="bloque"><div class="pcard-h"><h2>Sin fecha</h2><span class="mu t14">${sin.length}</span></div>
+    <ul class="pend-l">${sin.map(p => filaPend(p, { conCuenta: true, aHoy: true })).join('')}</ul></section>`;
+  return out;
+}
+function pCuentas() {
+  const hoy = todayKey();
+  // en cuentas se ven los abiertos y lo tachado hoy
+  const L = S.pend.filter(p => !p.done || p.done === hoy).sort(porVence);
+  const fila = p => filaPend(p);
   return `<div class="pend-grid">${AREAS.map(ar => {
     const ps = L.filter(p => areaP(p) === ar.id);
     if (ar.id === 'otros' && !ps.length) return '';
@@ -712,15 +728,10 @@ document.addEventListener('drop', e => {
   const antes = p.v; p.v = v; save(); render();
   toast(v ? `Vence ${venceTxt(v).t.toLowerCase().replace(/^vencida · /, 'el ')}.` : 'Sin fecha.', () => { p.v = antes; save(); render(); });
 });
-// "comprar pan punto llamar a Juan" → dos pendientes
-function partirDictado(txt) {
-  return txt.split(/[.;\n]+|\s+punto(?!\s+(?:de|del|com)\b)\s+(?:y\s+)?(?:aparte\s+)?/i).map(x => x.trim().replace(/[\s,]+$/, '').replace(/\s+punto$/i, ''))
-    .filter(Boolean).map(x => x.charAt(0).toUpperCase() + x.slice(1));
-}
 function addPend(textos) {
   const k = todayKey(), dest = V.parea && V.parea !== 'auto' ? V.parea : null;
   const fi = $('#pend-v'), fija = (fi && fi.value) || V.pfecha || null;
-  const nuevos = textos.map(t0 => { const f = fechaDeTexto(t0), t = f.t.charAt(0).toUpperCase() + f.t.slice(1); return { id: uid(), t: t.slice(0, 200), k, done: null, a: dest || areaDe(t0), v: fija || f.v }; });
+  const nuevos = textos.map(t0 => { const f = fechaDeTexto(t0), t = f.t.charAt(0).toUpperCase() + f.t.slice(1); return { id: uid(), t: t.slice(0, 200), k, done: null, a: dest || areaDe(t0), v: fija || f.v || (V.pvista === 'hoy' ? k : null) }; });
   if (!nuevos.length) return [];
   S.pend.push(...nuevos); V.parea = 'auto'; V.pfecha = ''; save(); render();
   return nuevos;
@@ -737,53 +748,6 @@ function delPend(id) {
   const [p] = S.pend.splice(ix, 1); save(); render();
   toast('Pendiente borrado.', () => { S.pend.splice(Math.min(ix, S.pend.length), 0, p); save(); render(); });
 }
-// Mientras escucha no se redibuja la pantalla: solo cambian el botón y el texto de ayuda.
-function vozUI() {
-  const b = $('#pend-mic'), t = $('#pend-voz'); if (!b) return;
-  b.classList.toggle('on', !!reco); b.setAttribute('aria-pressed', !!reco);
-  b.querySelector('span').textContent = reco ? 'Listo' : 'Dictar pendientes';
-  if (t) t.textContent = reco ? (reco.texto ? '“' + reco.texto + '”' : 'Te escucho… Decí “punto” entre uno y otro.') : '';
-}
-function vozFin(error) {
-  const d = reco; if (!d || d.fin) return;
-  d.fin = true; reco = null; clearTimeout(d.timer); clearTimeout(d.tope);
-  try { d.r.abort(); } catch (e) {}
-  vozUI();
-  if (error) return toast(error);
-  const n = addPend(partirDictado(d.texto));
-  if (n.length) toast(n.length === 1 ? `Agregado: ${n[0].t}.` : `Agregados ${n.length} pendientes.`, () => { S.pend = S.pend.filter(p => !n.includes(p)); save(); render(); });
-  else toast('No te escuché. Probá de nuevo o escribilo.');
-}
-function voz() {
-  if (reco) { // segundo toque: termina y guarda lo que escuchó
-    try { reco.r.stop(); } catch (e) {}
-    const d = reco; setTimeout(() => { if (reco === d) vozFin(); }, 800);
-    return;
-  }
-  let r;
-  try { r = new Reco(); } catch (e) { return toast('El dictado no anda acá. Usá el micrófono del teclado.'); }
-  const d = reco = { r, texto: '', fin: false, timer: null, tope: null };
-  r.lang = 'es-AR'; r.interimResults = true; r.continuous = false; // en iPhone el modo continuo repite frases r.maxAlternatives = 1;
-  r.onresult = e => {
-    if (d.fin) return;
-    let t = '';
-    for (let i = 0; i < e.results.length; i++) t += ' ' + e.results[i][0].transcript;
-    d.texto = t.replace(/\s+/g, ' ').trim();
-    vozUI();
-    clearTimeout(d.timer); d.timer = setTimeout(() => vozFin(), 2500); // 2,5 s de silencio y corta
-  };
-  r.onerror = e => {
-    if (d.fin) return;
-    if (e.error === 'no-speech' || e.error === 'aborted') return vozFin();
-    vozFin({ 'not-allowed': 'Sin permiso para el micrófono. Habilitalo en Ajustes del navegador.', 'service-not-allowed': 'El dictado no anda acá. Usá el micrófono del teclado.', 'audio-capture': 'No encuentro el micrófono.', network: 'El dictado necesita internet.' }[e.error] || 'El dictado falló. Usá el micrófono del teclado.');
-  };
-  r.onend = () => { if (!d.fin) vozFin(); };
-  d.timer = setTimeout(() => vozFin(), 8000); // si no llega nada (Safari a veces se queda colgado), corta igual
-  d.tope = setTimeout(() => vozFin(), 30000);
-  try { r.start(); } catch (e) { return vozFin('El dictado no anda acá. Usá el micrófono del teclado.'); }
-  vozUI(); Comun.haptic(10);
-}
-
 function vHoy() {
   const now = new Date(), k = key(now), dow = now.getDay();
   const i = dayInfo(k);
@@ -917,11 +881,9 @@ let tabPintada = null;
 function render() {
   const view = $('#view');
   view.classList.toggle('entra', V.tab !== tabPintada); tabPintada = V.tab;
-  if (reco && V.tab !== 'pend') vozFin();
   view.classList.toggle('ancho', V.tab === 'pend');
   view.innerHTML = V.tab === 'hoy' ? vHoy() : V.tab === 'pend' ? vPend() : V.tab === 'prog' ? vProg() : vHab();
   const np = pendAbiertos(); $$('[data-badge="pend"]').forEach(x => { x.textContent = np || ''; x.hidden = !np; });
-  if (reco) vozUI();
   $$('[data-act="tab"][data-t]').forEach(b => { if (!b.dataset.ancla) { if (b.dataset.t === V.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); } });
   if (openDay) fillDay();
   if (window.Sync) renderSync();
@@ -1106,7 +1068,6 @@ document.addEventListener('click', e => {
     case 'pArcade': { const id = ED.pid, dsc = $('#pe-d').value.trim(), pp = S.pend.find(x => x.id === id); if (pp && dsc !== (pp.d || '')) { if (dsc) pp.d = dsc.slice(0, 600); else delete pp.d; save(); } closeSheet(); abrirArcade(id, 'p'); break; }
     case 'tab': e.preventDefault(); irTab(d.t, d.ancla); break;
     case 'tick': toggle(d.id, todayKey()); break;
-    case 'voz': voz(); break;
     case 'ptick': tickPend(d.id); break;
     case 'pdel': delPend(d.id); break;
     case 'pedit': editPend(d.id); break;
@@ -1119,7 +1080,8 @@ document.addEventListener('click', e => {
       if (p) { const dsc = $('#pe-d').value.trim(); p.t = txt.slice(0, 200); p.a = ED.a; p.v = $('#pe-v').value || null; if (dsc) p.d = dsc.slice(0, 600); else delete p.d; save(); }
       closeSheet(); render(); break;
     }
-    case 'pvista': V.pvista = d.v; try { localStorage.setItem(PV_LS, d.v); } catch (er) {} render(); break;
+    case 'pvista': V.pvista = d.v; render(); break;
+    case 'phoy': { const p = S.pend.find(x => x.id === d.id); if (p) { p.v = todayKey(); save(); render(); toast('Pasado a hoy.', () => { p.v = null; save(); render(); }); } break; }
     case 'psem': V.psem = +d.n === 0 ? 0 : (V.psem || 0) + +d.n; render(); break;
     case 'pmes': V.pmes = +d.n === 0 ? 0 : (V.pmes || 0) + +d.n; render(); break;
     case 'pirsem': V.pvista = 'semana'; V.psem = Math.round((Comun.lunes(parse(d.v)) - weekStart(0)) / (7 * 864e5)); render(); break;
