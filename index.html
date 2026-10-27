@@ -278,54 +278,53 @@ button.c:disabled{opacity:.55}
 .hoja textarea{width:100%;min-height:88px;padding:12px 14px;border-radius:14px;border:2px solid var(--ln2);background:var(--card);font-size:var(--t16);font-weight:600;color:var(--tx);resize:vertical}
 .hoja textarea:focus{border-color:var(--sel)}
 
-/* modo arcade: temporizador a pantalla completa */
-.arcade{--cian:#3DF2FF;--rosa:#FF2E88;--oro:#FFD23F;--rojo:#FF4D6D;position:fixed;inset:0;z-index:74;display:flex;flex-direction:column;overflow:auto;color:#E9F1FF;background:radial-gradient(120% 70% at 50% 0%,#24306A 0%,#0B0F1E 62%) #0B0F1E;padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 18px) calc(env(safe-area-inset-left) + 16px);animation:fade 200ms var(--ease)}
+/* modo foco (temporizador a pantalla completa): mismo estilo de la app, con toques de juego */
+.arcade{position:fixed;inset:0;z-index:74;display:flex;flex-direction:column;overflow:auto;background:var(--bg);color:var(--tx);padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 18px) calc(env(safe-area-inset-left) + 16px);animation:fade 200ms var(--ease)}
 .arcade[hidden]{display:none}
-.arcade::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 3px)}
-.arcade::after{content:"";position:fixed;left:-50%;right:-50%;bottom:-10%;height:46%;pointer-events:none;z-index:0;opacity:.45;transform:perspective(260px) rotateX(62deg);transform-origin:bottom;background:linear-gradient(var(--rosa) 2px,transparent 2px) 0 0/100% 40px,linear-gradient(90deg,var(--rosa) 2px,transparent 2px) 0 0/40px 100%;-webkit-mask:linear-gradient(transparent,#000 60%);mask:linear-gradient(transparent,#000 60%);animation:ar-piso 1.2s linear infinite}
-.arcade>*{position:relative;z-index:2}
-.ar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;font:900 var(--t14)/1 var(--sans);letter-spacing:.14em;text-transform:uppercase}
-.ar-top .p1{color:var(--rosa);animation:parpadeo 1.2s steps(2) infinite}
-.ar-top .pts{color:var(--oro);font-variant-numeric:tabular-nums}
-.ar-x{width:44px;height:44px;display:grid;place-items:center;padding:0;border-radius:50%;border:2px solid rgba(233,241,255,.35);background:rgba(11,15,30,.6);color:#E9F1FF}
-.ar-centro{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:16px 0}
-.ar-emo{font-size:60px;line-height:1;animation:flota 3s ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(61,242,255,.45))}
-.ar-nm{margin:0;max-width:22ch;font:900 clamp(26px,6.5vw,46px)/1.1 var(--sans);text-transform:uppercase;letter-spacing:.03em;color:#fff;overflow-wrap:anywhere;text-shadow:0 0 14px var(--cian),3px 3px 0 var(--rosa)}
-.ar-desc{width:100%;max-width:560px;max-height:28vh;overflow:auto;margin:0;padding:12px 16px;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;font:700 var(--t16)/1.45 var(--sans);background:rgba(13,20,48,.88);border:3px solid var(--cian);border-radius:6px;box-shadow:0 0 0 3px #0B0F1E,0 0 0 6px var(--rosa),0 0 24px rgba(61,242,255,.25)}
-.ar-desc::before{content:"▶ MISIÓN";display:block;margin-bottom:4px;font:900 var(--t12)/1 var(--sans);letter-spacing:.2em;color:var(--oro)}
-.ar-reloj{font:900 clamp(84px,25vw,230px)/1 var(--sans);font-variant-numeric:tabular-nums;letter-spacing:.02em;color:var(--oro);text-shadow:0 0 22px rgba(255,210,63,.55),5px 5px 0 var(--rosa)}
-.ar-vida{display:grid;grid-template-columns:repeat(20,1fr);gap:3px;width:min(560px,100%)}
-.ar-vida i{height:16px;border-radius:2px;background:var(--cian);box-shadow:0 0 8px var(--cian);transition:background 200ms,box-shadow 200ms}
-.ar-vida i.off{background:rgba(255,255,255,.08);box-shadow:none}
-.bajo .ar-reloj{color:var(--rojo);text-shadow:0 0 22px rgba(255,77,109,.6),5px 5px 0 #6A1030}
-.bajo .ar-vida i:not(.off){background:var(--rojo);box-shadow:0 0 8px var(--rojo)}
-.critico .ar-reloj{animation:parpadeo 1s steps(2) infinite}
-.ar-estado{margin:0;min-height:1.2em;font:900 var(--t16)/1.2 var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--cian)}
-.ar-estado.blink{animation:parpadeo 1.2s steps(2) infinite}
-.ar-ctl{display:flex;flex-direction:column;align-items:center;gap:14px}
+.ar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:620px;margin:0 auto}
+.ar-chip{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:999px;background:var(--card);border:2px solid var(--ln);border-bottom-width:3px;font:900 var(--t14)/1 var(--sans);font-variant-numeric:tabular-nums}
+.ar-chip.racha{color:var(--naranja)}
+.ar-chip i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.ar-x{background:var(--card);border:2px solid var(--ln);border-bottom-width:3px;color:var(--mu)}
+.ar-centro{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;width:100%;max-width:620px;margin:0 auto;padding:16px 0;text-align:center}
+.ar-card{width:100%;background:var(--card);border:2px solid var(--ln);border-bottom-width:4px;border-radius:var(--r-l);padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.ar-emo{width:72px;height:72px;display:grid;place-items:center;font-size:40px;line-height:1;border-radius:22px;background:color-mix(in srgb,var(--c,var(--sel)) 16%,var(--card));animation:flota 3s ease-in-out infinite}
+.ar-nm{margin:0;max-width:24ch;font:900 clamp(22px,5.5vw,34px)/1.15 var(--sans);overflow-wrap:anywhere}
+.ar-desc{width:100%;max-height:26vh;overflow:auto;margin:0;padding:12px 14px;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;font:700 var(--t16)/1.45 var(--sans);color:var(--tx);background:var(--bg3);border-radius:14px}
+.ar-desc::before{content:"🎯 Misión";display:block;margin-bottom:4px;font:900 var(--t12)/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--mu)}
+.ar-reloj{font:900 clamp(80px,24vw,200px)/1 var(--sans);font-variant-numeric:tabular-nums;letter-spacing:-.01em;color:var(--tx);text-shadow:0 6px 0 var(--ln2);transition:color 300ms var(--ease)}
+.ar-vida{display:grid;grid-template-columns:repeat(20,1fr);gap:4px;width:100%;padding:5px;border-radius:999px;background:var(--track)}
+.ar-vida i{height:16px;border-radius:999px;background:var(--acc);box-shadow:inset 0 -4px 0 var(--acc-sh);transition:background 250ms var(--ease),transform 250ms var(--spring)}
+.ar-vida i.off{background:transparent;box-shadow:none;transform:scale(.6)}
+.bajo .ar-reloj{color:var(--naranja)}
+.bajo .ar-vida i:not(.off){background:var(--naranja);box-shadow:inset 0 -4px 0 #D9530F}
+.critico .ar-reloj{color:var(--neg);animation:latido 1s var(--ease) infinite}
+.critico .ar-vida i:not(.off){background:var(--neg);box-shadow:inset 0 -4px 0 #B3262B}
+.ar-estado{margin:0;min-height:1.3em;font:900 var(--t14)/1.3 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--mu)}
+.ar-estado.blink{animation:latido 1.6s var(--ease) infinite}
+.ar-ctl{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;max-width:620px;margin:0 auto}
 .ar-pre{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
-.ar-pre button{min-width:56px;min-height:44px;padding:0 10px;border-radius:8px;border:2px solid var(--cian);background:transparent;color:var(--cian);font:900 var(--t16)/1 var(--sans);font-variant-numeric:tabular-nums}
-.ar-pre button.on{background:var(--cian);color:#0B0F1E;box-shadow:0 0 14px var(--cian)}
-.ar-fila{display:flex;align-items:flex-end;justify-content:center;gap:18px;flex-wrap:wrap}
-.ar-b{width:84px;height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0;border:0;border-radius:50%;color:#fff;font:900 var(--t12)/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;background:radial-gradient(circle at 35% 28%,var(--l),var(--b) 70%);box-shadow:0 6px 0 var(--s),0 12px 20px rgba(0,0,0,.5);transition:transform 90ms var(--ease),box-shadow 90ms var(--ease)}
-.ar-b:active{transform:translateY(5px);box-shadow:0 1px 0 var(--s),0 4px 8px rgba(0,0,0,.5)}
-.ar-b .ic{width:26px;height:26px}
-.ar-b.grande{width:124px;height:124px;font-size:var(--t16)}
-.ar-b.grande .ic{width:38px;height:38px}
-.ar-b.verde{--l:#6CF0A0;--b:#18B85E;--s:#0B6E37}
-.ar-b.oro{--l:#FFE89A;--b:#F5B800;--s:#9C7400;color:#2A1E00}
-.ar-b.rojo{--l:#FF9AAE;--b:#E8304F;--s:#8E1229}
-.ar-b.azul{--l:#9CC6FF;--b:#2F7BF0;--s:#163F8C}
-.ar-b.chico{width:64px;height:64px;font-size:11px}
-.ar-b.chico .ic{width:22px;height:22px}
-.ar-cuenta{position:fixed;inset:0;z-index:4;display:grid;place-items:center;background:rgba(11,15,30,.55);font:900 clamp(120px,40vw,320px)/1 var(--sans);color:var(--oro);text-shadow:0 0 30px rgba(255,210,63,.6),8px 8px 0 var(--rosa)}
-.ar-cuenta span{animation:ar-zoom 700ms var(--ease) both}
-.ar-cuenta span.ya{font-size:.55em;color:var(--cian);text-shadow:0 0 30px rgba(61,242,255,.7),6px 6px 0 var(--rosa)}
-.ar-gano{font:900 clamp(30px,8vw,56px)/1.1 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--cian);text-shadow:0 0 18px var(--cian),4px 4px 0 var(--rosa);animation:rebote 600ms var(--spring)}
-@keyframes ar-zoom{0%{transform:scale(2.2);opacity:0}30%{transform:scale(1);opacity:1}80%{opacity:1}100%{transform:scale(.85);opacity:0}}
-@keyframes ar-piso{to{background-position:0 40px,0 0}}
-@keyframes parpadeo{50%{opacity:0}}
-@media (max-height:560px){.ar-emo{font-size:40px}.ar-centro{gap:8px;padding:8px 0}.ar-reloj{font-size:clamp(64px,18vh,140px)}.ar-desc{max-height:22vh}.ar-b{width:64px;height:64px}.ar-b.grande{width:88px;height:88px}}
+.ar-pre button{min-width:58px;min-height:46px;padding:0 10px;border:2px solid var(--ln2);border-bottom-width:4px;border-radius:14px;background:var(--card);color:var(--tx);font:900 var(--t16)/1 var(--sans);font-variant-numeric:tabular-nums;transition:transform 110ms var(--spring)}
+.ar-pre button:active{transform:scale(.92)}
+.ar-pre button.on{background:var(--sel-bg);border-color:var(--sel);color:var(--sel)}
+.ar-fila{display:flex;align-items:stretch;justify-content:center;gap:10px;width:100%}
+.ar-b{flex:1;min-height:60px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 14px;border:2px solid var(--ln2);border-bottom-width:5px;border-radius:18px;background:var(--card);color:var(--tx);font:900 var(--t16)/1 var(--sans);transition:transform 110ms var(--ease),border-bottom-width 110ms var(--ease)}
+.ar-b:active{transform:translateY(3px);border-bottom-width:2px}
+.ar-b .ic{width:22px;height:22px}
+.ar-b.grande{flex:2;min-height:68px;font-size:var(--t20)}
+.ar-b.grande .ic{width:26px;height:26px}
+.ar-b.verde{background:var(--acc);border-color:var(--acc-sh);color:#fff}
+.ar-b.azul{background:var(--sel);border-color:var(--sel-sh);color:#fff}
+.ar-b.chico{flex:0 0 auto;min-width:64px}
+.ar-b.rojo{color:var(--neg)}
+.ar-b.oro{color:var(--acc)}
+.ar-cuenta{position:fixed;inset:0;z-index:4;display:grid;place-items:center;background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);font:900 clamp(120px,38vw,280px)/1 var(--sans);color:var(--acc);text-shadow:0 10px 0 var(--acc-sh)}
+.ar-cuenta span{animation:ar-zoom 700ms var(--spring) both}
+.ar-cuenta span.ya{font-size:.5em;color:var(--naranja);text-shadow:0 8px 0 #D9530F}
+.ar-gano{margin:6px 0 0;font:900 clamp(28px,7vw,44px)/1.1 var(--sans);color:var(--acc);animation:rebote 600ms var(--spring)}
+@keyframes ar-zoom{0%{transform:scale(.3);opacity:0}45%{transform:scale(1.08);opacity:1}80%{transform:scale(1);opacity:1}100%{transform:scale(.9);opacity:0}}
+@keyframes latido{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.04);opacity:.75}}
+@media (max-height:600px){.ar-emo{width:52px;height:52px;font-size:30px;border-radius:16px}.ar-centro{gap:8px;padding:8px 0}.ar-card{padding:12px;gap:6px}.ar-reloj{font-size:clamp(60px,17vh,130px)}.ar-desc{max-height:20vh}.ar-b{min-height:50px}.ar-b.grande{min-height:56px}}
 @media (min-width:900px){main{max-width:760px;margin:0;padding:24px 40px 48px}}
 </style>
 </head>
@@ -369,7 +368,7 @@ button.c:disabled{opacity:.55}
 <div class="hoja-ov" id="ov" hidden><div class="hoja" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"><span></span><button hidden>Deshacer</button></div>
 <div id="sello-slot" aria-live="polite"></div>
-<div class="arcade" id="arcade" role="dialog" aria-modal="true" aria-label="Modo arcade" hidden></div>
+<div class="arcade" id="arcade" role="dialog" aria-modal="true" aria-label="Modo foco" hidden></div>
 <input type="file" id="imp" accept="application/json,.json,text/plain" hidden aria-label="Archivo de respaldo">
 
 <script src="config.js"></script>
@@ -696,7 +695,7 @@ function editPend(id) {
     <label class="lb" for="pe-d">Descripción (opcional)</label><textarea id="pe-d" maxlength="600" placeholder="Detalle para el modo arcade">${esc(p.d || '')}</textarea>
     <label class="lb" for="pe-v">Vence el</label><div class="er"><input type="date" id="pe-v" value="${esc(p.v || '')}"><button type="button" class="b-sec" data-act="peSinFecha">Sin fecha</button></div>
     <span class="lb" id="lb-pa">Cuenta</span><div class="pend-dest" role="radiogroup" aria-labelledby="lb-pa" id="pe-a">${AREAS.map(x => `<button type="button" role="radio" aria-checked="${ED.a === x.id}" class="${ED.a === x.id ? 'on' : ''}" data-act="peArea" data-a="${x.id}" style="--c:${x.c}"><i></i>${x.n}</button>`).join('')}</div>
-    ${p.done ? '' : `<button class="b-sec b-ancho" style="margin-top:16px;width:100%" data-act="pArcade">${ic('play', 's')}Modo arcade</button>`}
+    ${p.done ? '' : `<button class="b-sec b-ancho" style="margin-top:16px;width:100%" data-act="pArcade">${ic('play', 's')}Modo foco</button>`}
     <div class="form-pie"><button class="b-sec" data-act="closeSheet">Cancelar</button><button class="b-pri" data-act="pSave">Guardar</button></div>
     <div class="zona-borrar"><button class="b-txt neg" data-act="pDelS">${ic('trash-2', 's')}Borrar pendiente</button></div>`, 'Editar pendiente');
 }
@@ -1215,7 +1214,7 @@ function pantallaCompleta(on) {
     if (p && p.catch) p.catch(() => {});
   } catch (e) {}
 }
-function temaArcade(on) { $$('meta[name="theme-color"]').forEach(m => { if (!m.dataset.orig) m.dataset.orig = m.content; m.content = on ? '#0B0F1E' : m.dataset.orig; }); }
+function temaArcade(on) { $$('meta[name="theme-color"]').forEach(m => { if (!m.dataset.orig) m.dataset.orig = m.content; m.content = m.dataset.orig; /* ahora usa el fondo de la app */ }); }
 
 function abrirArcade(id, tipo) {
   const h = (tipo === 'p' ? S.pend : S.habits).find(x => x.id === id); if (!h) return;
@@ -1241,17 +1240,17 @@ function cerrarArcade() {
 function pintarArcade() {
   const h = habT(); if (!h) return cerrarArcade();
   const { nm, desc, emoji, hecho, hoy } = datosT(h), n = esP() ? 0 : sesiones(h), f = T.fase, min = Math.round(T.total / 60000);
-  const estado = { listo: 'READY?', cuenta: '', juego: '¡DALE!', pausa: 'PAUSA', fin: '' }[f];
+  const estado = { listo: '¿Arrancamos?', cuenta: '', juego: 'En foco', pausa: 'En pausa', fin: '' }[f];
   let ctl = '';
   if (f === 'listo') ctl = `<div class="ar-pre" role="group" aria-label="Minutos">${PRESETS.map(m => `<button data-act="arMin" data-n="${m}" class="${m === min ? 'on' : ''}" aria-pressed="${m === min}">${m}'</button>`).join('')}</div>
-    <div class="ar-fila"><button class="ar-b azul chico" data-act="arMas" data-n="-1" aria-label="Un minuto menos">−1'</button><button class="ar-b verde grande" data-act="arStart" id="ar-main">${ic('play')}Start</button><button class="ar-b azul chico" data-act="arMas" data-n="1" aria-label="Un minuto más">+1'</button></div>`;
-  else if (f === 'juego' || f === 'pausa') ctl = `<div class="ar-fila"><button class="ar-b azul chico" data-act="arReset">${ic('rotate-ccw')}Reset</button><button class="ar-b ${f === 'juego' ? 'oro' : 'verde'} grande" data-act="arPausa" id="ar-main">${ic(f === 'juego' ? 'pause' : 'play')}${f === 'juego' ? 'Pausa' : 'Seguir'}</button><button class="ar-b verde chico" data-act="arFin">${ic('check')}Listo</button></div>`;
-  else if (f === 'fin') ctl = `<div class="ar-fila">${hoy && !hecho ? `<button class="ar-b verde grande" data-act="arHecho" id="ar-main">${ic('check')}Marcar</button>` : ''}<button class="ar-b azul chico" data-act="arOtra" ${hoy && !hecho ? '' : 'id="ar-main"'}>${ic('rotate-ccw')}Otra</button><button class="ar-b rojo chico" data-act="arSalir">${ic('x')}Salir</button></div>`;
+    <div class="ar-fila"><button class="ar-b chico" data-act="arMas" data-n="-1" aria-label="Un minuto menos">−1'</button><button class="ar-b verde grande" data-act="arStart" id="ar-main">${ic('play')}Start</button><button class="ar-b chico" data-act="arMas" data-n="1" aria-label="Un minuto más">+1'</button></div>`;
+  else if (f === 'juego' || f === 'pausa') ctl = `<div class="ar-fila"><button class="ar-b chico" data-act="arReset">${ic('rotate-ccw')}Reset</button><button class="ar-b ${f === 'juego' ? 'azul' : 'verde'} grande" data-act="arPausa" id="ar-main">${ic(f === 'juego' ? 'pause' : 'play')}${f === 'juego' ? 'Pausa' : 'Seguir'}</button><button class="ar-b oro chico" data-act="arFin">${ic('check')}Listo</button></div>`;
+  else if (f === 'fin') ctl = `<div class="ar-fila">${hoy && !hecho ? `<button class="ar-b verde grande" data-act="arHecho" id="ar-main">${ic('check')}Marcar</button>` : ''}<button class="ar-b chico" data-act="arOtra" ${hoy && !hecho ? '' : 'id="ar-main"'}>${ic('rotate-ccw')}Otra</button><button class="ar-b rojo chico" data-act="arSalir">${ic('x')}Salir</button></div>`;
   const centro = f === 'fin'
-    ? `<p class="ar-gano">${T.marcado ? (esP() ? '¡Tarea hecha!' : '+1 sesión') : T.temprano ? '¡Nivel superado!' : '¡Tiempo!'}</p><p class="ar-estado blink">${T.marcado && esP() ? 'Tachada de pendientes' : T.marcado ? `${n} ${n === 1 ? 'sesión' : 'sesiones'} en total` : hecho ? 'Ya estaba hecho hoy' : hoy ? 'Marcalo como hecho' : 'Hoy no estaba programado'}</p>`
+    ? `<p class="ar-gano">${T.marcado ? (esP() ? '¡Tarea hecha! 🎉' : '+1 sesión 🎉') : T.temprano ? '¡Nivel superado!' : '¡Tiempo!'}</p><p class="ar-estado blink">${T.marcado && esP() ? 'Tachada de pendientes' : T.marcado ? `${n} ${n === 1 ? 'sesión' : 'sesiones'} en total` : hecho ? 'Ya estaba hecho hoy' : hoy ? 'Marcalo como hecho' : 'Hoy no estaba programado'}</p>`
     : `<div class="ar-reloj" id="ar-reloj" role="timer" aria-label="Tiempo restante">${mmss(restante())}</div><div class="ar-vida" id="ar-vida" aria-hidden="true">${'<i></i>'.repeat(SEG)}</div><p class="ar-estado ${f === 'listo' || f === 'pausa' ? 'blink' : ''}">${estado}</p>`;
-  $('#arcade').innerHTML = `<header class="ar-top"><span class="p1">1UP</span><span class="pts">${esP() ? esc(areaInfo(areaP(h)).n) : `Sesiones ${String(n).padStart(3, '0')}`}</span><button class="ar-x" data-act="arSalir" aria-label="Salir del modo arcade">${ic('x')}</button></header>
-    <div class="ar-centro"><span class="ar-emo" aria-hidden="true">${esc(emoji)}</span><h2 class="ar-nm">${esc(nm)}</h2>${desc ? `<p class="ar-desc">${esc(desc)}</p>` : ''}${centro}</div>
+  $('#arcade').innerHTML = `<header class="ar-top">${esP() ? `<span class="ar-chip" style="--c:${areaInfo(areaP(h)).c}"><i aria-hidden="true"></i>${esc(areaInfo(areaP(h)).n)}</span>` : `<span class="ar-chip racha">🔥 ${n} ${n === 1 ? 'sesión' : 'sesiones'}</span>`}<button class="icon-btn ar-x" data-act="arSalir" aria-label="Salir del modo foco">${ic('x')}</button></header>
+    <div class="ar-centro"><div class="ar-card"><span class="ar-emo" aria-hidden="true" style="--c:${esP() ? areaInfo(areaP(h)).c : colorDe(h)}">${esc(emoji)}</span><h2 class="ar-nm">${esc(nm)}</h2>${desc ? `<p class="ar-desc">${esc(desc)}</p>` : ''}</div>${centro}</div>
     <div class="ar-ctl">${ctl}</div>`;
   tickArcade(true);
   const m = $('#ar-main'); if (m) m.focus({ preventScroll: true });
