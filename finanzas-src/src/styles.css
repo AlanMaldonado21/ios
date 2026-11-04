@@ -573,3 +573,18 @@ html.teclado .qa .ti .ic{width:14px;height:14px}
 html.teclado .qa .medios button{min-height:46px;flex-direction:row;gap:6px}
 html.teclado .qa .add-monto{padding:6px 14px}
 html.teclado .qa .add-monto input{font-size:34px}
+
+/* Cuotas: tarjetas que filtran por banco */
+.mini .mini-r{display:block;font-size:var(--t12);color:var(--mu)}
+.mini>div>b{display:block;margin:2px 0 0;font-size:var(--t16);font-weight:900}
+.mini>.mini-tj{padding:0;background:none}
+.mini-tj button{display:flex;flex-direction:column;align-items:flex-start;width:100%;height:100%;padding:10px 12px;border:2px solid transparent;border-bottom-width:4px;border-radius:14px;background:var(--bg3);color:inherit;text-align:left;cursor:pointer;transition:transform 110ms var(--ease),background var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+.mini-tj button:hover{border-color:var(--ln2)}
+.mini-tj button:active{transform:translateY(2px);border-bottom-width:2px}
+.mini-tj button b{margin:2px 0 0;font-size:var(--t16);font-weight:900}
+.mini-tj button small{margin-top:4px;font-size:var(--t12);color:var(--mu)}
+.mini-tj button[aria-pressed="true"]{background:var(--sel-bg);border-color:var(--sel)}
+.mini-tj button[aria-pressed="true"] .mini-r,.mini-tj button[aria-pressed="true"] small{color:var(--sel)}
+.filtro-tj{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 14px;margin:0 0 14px;border:2px solid var(--sel);border-radius:var(--r-l);background:var(--sel-bg);color:var(--sel);font-size:var(--t14)}
+.filtro-tj .b-txt{display:inline-flex;align-items:center;gap:4px;min-height:36px}
+.fe-fecha{display:inline-flex;align-items:center;gap:4px}
