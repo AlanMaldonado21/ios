@@ -206,9 +206,22 @@ details.plegado>summary h2{font-size:var(--t20)}
 .gs-graf{margin-top:16px}
 .gs-graf p{margin:4px 0 0}
 .gs-medios{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 0}
-.gs-medios>div{padding:10px;border-radius:14px;background:var(--bg3)}
-.gs-medios dt{font-size:var(--t12)}
-.gs-medios dd{margin:6px 0 0;font-size:var(--t16);font-weight:900}
+.gs-medios>button{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;padding:10px;border:2px solid transparent;border-bottom-width:4px;border-radius:14px;background:var(--bg3);color:inherit;text-align:left;cursor:pointer;transition:transform 110ms var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.gs-medios>button:hover:not(:disabled){border-color:var(--ln2)}
+.gs-medios>button:active:not(:disabled){transform:translateY(2px);border-bottom-width:2px}
+.gs-medios>button:disabled{cursor:default;opacity:.7}
+.gs-medios>button b{font-size:var(--t16);font-weight:900}
+.gs-medios>button small{font-size:var(--t12);color:var(--mu)}
+.gs-medios>button[aria-pressed="true"]{background:var(--sel-bg);border-color:var(--sel)}
+.gs-medios>button[aria-pressed="true"] small{color:var(--sel);font-weight:800}
+.gs-desg{margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--bg3);animation:fade var(--dur) var(--ease)}
+.gs-desg-h{display:flex;justify-content:space-between;gap:8px;margin:0 0 6px;font-size:var(--t14)}
+.gs-desg-h b{font-weight:900}
+.gs-desg .gs-t b small{font-weight:800;font-size:var(--t12)}
+.gs-tj{display:flex;flex-wrap:wrap;gap:6px 16px;margin:8px 0 0;font-size:var(--t14)}
+.gs-tj>div{display:flex;gap:6px}
+.gs-tj dt{color:var(--mu)}
+.gs-tj dd{margin:0;font-weight:900}
 .gs-tipos{margin-top:12px;padding-top:4px}
 .gs-tipos summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:900;font-size:var(--t14);color:var(--sel)}
 .gs-t{display:grid;grid-template-columns:minmax(0,150px) 1fr auto;align-items:center;gap:10px;font-size:var(--t14);padding:4px 0}
@@ -599,3 +612,9 @@ html.teclado .qa .add-monto input{font-size:34px}
 .filtro-tj{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 14px;margin:0 0 14px;border:2px solid var(--sel);border-radius:var(--r-l);background:var(--sel-bg);color:var(--sel);font-size:var(--t14)}
 .filtro-tj .b-txt{display:inline-flex;align-items:center;gap:4px;min-height:36px}
 .fe-fecha{display:inline-flex;align-items:center;gap:4px}
+
+/* Diario: desglose por medio de pago */
+.gs-medios>button>.medio{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gs-desg .gs-t{grid-template-columns:minmax(0,1fr) auto;row-gap:6px;padding:6px 0}
+.gs-desg .gs-t>i{grid-column:1/-1;grid-row:2}
+@media (max-width:380px){.gs-medios>button>.medio{font-size:11px}}

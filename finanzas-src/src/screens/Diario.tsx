@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { sumarMeses } from '../../../lib/finanzas/calc';
-import { MEDIOS, TARJETAS, acumuladoDiario, agruparPorDia, gastosAlContado, gastosDelMes, primerPagoCredito, primerRegistro, totalGastos, totalPorMedio, totalPorTipo } from '../../../lib/finanzas/diario';
+import { MEDIOS, TARJETAS, type Medio, acumuladoDiario, agruparPorDia, gastosAlContado, gastosDelMes, primerPagoCredito, primerRegistro, totalGastos, totalPorMedio, totalPorTipo } from '../../../lib/finanzas/diario';
 import { fmtArs, mesCorto, mesLargo } from '../../../lib/finanzas/format';
 import { hoyISO, usePlan, useStore } from '../store';
 import { CountUp } from '../components/CountUp';
@@ -48,6 +48,7 @@ export function Diario() {
   const { meses } = usePlan();
   const [mes, setMes] = useState(hoyISO().slice(0, 7));
   const [borrando, setBorrando] = useState<string | null>(null);
+  const [medioSel, setMedioSel] = useState<Medio | null>(null);
 
   const delMes = useMemo(() => gastosDelMes(gastos, mes), [gastos, mes]);
   const contado = gastosAlContado(delMes);
@@ -55,7 +56,10 @@ export function Diario() {
   const enCredito = totalGastos(delMes) - total;
   const porMedio = totalPorMedio(delMes);
   const porTipo = totalPorTipo(delMes);
-  const dias = agruparPorDia(delMes);
+  const delMedio = medioSel ? delMes.filter(g => g.medio === medioSel) : delMes;
+  const dias = agruparPorDia(delMedio);
+  const tiposMedio = medioSel ? totalPorTipo(delMedio) : [];
+  const nombreMedio = MEDIOS.find(x => x.id === medioSel)?.label;
   const plan = meses.find(m => m.mes === mes);
   const libre = topes[mes] ?? (plan ? plan.libre : null);
   const usado = libre && libre > 0 ? total / libre : 0;
@@ -84,9 +88,9 @@ export function Diario() {
       {mes === hoyM && <Registro />}
 
       <div className="mes-h">
-        <button className="icon-btn" onClick={() => setMes(sumarMeses(mes, -1))} aria-label="Mes anterior"><Ic n="chevron-left" /></button>
+        <button className="icon-btn" onClick={() => { setMes(sumarMeses(mes, -1)); setMedioSel(null); }} aria-label="Mes anterior"><Ic n="chevron-left" /></button>
         <div className="mes-t"><h2 key={mes}>{mesLargo(mes)}</h2></div>
-        <button className="icon-btn" onClick={() => setMes(sumarMeses(mes, 1))} aria-label="Mes siguiente"><Ic n="chevron-right" /></button>
+        <button className="icon-btn" onClick={() => { setMes(sumarMeses(mes, 1)); setMedioSel(null); }} aria-label="Mes siguiente"><Ic n="chevron-right" /></button>
       </div>
 
       <section className={`gasto-sum s-${nivel}`}>
@@ -104,9 +108,38 @@ export function Diario() {
         {cerro === true && <p className="marca"><Ic n="circle-check" size="s" /> Mes cerrado dentro del tope que pusiste.</p>}
         {enCredito > 0 && <p className="gs-cred"><MedioTag medio="credito" /> Además <b className="num">{fmtArs(enCredito)}</b> con crédito: no sale de este mes, se suma a Cuotas.</p>}
         {grafico}
-        <dl className="gs-medios">
-          {MEDIOS.map(x => <div key={x.id}><dt><MedioTag medio={x.id} /></dt><dd className="num">{fmtArs(porMedio[x.id])}</dd></div>)}
-        </dl>
+        <div className="gs-medios">
+          {MEDIOS.map(x => (
+            <button key={x.id} aria-pressed={medioSel === x.id} disabled={porMedio[x.id] === 0 && medioSel !== x.id}
+              onClick={() => setMedioSel(medioSel === x.id ? null : x.id)}
+              aria-label={medioSel === x.id ? 'Ver todos los gastos' : `Ver el desglose de ${x.label}`}>
+              <MedioTag medio={x.id} /><b className="num">{fmtArs(porMedio[x.id])}</b>
+              <small>{medioSel === x.id ? 'Ocultar' : porMedio[x.id] ? 'Ver desglose' : 'Sin gastos'}</small>
+            </button>
+          ))}
+        </div>
+        {medioSel && (
+          <div className="gs-desg">
+            <p className="gs-desg-h"><span><b>{nombreMedio}</b> · {delMedio.length === 1 ? '1 gasto' : `${delMedio.length} gastos`}</span>
+              <b className="num">{fmtArs(porMedio[medioSel])}</b></p>
+            {tiposMedio.map(t => (
+              <div key={t.tipo} className="gs-t">
+                <span><IcTipo t={t.tipo} />{t.tipo}</span>
+                <i style={{ width: `${(t.total / tiposMedio[0].total) * 100}%` }} />
+                <b className="num">{fmtArs(t.total)}<small className="mu"> {Math.round((t.total / porMedio[medioSel]) * 100)}%</small></b>
+              </div>
+            ))}
+            {medioSel === 'credito' && (
+              <dl className="gs-tj">
+                {TARJETAS.map(t => {
+                  const v = delMedio.filter(g => g.tarjeta === t.id).reduce((a, g) => a + g.monto, 0);
+                  return v > 0 ? <div key={t.id}><dt>{t.label}</dt><dd className="num">{fmtArs(v)}</dd></div> : null;
+                })}
+              </dl>
+            )}
+            <p className="mu t12">Abajo quedan solo los gastos con {nombreMedio?.toLowerCase()}.</p>
+          </div>
+        )}
         {porTipo.length > 0 && (
           <details className="gs-tipos">
             <summary>Por categoría</summary>
@@ -121,10 +154,16 @@ export function Diario() {
         )}
       </section>
 
-      {dias.length === 0 && sinGastoMes.length === 0 && (
+      {medioSel && (
+        <div className="filtro-tj" role="status">
+          <span>Solo <b>{nombreMedio}</b> · {fmtArs(porMedio[medioSel])}</span>
+          <button className="b-txt" onClick={() => setMedioSel(null)}><Ic n="x" size="s" />Ver todos</button>
+        </div>
+      )}
+      {!medioSel && dias.length === 0 && sinGastoMes.length === 0 && (
         <p className="mu vacio">Todavía no cargaste gastos en {mesLargo(mes)}. Tocá Cargar para anotar el primero.</p>
       )}
-      {sinGastoMes.length > 0 && <p className="mu t12">Días marcados sin gastos: {sinGastoMes.map(d => Number(d.slice(8))).join(', ')}.</p>}
+      {!medioSel && sinGastoMes.length > 0 && <p className="mu t12">Días marcados sin gastos: {sinGastoMes.map(d => Number(d.slice(8))).join(', ')}.</p>}
       {dias.map(d => {
         const cont = totalGastos(gastosAlContado(d.items)), cred = d.total - cont;
         return (
