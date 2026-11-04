@@ -13,13 +13,23 @@ import { Campo, FilaEditable } from '../components/FilaEditable';
 import { Ic } from '../components/Ic';
 
 const corta = (t: string) => (t.startsWith('BNA') ? 'BNA' : 'MP');
+/** "2026-11-03" → "3/11/26" */
+const fechaCorta = (iso: string) => { const [a, m, d] = iso.split('-'); return `${Number(d)}/${Number(m)}/${a.slice(2)}`; };
+type Filtro = 'todas' | 'BNA Visa' | 'MercadoPago';
 
 export function Cuotas() {
-  const { data: base, editar, setMesSel } = useStore();
+  const { data: base, gastos, editar, setMesSel } = useStore();
   const { data, meses } = usePlan();
   const [abierta, setAbierta] = useState<string | null>(null);
+  const [filtro, setFiltro] = useState<Filtro>('todas');
   const todas = data.cuotas;
-  const desdeDiario = todas.filter(c => c.origen);
+  const pasa = (c: Cuota) => filtro === 'todas' || c.tarjeta === filtro;
+  const fechaDe = new Map(gastos.map(g => [g.id, g.fecha]));
+  const aMano = base.cuotas.filter(pasa);
+  const desdeDiario = todas.filter(c => c.origen && pasa(c))
+    .sort((a, b) => (fechaDe.get(b.origen!) ?? '').localeCompare(fechaDe.get(a.origen!) ?? ''));
+  const nombreFiltro = TJ.find(t => t.id === filtro)?.label;
+  const totalFiltro = todas.filter(pasa).reduce((a, c) => a + totalQueFalta(c), 0);
   const totalFalta = todas.reduce((a, c) => a + totalQueFalta(c), 0);
   const ult = [...meses].reverse().find(m => m.cuotas > 0);
   const opcionesMes = Array.from({ length: base.settings.mesesPlan + 6 }, (_, i) => sumarMeses(base.settings.mesInicioPlan, i - 3));
@@ -27,10 +37,10 @@ export function Cuotas() {
   const porTarjeta = (t: string) => todas.filter(c => c.tarjeta === t).reduce((a, c) => a + totalQueFalta(c), 0);
   const abrir = (m: string) => { setMesSel(m); location.hash = '#/mes'; };
   const mesHoy = meses.find(m => m.mes === hoyISO().slice(0, 7)) ?? meses[0];
-  const pesan = todas.map(c => ({ c, falta: totalQueFalta(c) })).filter(x => x.falta > 0).sort((a, b) => b.falta - a.falta);
-  const porMesManual = base.cuotas.reduce((a, c) => a + c.cuotaMensual, 0);
-  const porMesDiario = desdeDiario.reduce((a, c) => a + c.cuotaMensual, 0);
+  const pesan = todas.filter(pasa).map(c => ({ c, falta: totalQueFalta(c) })).filter(x => x.falta > 0).sort((a, b) => b.falta - a.falta);
+  const porMes = (cs: Cuota[]) => cs.reduce((a, c) => a + c.cuotaMensual, 0);
   const colorTj = (t: string) => TARJETAS.find(x => x.key === t)?.color ?? 'var(--sel)';
+  const cuantas = (n: number) => (n === 1 ? '1 compra' : `${n} compras`);
   const resumen = (c: Cuota) => `${corta(c.tarjeta)} · ${c.cuotasRestantes === 1 ? 'queda 1 cuota' : `quedan ${c.cuotasRestantes} cuotas`} · hasta ${mesCorto(ultimoPago(c))}`;
 
   return (
@@ -38,24 +48,35 @@ export function Cuotas() {
       <header className="ph"><div><h1>Cuotas</h1><p className="sub">Lo que falta pagar con tarjeta</p></div></header>
 
       <section className="protagonista">
-        <span className="rotulo">Total que falta</span>
-        <b className="cifra"><CountUp value={totalFalta} format={fmtArs} ms={500} /></b>
         <div className="reparto prot-rep">
           <div className="prot-izq">
-            <ul className="leg">
-              {TARJETAS.map(t => (
-                <li key={t.key}><i style={{ background: t.color }} /><span>{t.key === 'BNA Visa' ? 'BNA' : t.key}</span><b className="num">{fmtArs(porTarjeta(t.key))}</b></li>
-              ))}
-            </ul>
+            <span className="rotulo">Total que falta</span>
+            <b className="cifra"><CountUp value={totalFalta} format={fmtArs} ms={500} /></b>
+            {mesHoy && <span className="mu t14">Pagás <b className="num">{fmtArs(mesHoy.cuotas)}</b> en {mesCorto(mesHoy.mes)}</span>}
           </div>
-          {totalFalta > 0 && <DonaChart label={todas.length === 1 ? "compra" : "compras"} centro={`${todas.length}`}
+          {totalFalta > 0 && <DonaChart label={todas.length === 1 ? 'compra' : 'compras'} centro={`${todas.length}`}
             partes={TARJETAS.map(t => ({ name: t.key, color: t.color, value: porTarjeta(t.key) }))} />}
         </div>
-        <dl className="mini">
-          <div><dt>{mesHoy ? `Pagás en ${mesCorto(mesHoy.mes)}` : 'Este mes'}</dt><dd className="num">{fmtArs(mesHoy?.cuotas ?? 0)}</dd></div>
-          <div><dt>Libre de cuotas</dt><dd>{ult ? mesCorto(sumarMeses(ult.mes, 1)) : 'ya'}</dd></div>
-        </dl>
+        <div className="mini">
+          {TJ.map(t => (
+            <div key={t.id} className="mini-tj">
+              <button aria-pressed={filtro === t.id} onClick={() => { setAbierta(null); setFiltro(filtro === t.id ? 'todas' : t.id); }}
+                aria-label={`${filtro === t.id ? 'Ver todas las cuotas' : `Ver solo ${t.label}`}`}>
+                <span className="mini-r">{t.label}</span><b className="num">{fmtArs(porTarjeta(t.id))}</b>
+                <small>{filtro === t.id ? 'Tocá para ver todas' : 'Ver sus cuotas'}</small>
+              </button>
+            </div>
+          ))}
+          <div><span className="mini-r">Libre de cuotas</span><b>{ult ? mesCorto(sumarMeses(ult.mes, 1)) : 'ya'}</b></div>
+        </div>
       </section>
+
+      {nombreFiltro && (
+        <div className="filtro-tj" role="status">
+          <span>Solo <b>{nombreFiltro}</b> · falta <b className="num">{fmtArs(totalFiltro)}</b></span>
+          <button className="b-txt" onClick={() => setFiltro('todas')}><Ic n="x" size="s" />Ver todas</button>
+        </div>
+      )}
 
       <section className="bloque">
         <div className="bloque-h"><h2>Cuotas por mes</h2><span className="mu t12">Tocá un mes para abrirlo</span></div>
@@ -65,7 +86,7 @@ export function Cuotas() {
 
       {pesan.length > 0 && (
         <section className="bloque">
-          <div className="bloque-h"><h2>Qué pesa más</h2><span className="mu t12">Lo que falta de cada compra</span></div>
+          <div className="bloque-h"><h2>Qué pesa más{nombreFiltro ? ` · ${corta(filtro)}` : ''}</h2><span className="mu t12">Lo que falta de cada compra</span></div>
           <div className="pesa">
             {pesan.slice(0, 6).map(({ c, falta }) => (
               <div key={c.id} className="gs-t">
@@ -79,18 +100,18 @@ export function Cuotas() {
         </section>
       )}
 
-      <Plegable id="cuotas-pendientes" titulo="Cuotas pendientes" forzarAbierto={abierta != null && base.cuotas.some(c => c.id === abierta)}
-        resumen={base.cuotas.length === 1 ? '1 compra' : `${base.cuotas.length} compras`}
-        valor={<>{fmtArs(porMesManual)}<small className="mu">/mes</small></>}
+      <Plegable id="cuotas-pendientes" titulo={`Cuotas pendientes${nombreFiltro ? ` · ${corta(filtro)}` : ''}`}
+        forzarAbierto={!!nombreFiltro || (abierta != null && aMano.some(c => c.id === abierta))}
+        resumen={cuantas(aMano.length)} valor={<>{fmtArs(porMes(aMano))}<small className="mu">/mes</small></>}
         pie={<button className="b-txt agregar" onClick={() => {
           const id = nuevoId();
-          editar(d => { d.cuotas.push({ id, concepto: '', tarjeta: 'BNA Visa', cuotaMensual: 0, cuotasRestantes: 1, primerPago: d.settings.mesInicioPlan }); });
+          editar(d => { d.cuotas.push({ id, concepto: '', tarjeta: filtro === 'todas' ? 'BNA Visa' : filtro, cuotaMensual: 0, cuotasRestantes: 1, primerPago: d.settings.mesInicioPlan }); });
           setAbierta(id);
         }}><Ic n="plus" size="s" />Agregar cuota</button>}>
         <p className="mu t12">Tocá una para editarla.</p>
         <ul className="lista">
-          {base.cuotas.length === 0 && <li className="mu vacio">No tenés cuotas cargadas a mano.</li>}
-          {base.cuotas.map(c => (
+          {aMano.length === 0 && <li className="mu vacio">{nombreFiltro ? `No tenés cuotas de ${nombreFiltro} cargadas a mano.` : 'No tenés cuotas cargadas a mano.'}</li>}
+          {aMano.map(c => (
             <FilaEditable key={c.id} id={c.id} abierta={abierta} setAbierta={setAbierta} etiqueta={c.concepto}
               nombre={c.concepto || 'Sin nombre'} detalle={resumen(c)} valor={<>{fmtArs(c.cuotaMensual)}<small className="mu">/mes</small></>}
               onBorrar={() => editar(d => { d.cuotas = d.cuotas.filter(x => x.id !== c.id); })}>
@@ -112,13 +133,16 @@ export function Cuotas() {
       </Plegable>
 
       {desdeDiario.length > 0 && (
-        <Plegable id="cuotas-diario" titulo="Compras con crédito del Diario"
-          resumen={desdeDiario.length === 1 ? '1 compra' : `${desdeDiario.length} compras`}
-          valor={<>{fmtArs(porMesDiario)}<small className="mu">/mes</small></>}>
+        <Plegable id="cuotas-diario" titulo={`Compras con crédito del Diario${nombreFiltro ? ` · ${corta(filtro)}` : ''}`}
+          forzarAbierto={!!nombreFiltro} resumen={cuantas(desdeDiario.length)}
+          valor={<>{fmtArs(porMes(desdeDiario))}<small className="mu">/mes</small></>}>
           <ul className="lista">
-            {desdeDiario.map(c => (
-              <li key={c.id} className="fe"><div className="fe-h ro"><span className="fe-n"><b>{c.concepto}</b><small>{resumen(c)}</small></span><span className="fe-v num">{fmtArs(c.cuotaMensual)}<small className="mu">/mes</small></span></div></li>
-            ))}
+            {desdeDiario.map(c => {
+              const f = fechaDe.get(c.origen!);
+              return (
+              <li key={c.id} className="fe"><div className="fe-h ro"><span className="fe-n"><b>{c.concepto}</b>{f && <small className="fe-fecha"><Ic n="calendar" size="s" />Compra del {fechaCorta(f)}</small>}<small>{resumen(c)}</small></span><span className="fe-v num">{fmtArs(c.cuotaMensual)}<small className="mu">/mes</small></span></div></li>
+              );
+            })}
           </ul>
           <p className="mu t12">Para cambiarlas o borrarlas, hacelo desde el gasto en Diario.</p>
         </Plegable>

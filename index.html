@@ -73,6 +73,109 @@ main{max-width:640px;margin:0 auto;padding:8px 16px 0}
 .chk.anim{animation:rebote 460ms var(--spring)}
 .chk.anim svg path{stroke-dasharray:24;animation:trazo 260ms var(--ease)}
 
+/* pendientes del día */
+.pend-form{display:flex;gap:8px;margin-bottom:14px}
+.pend-form .campo{flex:1;min-width:0}
+.pend-form .campo:focus{border-color:var(--sel);outline:none}
+.pend-b{width:50px;height:50px;flex:none;display:grid;place-items:center;padding:0;border-radius:14px;border:2px solid var(--ln2);border-bottom-width:4px;background:var(--card);color:var(--tx);transition:transform 110ms var(--ease)}
+.pend-b:active{transform:translateY(2px);border-bottom-width:2px}
+.pend-b.mas{background:var(--acc);border-color:var(--acc-sh);color:#fff}
+.badge{position:absolute;top:4px;left:calc(50% + 8px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--neg);color:#fff;font:900 11px/18px var(--sans);text-align:center}
+.rail .badge{position:static;margin-left:auto}
+.pend-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.pend-it{display:flex;align-items:center;gap:10px;min-height:52px;border-top:2px solid var(--bg3);padding:4px 0}
+.pend-it:first-child{border-top:0}
+.pend-it .chk{width:40px;height:40px;border-radius:12px;border-bottom-width:4px}
+.pend-it .chk svg{width:22px;height:22px}
+.pend-tx{flex:1;min-width:0;font-weight:800;overflow-wrap:anywhere}
+.pend-tx small{display:block;color:var(--naranja);font-size:var(--t12);font-weight:800}
+.pend-it.done .pend-tx{color:var(--mu);text-decoration:line-through}
+
+.pend-dest{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.pend-dest button{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border:2px solid var(--ln2);border-bottom-width:4px;border-radius:12px;background:var(--card);color:var(--mu);font:800 var(--t14)/1 var(--sans)}
+.pend-dest button i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.pend-dest button.on{background:var(--sel-bg);border-color:var(--sel);color:var(--sel)}
+.pend-grid .bloque{margin:0 0 12px;break-inside:avoid}
+@media (min-width:760px){.pend-grid{columns:2;column-gap:12px}}
+.pcard{border-color:color-mix(in srgb,var(--c) 45%,var(--ln));border-top:8px solid var(--c);padding-top:10px}
+.pcard-h{display:flex;align-items:center;gap:8px;margin:0 -6px 2px 0}
+.pcard-h h2{flex:1;display:flex;align-items:center;gap:8px;margin:0}
+.pcard-h h2 i{width:12px;height:12px;border-radius:4px;background:var(--c)}
+.pcard.vacia{opacity:.85}
+.pcard-v{margin:2px 0 4px}
+button.pend-tx{background:none;border:0;padding:6px 0;text-align:left;color:inherit;font:inherit;font-weight:800;cursor:pointer}
+
+/* pendientes en compu: más ancho, vistas Cuentas / Semana / Mes */
+main.ancho{max-width:1320px}
+.pend-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.pend-top .sub{margin-bottom:0}
+.c-hoy{color:var(--naranja)} .c-venc{color:var(--neg)}
+.seg{display:inline-flex;gap:4px;padding:4px;border-radius:16px;background:var(--bg3)}
+.seg button{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:0;border-radius:12px;background:none;color:var(--mu);font:800 var(--t14)/1 var(--sans)}
+.seg button.on{background:var(--card);color:var(--tx);box-shadow:0 2px 0 var(--ln2)}
+.phoy{border-color:var(--sel);border-bottom-color:var(--sel)}
+.phoy .pcard-h h2 .ic{width:22px;height:22px;color:var(--naranja)}
+.phoy .barra{height:14px;margin:8px 0 4px;border-radius:999px;background:var(--bg3);overflow:hidden}
+.phoy .barra>i{display:block;height:100%;border-radius:999px;background:var(--acc);transition:width 500ms var(--spring)}
+.phoy-sub{margin:12px 0 0;font-size:var(--t12);font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--mu)}
+.pend-cta{display:inline-flex;align-items:center;gap:5px;font-size:var(--t12);font-weight:800;color:var(--mu)}
+.pend-cta i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.pend-carga{display:flex;gap:10px;align-items:stretch;margin-bottom:6px}
+.pend-carga .pend-form{flex:1;margin:0}
+.pend-form .pend-fecha{flex:none;width:170px!important;padding:0 10px!important;color-scheme:light dark}
+@media (max-width:700px){.pend-carga{flex-direction:column}.pend-form{flex-wrap:wrap}.pend-form #pend-in{flex:1 1 100%}.pend-form .pend-fecha{flex:1;width:auto!important}}
+.pend-meta{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:2px}
+.pend-meta small{display:inline}
+.vence{display:inline-flex;align-items:center;gap:4px;font-size:var(--t12);font-weight:800;color:var(--mu)}
+.vence .ic{width:13px;height:13px}
+.vence.hoy{color:var(--naranja)} .vence.venc{color:var(--neg)} .vence.pronto{color:var(--sel)}
+.sobre{outline:3px dashed var(--sel);outline-offset:2px}
+.arrastrando{opacity:.4}
+[draggable="true"]{cursor:grab}
+.cal-nav{display:flex;align-items:center;gap:6px;margin:6px 0 12px}
+.cal-nav b{font-size:var(--t18,18px)}
+.b-sec.chico{min-height:36px;padding:0 12px;font-size:var(--t14);margin-left:8px}
+.cal-h{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.cal-atras,.cal-sin{background:var(--card);border:2px solid var(--ln);border-bottom-width:4px;border-radius:var(--r-l);padding:12px 14px;margin-bottom:12px}
+.cal-atras{border-color:color-mix(in srgb,var(--neg) 45%,var(--ln))}
+.cal-sin{margin-top:12px}
+.tk-fila{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.sem-g{display:grid;grid-template-columns:repeat(7,minmax(130px,1fr));gap:8px;overflow-x:auto}
+.sem-d{display:flex;flex-direction:column;min-height:300px;background:var(--card);border:2px solid var(--ln);border-bottom-width:4px;border-radius:18px;padding:8px}
+.sem-d.hoy{border-color:var(--sel);background:color-mix(in srgb,var(--sel) 6%,var(--card))}
+.sem-d.pasado{background:color-mix(in srgb,var(--bg3) 50%,var(--card))}
+.sem-dh{display:flex;align-items:baseline;gap:6px;padding:2px 4px 8px;color:var(--mu);font-weight:800;font-size:var(--t14)}
+.sem-dh b{font-size:var(--t20,20px);color:var(--tx)}
+.sem-d.hoy .sem-dh b,.sem-d.hoy .sem-dh span{color:var(--sel)}
+.sem-dh em{margin-left:auto;font-style:normal;font-size:var(--t12);background:var(--bg3);border-radius:8px;padding:2px 7px}
+.sem-l{display:flex;flex-direction:column;gap:6px;flex:1}
+.sem-add{margin-top:6px;min-height:34px;border:2px dashed var(--ln2);border-radius:12px;background:none;color:var(--mu);display:grid;place-items:center;opacity:.6}
+.sem-d:hover .sem-add{opacity:1}
+.tk{display:flex;align-items:flex-start;gap:6px;background:var(--bg2);border:1.5px solid var(--ln);border-left:5px solid var(--c);border-radius:10px;padding:6px 6px 6px 7px}
+.tk.venc{background:color-mix(in srgb,var(--neg) 10%,var(--bg2))}
+.tk-chk{flex:none;width:22px;height:22px;margin-top:1px;border-radius:7px;border:2px solid var(--ln2);background:var(--card);display:grid;place-items:center;padding:0;color:#fff}
+.tk-chk svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.tk.done .tk-chk{background:var(--acc);border-color:var(--acc-sh)} .tk.done .tk-chk svg{opacity:1}
+.tk-tx{flex:1;min-width:0;border:0;background:none;padding:0;text-align:left;color:var(--tx);font:700 var(--t14)/1.3 var(--sans);overflow-wrap:anywhere;cursor:pointer}
+.tk-tx small{display:block;font-size:11px;font-weight:900;color:var(--c);text-transform:uppercase;letter-spacing:.03em}
+.tk-col{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px}
+.tk-play{flex:none;width:24px;height:24px;margin-top:1px;display:grid;place-items:center;padding:0;border:1.5px solid var(--ln2);border-radius:7px;background:var(--card);color:var(--sel)}
+.tk-play .ic{width:13px;height:13px}
+.tk.done .tk-tx{color:var(--mu);text-decoration:line-through}
+.mes-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.mes-dn{display:contents}
+.mes-dn span{text-align:center;font:900 var(--t12)/1 var(--sans);color:var(--mu);text-transform:uppercase;letter-spacing:.05em;padding:4px 0}
+.mes-c{min-height:120px;background:var(--card);border:2px solid var(--ln);border-radius:14px;padding:4px 5px 6px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.mes-c.fuera{opacity:.45}
+.mes-c.pasado{background:color-mix(in srgb,var(--bg3) 50%,var(--card))}
+.mes-c.hoy{border-color:var(--sel)}
+.mes-n{align-self:flex-start;min-width:28px;height:26px;border:0;border-radius:8px;background:none;color:var(--mu);font:900 var(--t14)/1 var(--sans);padding:0 6px}
+.mes-n:hover{background:var(--bg3);color:var(--tx)}
+.mes-c.hoy .mes-n{background:var(--sel);color:#fff}
+.tk.chico{padding:3px 5px;border-radius:7px;border-left-width:4px}
+.tk.chico .tk-tx{font-size:var(--t12);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mes-mas{border:0;background:none;color:var(--sel);font:800 var(--t12)/1 var(--sans);text-align:left;padding:2px 4px}
+
 /* botones */
 .b-fila{display:flex;gap:8px;flex-wrap:wrap}
 .b-fila>*{flex:1}
@@ -166,6 +269,61 @@ button.c:disabled{opacity:.55}
 .semana dt{color:var(--mu);font-weight:900}.semana dd{margin:0}
 .semana>.rotulo::before{content:"🗓️ "}
 .syncbox .st{font-size:var(--t14);margin:4px 0 0}
+.pend-d{display:block;color:var(--mu);font-size:var(--t14);font-weight:600;white-space:pre-line}
+.ds{display:block;color:var(--mu);font-size:var(--t14);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.play{width:44px;height:44px;flex:none;display:grid;place-items:center;padding:0;border:2px solid var(--ln2);border-bottom-width:4px;border-radius:14px;background:var(--card);color:var(--sel);transition:transform 110ms var(--ease)}
+.play:active{transform:translateY(2px);border-bottom-width:2px}
+.done .play{color:var(--mu)}
+.hoja textarea{width:100%;min-height:88px;padding:12px 14px;border-radius:14px;border:2px solid var(--ln2);background:var(--card);font-size:var(--t16);font-weight:600;color:var(--tx);resize:vertical}
+.hoja textarea:focus{border-color:var(--sel)}
+
+/* modo foco (temporizador a pantalla completa): mismo estilo de la app, con toques de juego */
+.arcade{position:fixed;inset:0;z-index:74;display:flex;flex-direction:column;overflow:auto;background:var(--bg);color:var(--tx);padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 18px) calc(env(safe-area-inset-left) + 16px);animation:fade 200ms var(--ease)}
+.arcade[hidden]{display:none}
+.ar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;max-width:620px;margin:0 auto}
+.ar-chip{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:999px;background:var(--card);border:2px solid var(--ln);border-bottom-width:3px;font:900 var(--t14)/1 var(--sans);font-variant-numeric:tabular-nums}
+.ar-chip.racha{color:var(--naranja)}
+.ar-chip i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.ar-x{background:var(--card);border:2px solid var(--ln);border-bottom-width:3px;color:var(--mu)}
+.ar-centro{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;width:100%;max-width:620px;margin:0 auto;padding:16px 0;text-align:center}
+.ar-card{width:100%;background:var(--card);border:2px solid var(--ln);border-bottom-width:4px;border-radius:var(--r-l);padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.ar-emo{width:72px;height:72px;display:grid;place-items:center;font-size:40px;line-height:1;border-radius:22px;background:color-mix(in srgb,var(--c,var(--sel)) 16%,var(--card));animation:flota 3s ease-in-out infinite}
+.ar-nm{margin:0;max-width:24ch;font:900 clamp(22px,5.5vw,34px)/1.15 var(--sans);overflow-wrap:anywhere}
+.ar-desc{width:100%;max-height:26vh;overflow:auto;margin:0;padding:12px 14px;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;font:700 var(--t16)/1.45 var(--sans);color:var(--tx);background:var(--bg3);border-radius:14px}
+.ar-desc::before{content:"🎯 Misión";display:block;margin-bottom:4px;font:900 var(--t12)/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--mu)}
+.ar-reloj{font:900 clamp(80px,24vw,200px)/1 var(--sans);font-variant-numeric:tabular-nums;letter-spacing:-.01em;color:var(--tx);text-shadow:0 6px 0 var(--ln2);transition:color 300ms var(--ease)}
+.ar-vida{display:grid;grid-template-columns:repeat(20,1fr);gap:4px;width:100%;padding:5px;border-radius:999px;background:var(--track)}
+.ar-vida i{height:16px;border-radius:999px;background:var(--acc);box-shadow:inset 0 -4px 0 var(--acc-sh);transition:background 250ms var(--ease),transform 250ms var(--spring)}
+.ar-vida i.off{background:transparent;box-shadow:none;transform:scale(.6)}
+.bajo .ar-reloj{color:var(--naranja)}
+.bajo .ar-vida i:not(.off){background:var(--naranja);box-shadow:inset 0 -4px 0 #D9530F}
+.critico .ar-reloj{color:var(--neg);animation:latido 1s var(--ease) infinite}
+.critico .ar-vida i:not(.off){background:var(--neg);box-shadow:inset 0 -4px 0 #B3262B}
+.ar-estado{margin:0;min-height:1.3em;font:900 var(--t14)/1.3 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--mu)}
+.ar-estado.blink{animation:latido 1.6s var(--ease) infinite}
+.ar-ctl{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;max-width:620px;margin:0 auto}
+.ar-pre{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.ar-pre button{min-width:58px;min-height:46px;padding:0 10px;border:2px solid var(--ln2);border-bottom-width:4px;border-radius:14px;background:var(--card);color:var(--tx);font:900 var(--t16)/1 var(--sans);font-variant-numeric:tabular-nums;transition:transform 110ms var(--spring)}
+.ar-pre button:active{transform:scale(.92)}
+.ar-pre button.on{background:var(--sel-bg);border-color:var(--sel);color:var(--sel)}
+.ar-fila{display:flex;align-items:stretch;justify-content:center;gap:10px;width:100%}
+.ar-b{flex:1;min-height:60px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 14px;border:2px solid var(--ln2);border-bottom-width:5px;border-radius:18px;background:var(--card);color:var(--tx);font:900 var(--t16)/1 var(--sans);transition:transform 110ms var(--ease),border-bottom-width 110ms var(--ease)}
+.ar-b:active{transform:translateY(3px);border-bottom-width:2px}
+.ar-b .ic{width:22px;height:22px}
+.ar-b.grande{flex:2;min-height:68px;font-size:var(--t20)}
+.ar-b.grande .ic{width:26px;height:26px}
+.ar-b.verde{background:var(--acc);border-color:var(--acc-sh);color:#fff}
+.ar-b.azul{background:var(--sel);border-color:var(--sel-sh);color:#fff}
+.ar-b.chico{flex:0 0 auto;min-width:64px}
+.ar-b.rojo{color:var(--neg)}
+.ar-b.oro{color:var(--acc)}
+.ar-cuenta{position:fixed;inset:0;z-index:4;display:grid;place-items:center;background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);font:900 clamp(120px,38vw,280px)/1 var(--sans);color:var(--acc);text-shadow:0 10px 0 var(--acc-sh)}
+.ar-cuenta span{animation:ar-zoom 700ms var(--spring) both}
+.ar-cuenta span.ya{font-size:.5em;color:var(--naranja);text-shadow:0 8px 0 #D9530F}
+.ar-gano{margin:6px 0 0;font:900 clamp(28px,7vw,44px)/1.1 var(--sans);color:var(--acc);animation:rebote 600ms var(--spring)}
+@keyframes ar-zoom{0%{transform:scale(.3);opacity:0}45%{transform:scale(1.08);opacity:1}80%{transform:scale(1);opacity:1}100%{transform:scale(.9);opacity:0}}
+@keyframes latido{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.04);opacity:.75}}
+@media (max-height:600px){.ar-emo{width:52px;height:52px;font-size:30px;border-radius:16px}.ar-centro{gap:8px;padding:8px 0}.ar-card{padding:12px;gap:6px}.ar-reloj{font-size:clamp(60px,17vh,130px)}.ar-desc{max-height:20vh}.ar-b{min-height:50px}.ar-b.grande{min-height:56px}}
 @media (min-width:900px){main{max-width:760px;margin:0;padding:24px 40px 48px}}
 </style>
 </head>
@@ -185,6 +343,7 @@ button.c:disabled{opacity:.55}
   <nav class="modsw" aria-label="Cambiar de módulo"><a href="./" aria-current="page">Hábitos</a><a href="finanzas/">Finanzas</a></nav>
   <nav aria-label="Hábitos">
     <a href="#hoy" data-act="tab" data-t="hoy"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-sun"/></svg>Hoy</a>
+    <a href="#pend" data-act="tab" data-t="pend"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-todo"/></svg>Pendientes<span class="badge" data-badge="pend" hidden></span></a>
     <a href="#prog" data-act="tab" data-t="prog"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-chart-no-axes-column"/></svg>Progreso</a>
     <a href="#hab" data-act="tab" data-t="hab"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-checks"/></svg>Hábitos</a>
   </nav>
@@ -201,12 +360,14 @@ button.c:disabled{opacity:.55}
 </div>
 <nav class="tabbar" aria-label="Hábitos"><div class="tabbar-in">
   <a href="#hoy" data-act="tab" data-t="hoy"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-sun"/></svg>Hoy</a>
+  <a href="#pend" data-act="tab" data-t="pend"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-todo"/></svg>Pendientes<span class="badge" data-badge="pend" hidden></span></a>
   <a href="#prog" data-act="tab" data-t="prog"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-chart-no-axes-column"/></svg>Progreso</a>
   <a href="#hab" data-act="tab" data-t="hab"><svg class="ic" aria-hidden="true"><use href="ui/icons.svg#i-list-checks"/></svg>Hábitos</a>
 </div></nav>
 <div class="hoja-ov" id="ov" hidden><div class="hoja" id="sheet" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"><span></span><button hidden>Deshacer</button></div>
 <div id="sello-slot" aria-live="polite"></div>
+<div class="arcade" id="arcade" role="dialog" aria-modal="true" aria-label="Modo foco" hidden></div>
 <input type="file" id="imp" accept="application/json,.json,text/plain" hidden aria-label="Archivo de respaldo">
 
 <script src="config.js"></script>
@@ -260,9 +421,13 @@ function normalize(s) {
   s.routines = Array.isArray(s.routines) ? s.routines : [];
   s.log = s.log && typeof s.log === 'object' ? s.log : {};
   s.settings = Object.assign({ goal: 2, sound: true }, s.settings);
+  // pendientes: los no hechos pasan al día siguiente; los hechos de días anteriores se van
+  const hoy = todayKey();
+  s.pend = (Array.isArray(s.pend) ? s.pend : []).filter(p => p && p.t && !(p.done && diasEntreK(p.done, hoy) > 90)); // lo hecho queda 90 días para verlo en semana y mes
   s.habits.forEach(h => { h.days = h.days || []; h.times = h.times || {}; h.time = h.time || ''; h.since = h.since || todayKey(); h.routine = h.routine || null; });
   return s;
 }
+const diasEntreK = (a, b) => Math.round((parse(b) - parse(a)) / 864e5);
 const weekMin = () => S.settings.weekMin || 4;
 function load() {
   try { const s = JSON.parse(localStorage.getItem(LS)); if (s && Array.isArray(s.habits)) return normalize(s); } catch (e) {}
@@ -359,9 +524,229 @@ function item(h, k, dow) {
   const d = isDone(h, k);
   return `<li class="item ${d ? 'done' : ''}" data-id="${h.id}" style="--c:${colorDe(h)}">
     <span class="emo-i" aria-hidden="true">${esc(h.emoji)}</span>
-    <div class="txt"><span class="nm">${esc(h.name)}</span><span class="meta">${metaLine(h, dow)}</span></div>
+    <div class="txt"><span class="nm">${esc(h.name)}</span>${h.desc ? `<span class="ds">${esc(h.desc)}</span>` : ''}<span class="meta">${metaLine(h, dow)}</span></div>
+    <button class="play" data-act="arcade" data-id="${h.id}" aria-label="Temporizador de ${esc(h.name)}">${ic('play', 's')}</button>
     <button class="chk ${animar === h.id ? 'anim' : ''}" data-act="tick" data-id="${h.id}" aria-pressed="${d}" aria-label="${d ? 'Desmarcar' : 'Marcar'} ${esc(h.name)}">${TILDE}</button>
   </li>`;
+}
+/* ---------- pendientes del día (pestaña propia, #pend) ---------- */
+const pendAbiertos = () => S.pend.filter(p => !p.done).length;
+// Una card por cuenta. El pendiente cae en la que nombra (también con errores de tipeo); si no nombra ninguna, en "Otros".
+const AREAS = [
+  { id: 'gimos', n: 'Gimos', c: COLORS[0].c, re: /\b(gimos|gimo|jimos|guimos|ximos)\b/i },
+  { id: 'yagmour', n: 'Yagmour', c: COLORS[5].c, re: /\b(y[ae]g\s?m[ou]u?r|jag\s?m[ou]u?r|yag\s?more|yamour|yagmur)\b/i },
+  { id: 'solmaint', n: 'Solmaint', c: COLORS[1].c, re: /\b(sol\s?main?t?|solmeint|solment|sol\s?mint)\b/i },
+  { id: 'midway', n: 'Midway', c: COLORS[4].c, re: /\b(mid\s?w[ae]y|midwei|mitwey|mit\s?way)\b/i },
+  { id: 'rock', n: 'Rock Stories', c: COLORS[3].c, re: /\b(rock\s?stor(y|ies|ys|is)|rock|rok\s?stor\w*|roc\s?stor\w*)\b/i },
+  { id: 'mieza', n: 'Mieza', c: COLORS[2].c, re: /\b(mi[eé]za|mi\s?eza|mieza)\b/i },
+  { id: 'otros', n: 'Otros', c: '#8B8F98', re: null }
+];
+const areaDe = t => (AREAS.find(x => x.re && x.re.test(t)) || AREAS[AREAS.length - 1]).id;
+const areaP = p => AREAS.some(x => x.id === p.a) ? p.a : areaDe(p.t);
+// Vista de pendientes: hoy, por cuenta, semana o mes. Siempre abre en Hoy.
+const areaInfo = id => AREAS.find(x => x.id === id) || AREAS[AREAS.length - 1];
+const DCORTO = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const diasEntre = (a, b) => Math.round((parse(b) - parse(a)) / 864e5);
+// Vencimiento como texto corto: Vencida · 24 oct / Hoy / Mañana / Vie 30 / 12 nov
+function venceTxt(v) {
+  const n = diasEntre(todayKey(), v), d = parse(v);
+  if (n < 0) return { t: 'Vencida · ' + fecha(v), c: 'venc' };
+  if (n === 0) return { t: 'Hoy', c: 'hoy' };
+  if (n === 1) return { t: 'Mañana', c: 'pronto' };
+  if (n < 7) return { t: `${DCORTO[d.getDay()]} ${d.getDate()}`, c: 'pronto' };
+  return { t: fecha(v), c: '' };
+}
+const venceHTML = p => { if (!p.v) return ''; const x = venceTxt(p.v); return `<span class="vence ${p.done ? '' : x.c}">${ic('calendar', 's')}${x.t}</span>`; };
+// Orden: abiertos por vencimiento (sin fecha al final), después los hechos
+const porVence = (a, b) => (!!a.done - !!b.done) || (a.v || '9999').localeCompare(b.v || '9999');
+
+// "para el viernes", "mañana", "el 30", "30 de noviembre", "30/11" → fecha; se saca del texto
+const MESES_RE = MONTHS.join('|') + '|setiembre';
+const DIAS_N = { domingo: 0, lunes: 1, martes: 2, 'miércoles': 3, miercoles: 3, jueves: 4, viernes: 5, 'sábado': 6, sabado: 6 };
+function fechaDeTexto(txt) {
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const P = '(?:\\s*,?\\s*(?:para|hasta|antes\\s+de)?\\s*(?:el|del)?\\s*)';
+  const reglas = [
+    [new RegExp(P + '\\bpasado\\s+mañana\\b', 'i'), () => addDays(hoy, 2)],
+    [new RegExp(P + '(?<!\\b(?:la|de|esta|por)\\s)\\bmañana\\b', 'i'), () => addDays(hoy, 1)],
+    [new RegExp('\\s*,?\\s*(?:para\\s+)?(?<!\\bde\\s)\\bhoy\\b', 'i'), () => hoy],
+    [new RegExp(P + '(?:fin\\s+de\\s+mes|[úu]ltimo\\s+d[íi]a\\s+del\\s+mes|[úu]ltimo\\s+d[íi]a\\s+de\\s+(' + MESES_RE + '))\\b', 'i'), m => {
+      const mes = m[1] ? (m[1].toLowerCase() === 'setiembre' ? 8 : MONTHS.indexOf(m[1].toLowerCase())) : hoy.getMonth();
+      let d = new Date(hoy.getFullYear(), mes + 1, 0); if (d < hoy) d = new Date(hoy.getFullYear() + 1, mes + 1, 0); return d; }],
+    [new RegExp('\\s*,?\\s*(?:para|hasta|antes\\s+del?)?\\s*\\bel\\s+(domingo|lunes|martes|mi[ée]rcoles|jueves|viernes|s[áa]bado)(\\s+que\\s+viene)?\\b', 'i'), m => {
+      const dw = DIAS_N[m[1].toLowerCase()]; let n = (dw - hoy.getDay() + 7) % 7 || 7; if (m[2] && n < 7) n += 0; return addDays(hoy, n); }],
+    [new RegExp('\\s*,?\\s*(?:para\\s+)?(?:el\\s+)?\\b(\\d{1,2})\\s+de\\s+(' + MESES_RE + ')\\b', 'i'), m => {
+      const mes = m[2].toLowerCase() === 'setiembre' ? 8 : MONTHS.indexOf(m[2].toLowerCase());
+      let d = new Date(hoy.getFullYear(), mes, +m[1]); if (d < hoy) d = new Date(hoy.getFullYear() + 1, mes, +m[1]); return d; }],
+    [/\s*,?\s*(?:para\s+)?(?:el\s+)?\b(\d{1,2})\/(\d{1,2})\b/i, m => {
+      let d = new Date(hoy.getFullYear(), +m[2] - 1, +m[1]); if (d < hoy) d = new Date(hoy.getFullYear() + 1, +m[2] - 1, +m[1]); return d; }],
+    [/\s*,?\s*(?:para|hasta|antes\s+del?)\s+el\s+(\d{1,2})\b(?!\s*(?:de\s+\D|%|unidades|productos|piezas))/i, m => {
+      let d = new Date(hoy.getFullYear(), hoy.getMonth(), +m[1]); if (d < hoy) d = new Date(hoy.getFullYear(), hoy.getMonth() + 1, +m[1]); return d; }]
+  ];
+  for (const [re, f] of reglas) {
+    const m = txt.match(re); if (!m) continue;
+    const d = f(m); if (!d || isNaN(d)) continue;
+    const t = (txt.slice(0, m.index) + ' ' + txt.slice(m.index + m[0].length)).replace(/\s+/g, ' ').replace(/\s+([,.])/g, '$1').replace(/[\s,\-–]+$/, '').trim();
+    return { t: t || txt, v: key(d) };
+  }
+  return { t: txt, v: null };
+}
+
+function vPend() {
+  const now = new Date(), hoy = todayKey(), vista = V.pvista || (V.pvista = 'hoy');
+  const dest = V.parea || 'auto';
+  const abiertos = S.pend.filter(p => !p.done), vencidas = abiertos.filter(p => p.v && p.v < hoy).length, paraHoy = abiertos.filter(p => p.v === hoy).length;
+  let out = `<div class="pend-top"><div><h1>Pendientes</h1><p class="sub">${DFULL[now.getDay()]} ${now.getDate()} de ${MONTHS[now.getMonth()]} · ${abiertos.length} ${abiertos.length === 1 ? 'abierto' : 'abiertos'}${paraHoy ? ` · <b class="c-hoy">${paraHoy} para hoy</b>` : ''}${vencidas ? ` · <b class="c-venc">${vencidas} ${vencidas === 1 ? 'vencida' : 'vencidas'}</b>` : ''}</p></div>
+    <div class="seg" role="tablist" aria-label="Vista">${[['hoy', 'Hoy', 'sun'], ['cuentas', 'Cuentas', 'folder'], ['semana', 'Semana', 'calendar-range'], ['mes', 'Mes', 'calendar-days']].map(([id, n, i]) => `<button role="tab" aria-selected="${vista === id}" class="${vista === id ? 'on' : ''}" data-act="pvista" data-v="${id}">${ic(i, 's')}${n}</button>`).join('')}</div></div>`;
+  out += `<div class="pend-carga">`;
+  out += `<form class="pend-form" id="pend-form">
+      <input class="campo" type="text" id="pend-in" placeholder="${vista === 'hoy' ? 'Escribí un pendiente para hoy' : 'Escribí un pendiente (ej: fotos de Gimos para el viernes)'}" aria-label="Nuevo pendiente" autocomplete="off" enterkeyhint="done" maxlength="200">
+      <input class="campo pend-fecha" type="date" id="pend-v" value="${esc(V.pfecha || '')}" aria-label="Vence el (opcional)" title="Vence el (opcional)">
+      <button type="submit" class="pend-b mas" aria-label="Agregar pendiente">${ic('plus')}</button>
+    </form></div>
+    <div class="pend-dest" role="radiogroup" aria-label="¿En qué cuenta va?">${[{ id: 'auto', n: 'Automático' }, ...AREAS].map(x => `<button type="button" role="radio" aria-checked="${dest === x.id}" class="${dest === x.id ? 'on' : ''}" data-act="parea" data-a="${x.id}" ${x.c ? `style="--c:${x.c}"` : ''}>${x.c ? '<i></i>' : ''}${x.n}</button>`).join('')}</div>`;
+  out += vista === 'hoy' ? pHoy() : vista === 'semana' ? pSemana() : vista === 'mes' ? pMes() : pCuentas();
+  return out;
+}
+// Fila de pendiente (vistas Hoy y Cuentas). conCuenta: muestra de qué cuenta es; aHoy: botón para pasarlo a hoy.
+function filaPend(p, o = {}) {
+  const hoy = todayKey(), ar = areaInfo(areaP(p));
+  const desde = k => k === key(addDays(new Date(), -1)) ? 'Desde ayer' : 'Desde el ' + fecha(k);
+  return `<li class="pend-it ${p.done ? 'done' : ''}" draggable="true" data-drag="${p.id}">
+      <button class="chk ${animar === p.id ? 'anim' : ''}" data-act="ptick" data-id="${p.id}" aria-pressed="${!!p.done}" aria-label="${p.done ? 'Desmarcar' : 'Marcar'} ${esc(p.t)}">${TILDE}</button>
+      <button class="pend-tx" data-act="pedit" data-id="${p.id}" aria-label="Editar ${esc(p.t)}">${esc(p.t)}${p.d ? `<span class="pend-d">${esc(p.d)}</span>` : ''}<span class="pend-meta">${o.conCuenta ? `<span class="pend-cta" style="--c:${ar.c}"><i></i>${ar.n}</span>` : ''}${venceHTML(p)}${!p.done && !p.v && p.k < hoy ? `<small>${desde(p.k)}</small>` : ''}</span></button>
+      ${o.aHoy && !p.done ? `<button class="icon-btn" data-act="phoy" data-id="${p.id}" aria-label="Pasar ${esc(p.t)} a hoy" title="Para hoy">${ic('sun', 's')}</button>` : ''}
+      ${p.done ? '' : `<button class="play" data-act="arcade" data-tipo="p" data-id="${p.id}" aria-label="Temporizador de ${esc(p.t)}">${ic('play', 's')}</button>`}
+      <button class="icon-btn" data-act="pdel" data-id="${p.id}" aria-label="Borrar ${esc(p.t)}">${ic('x')}</button>
+    </li>`;
+}
+function pHoy() {
+  const hoy = todayKey(), o = { conCuenta: true };
+  const venc = S.pend.filter(p => !p.done && p.v && p.v < hoy).sort(porVence);
+  const deHoy = S.pend.filter(p => p.v === hoy || (p.done === hoy && (!p.v || p.v < hoy))).sort(porVence);
+  const sin = S.pend.filter(p => !p.done && !p.v).sort((a, b) => a.k.localeCompare(b.k));
+  const hechas = deHoy.filter(p => p.done).length, total = deHoy.length + venc.length;
+  let out = `<section class="bloque phoy">
+    <div class="pcard-h"><h2>${ic('sun')}Para hoy</h2><span class="mu t14">${total ? `${hechas} de ${total} hechos` : ''}</span></div>
+    ${total ? `<div class="barra" aria-hidden="true"><i style="width:${hechas / total * 100}%"></i></div>` : ''}
+    ${venc.length ? `<p class="phoy-sub c-venc">${venc.length === 1 ? 'Vencida' : 'Vencidas'}</p><ul class="pend-l">${venc.map(p => filaPend(p, o)).join('')}</ul>` : ''}
+    ${deHoy.length ? `${venc.length ? '<p class="phoy-sub">De hoy</p>' : ''}<ul class="pend-l">${deHoy.map(p => filaPend(p, o)).join('')}</ul>` : ''}
+    ${total ? '' : `<p class="mu pcard-v">Nada para hoy. Escribí uno arriba o pasá alguno sin fecha con ${ic('sun', 's')}.</p>`}
+  </section>`;
+  if (sin.length) out += `<section class="bloque"><div class="pcard-h"><h2>Sin fecha</h2><span class="mu t14">${sin.length}</span></div>
+    <ul class="pend-l">${sin.map(p => filaPend(p, { conCuenta: true, aHoy: true })).join('')}</ul></section>`;
+  return out;
+}
+function pCuentas() {
+  const hoy = todayKey();
+  // en cuentas se ven los abiertos y lo tachado hoy
+  const L = S.pend.filter(p => !p.done || p.done === hoy).sort(porVence);
+  const fila = p => filaPend(p);
+  return `<div class="pend-grid">${AREAS.map(ar => {
+    const ps = L.filter(p => areaP(p) === ar.id);
+    if (ar.id === 'otros' && !ps.length) return '';
+    const ab = ps.filter(p => !p.done).length, ve = ps.filter(p => !p.done && p.v && p.v < hoy).length;
+    return `<section class="bloque pcard ${ab ? '' : 'vacia'}" style="--c:${ar.c}" aria-label="${ar.n}" data-drop-a="${ar.id}">
+      <div class="pcard-h"><h2><i aria-hidden="true"></i>${ar.n}</h2><span class="mu t14">${ve ? `<b class="c-venc">${ve} ${ve === 1 ? 'vencida' : 'vencidas'}</b> · ` : ''}${ps.length ? (ab ? `${ab} ${ab === 1 ? 'pendiente' : 'pendientes'}` : 'Todo hecho') : ''}</span>
+        <button class="icon-btn" data-act="padd" data-a="${ar.id}" aria-label="Agregar pendiente en ${ar.n}">${ic('plus')}</button></div>
+      ${ps.length ? `<ul class="pend-l">${ps.map(fila).join('')}</ul>` : `<p class="mu t14 pcard-v">Nada pendiente.</p>`}
+    </section>`;
+  }).join('')}</div>`;
+}
+// Tarjetita de tarea para semana y mes (se arrastra a otro día)
+const tk = (p, chico) => {
+  const ar = areaInfo(areaP(p)), hoy = todayKey(), venc = !p.done && p.v && p.v < hoy;
+  return `<div class="tk ${p.done ? 'done' : ''} ${venc ? 'venc' : ''} ${chico ? 'chico' : ''}" style="--c:${ar.c}" draggable="true" data-drag="${p.id}">
+    ${chico ? '' : `<span class="tk-col"><button class="tk-chk" data-act="ptick" data-id="${p.id}" aria-pressed="${!!p.done}" aria-label="${p.done ? 'Desmarcar' : 'Marcar'} ${esc(p.t)}">${TILDE}</button>${p.done ? '' : `<button class="tk-play" data-act="arcade" data-tipo="p" data-id="${p.id}" aria-label="Temporizador de ${esc(p.t)}">${ic('play', 's')}</button>`}</span>`}
+    <button class="tk-tx" data-act="pedit" data-id="${p.id}" title="${esc(p.t)} · ${ar.n}">${chico ? '' : `<small>${ar.n}</small>`}${esc(p.t)}</button></div>`;
+};
+function pSemana() {
+  const ws = weekStart(V.psem || 0), we = addDays(ws, 6), hoy = todayKey(), wsk = key(ws), wek = key(we);
+  const dias = [...Array(7)].map((_, i) => addDays(ws, i));
+  const atras = S.pend.filter(p => !p.done && p.v && p.v < wsk && (V.psem || 0) >= 0).sort(porVence);
+  const sin = S.pend.filter(p => !p.v && (!p.done || p.done === hoy)).sort(porVence);
+  const lbl = `${ws.getDate()} ${MONTHS[ws.getMonth()].slice(0, 3)} al ${we.getDate()} ${MONTHS[we.getMonth()].slice(0, 3)}`;
+  let out = `<div class="cal-nav"><button class="icon-btn" data-act="psem" data-n="-1" aria-label="Semana anterior">${ic('chevron-left')}</button>
+    <b>${(V.psem || 0) === 0 ? 'Esta semana' : (V.psem === 1 ? 'Semana que viene' : (V.psem === -1 ? 'Semana pasada' : 'Semana'))} <span class="mu">· ${lbl}</span></b>
+    <button class="icon-btn" data-act="psem" data-n="1" aria-label="Semana siguiente">${ic('chevron-right')}</button>
+    ${(V.psem || 0) !== 0 ? `<button class="b-sec chico" data-act="psem" data-n="0">Hoy</button>` : ''}</div>`;
+  if (atras.length) out += `<section class="cal-atras" data-drop="${hoy}"><div class="cal-h"><b class="c-venc">Vencidas de antes</b><span class="mu t12">Arrastralas a un día</span></div><div class="tk-fila">${atras.map(p => tk(p)).join('')}</div></section>`;
+  out += `<div class="sem-g">${dias.map(d => {
+    const k = key(d), ps = S.pend.filter(p => p.v === k).sort(porVence);
+    return `<section class="sem-d ${k === hoy ? 'hoy' : ''} ${k < hoy ? 'pasado' : ''}" data-drop="${k}" aria-label="${DFULL[d.getDay()]} ${d.getDate()}">
+      <div class="sem-dh"><span>${DCORTO[d.getDay()]}</span><b>${d.getDate()}</b>${ps.filter(p => !p.done).length ? `<em>${ps.filter(p => !p.done).length}</em>` : ''}</div>
+      <div class="sem-l">${ps.map(p => tk(p)).join('')}</div>
+      <button class="sem-add" data-act="pdia" data-v="${k}" aria-label="Agregar para el ${DFULL[d.getDay()]} ${d.getDate()}">${ic('plus', 's')}</button>
+    </section>`;
+  }).join('')}</div>`;
+  out += `<section class="cal-sin" data-drop=""><div class="cal-h"><b>Sin fecha</b><span class="mu t12">${sin.length ? 'Arrastrá una tarea a un día para ponerle fecha' : 'Todo tiene fecha'}</span></div>${sin.length ? `<div class="tk-fila">${sin.map(p => tk(p)).join('')}</div>` : ''}</section>`;
+  return out;
+}
+function pMes() {
+  const ref = monthRef(V.pmes || 0), hoy = todayKey(), mes = ref.getMonth();
+  const ini = Comun.lunes(new Date(ref.getFullYear(), mes, 1)), fin = new Date(ref.getFullYear(), mes + 1, 0);
+  const semanas = Math.ceil((diasEntre(key(ini), key(fin)) + 1) / 7);
+  const delMes = S.pend.filter(p => p.v && parse(p.v).getMonth() === mes && parse(p.v).getFullYear() === ref.getFullYear());
+  let out = `<div class="cal-nav"><button class="icon-btn" data-act="pmes" data-n="-1" aria-label="Mes anterior">${ic('chevron-left')}</button>
+    <b>${MONTHS[mes].charAt(0).toUpperCase() + MONTHS[mes].slice(1)} ${ref.getFullYear()} <span class="mu">· ${(n => n + (n === 1 ? ' abierta' : ' abiertas'))(delMes.filter(p => !p.done).length)}, ${(n => n + (n === 1 ? ' hecha' : ' hechas'))(delMes.filter(p => p.done).length)}</span></b>
+    <button class="icon-btn" data-act="pmes" data-n="1" aria-label="Mes siguiente">${ic('chevron-right')}</button>
+    ${(V.pmes || 0) !== 0 ? `<button class="b-sec chico" data-act="pmes" data-n="0">Hoy</button>` : ''}</div>
+    <div class="mes-g"><div class="mes-dn">${ORDER.map(d => `<span>${DCORTO[d]}</span>`).join('')}</div>`;
+  for (let i = 0; i < semanas * 7; i++) {
+    const d = addDays(ini, i), k = key(d), ps = S.pend.filter(p => p.v === k).sort(porVence);
+    const MAX = 4, extra = ps.length - MAX;
+    out += `<div class="mes-c ${d.getMonth() !== mes ? 'fuera' : ''} ${k === hoy ? 'hoy' : ''} ${k < hoy ? 'pasado' : ''}" data-drop="${k}">
+      <button class="mes-n" data-act="pdia" data-v="${k}" aria-label="Agregar para el ${d.getDate()} de ${MONTHS[d.getMonth()]}">${d.getDate()}</button>
+      ${ps.slice(0, extra > 0 ? MAX - 1 : MAX).map(p => tk(p, true)).join('')}
+      ${extra > 0 ? `<button class="mes-mas" data-act="pirsem" data-v="${k}">+${extra + 1} más</button>` : ''}
+    </div>`;
+  }
+  return out + `</div>`;
+}
+function editPend(id) {
+  const p = S.pend.find(x => x.id === id); if (!p) return;
+  ED = { pid: id, a: areaP(p) };
+  openSheet(`<div class="bloque-h"><h2>Pendiente</h2><button class="icon-btn" data-act="closeSheet" aria-label="Cerrar">${ic('x')}</button></div>
+    <label class="lb" for="pe-t">Texto</label><input type="text" id="pe-t" maxlength="200" value="${esc(p.t)}">
+    <label class="lb" for="pe-d">Descripción (opcional)</label><textarea id="pe-d" maxlength="600" placeholder="Detalle para el modo arcade">${esc(p.d || '')}</textarea>
+    <label class="lb" for="pe-v">Vence el</label><div class="er"><input type="date" id="pe-v" value="${esc(p.v || '')}"><button type="button" class="b-sec" data-act="peSinFecha">Sin fecha</button></div>
+    <span class="lb" id="lb-pa">Cuenta</span><div class="pend-dest" role="radiogroup" aria-labelledby="lb-pa" id="pe-a">${AREAS.map(x => `<button type="button" role="radio" aria-checked="${ED.a === x.id}" class="${ED.a === x.id ? 'on' : ''}" data-act="peArea" data-a="${x.id}" style="--c:${x.c}"><i></i>${x.n}</button>`).join('')}</div>
+    ${p.done ? '' : `<button class="b-sec b-ancho" style="margin-top:16px;width:100%" data-act="pArcade">${ic('play', 's')}Modo foco</button>`}
+    <div class="form-pie"><button class="b-sec" data-act="closeSheet">Cancelar</button><button class="b-pri" data-act="pSave">Guardar</button></div>
+    <div class="zona-borrar"><button class="b-txt neg" data-act="pDelS">${ic('trash-2', 's')}Borrar pendiente</button></div>`, 'Editar pendiente');
+}
+// Arrastrar (compu): a un día cambia el vencimiento, a "Sin fecha" lo saca, a una cuenta la cambia
+let arrastra = null;
+document.addEventListener('dragstart', e => { const el = e.target.closest && e.target.closest('[data-drag]'); if (!el) return; arrastra = el.dataset.drag; e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', arrastra); } catch (er) {} el.classList.add('arrastrando'); });
+document.addEventListener('dragend', () => { arrastra = null; $$('.arrastrando,.sobre').forEach(x => x.classList.remove('arrastrando', 'sobre')); });
+document.addEventListener('dragover', e => { if (!arrastra) return; const z = e.target.closest('[data-drop],[data-drop-a]'); if (!z) return; e.preventDefault(); $$('.sobre').forEach(x => x !== z && x.classList.remove('sobre')); z.classList.add('sobre'); });
+document.addEventListener('drop', e => {
+  if (!arrastra) return; const z = e.target.closest('[data-drop],[data-drop-a]'); if (!z) return; e.preventDefault();
+  const p = S.pend.find(x => x.id === arrastra); arrastra = null; if (!p) return;
+  if ('dropA' in z.dataset) { if (p.a === z.dataset.dropA) return render(); p.a = z.dataset.dropA; save(); render(); return toast(`Movido a ${areaInfo(p.a).n}.`); }
+  const v = z.dataset.drop || null; if (p.v === v) return render();
+  const antes = p.v; p.v = v; save(); render();
+  toast(v ? `Vence ${venceTxt(v).t.toLowerCase().replace(/^vencida · /, 'el ')}.` : 'Sin fecha.', () => { p.v = antes; save(); render(); });
+});
+function addPend(textos) {
+  const k = todayKey(), dest = V.parea && V.parea !== 'auto' ? V.parea : null;
+  const fi = $('#pend-v'), fija = (fi && fi.value) || V.pfecha || null;
+  const nuevos = textos.map(t0 => { const f = fechaDeTexto(t0), t = f.t.charAt(0).toUpperCase() + f.t.slice(1); return { id: uid(), t: t.slice(0, 200), k, done: null, a: dest || areaDe(t0), v: fija || f.v || (V.pvista === 'hoy' ? k : null) }; });
+  if (!nuevos.length) return [];
+  S.pend.push(...nuevos); V.parea = 'auto'; V.pfecha = ''; save(); render();
+  return nuevos;
+}
+function tickPend(id) {
+  const p = S.pend.find(x => x.id === id); if (!p) return;
+  p.done = p.done ? null : todayKey(); save();
+  if (p.done) animar = id;
+  render();
+  if (p.done) { click(); Comun.haptic(10); Comun.chispas(document.querySelector(T && !$('#arcade').hidden ? '#arcade .ar-emo' : `[data-act="ptick"][data-id="${id}"]`)); }
+}
+function delPend(id) {
+  const ix = S.pend.findIndex(x => x.id === id); if (ix < 0) return;
+  const [p] = S.pend.splice(ix, 1); save(); render();
+  toast('Pendiente borrado.', () => { S.pend.splice(Math.min(ix, S.pend.length), 0, p); save(); render(); });
 }
 function vHoy() {
   const now = new Date(), k = key(now), dow = now.getDay();
@@ -496,7 +881,9 @@ let tabPintada = null;
 function render() {
   const view = $('#view');
   view.classList.toggle('entra', V.tab !== tabPintada); tabPintada = V.tab;
-  view.innerHTML = V.tab === 'hoy' ? vHoy() : V.tab === 'prog' ? vProg() : vHab();
+  view.classList.toggle('ancho', V.tab === 'pend');
+  view.innerHTML = V.tab === 'hoy' ? vHoy() : V.tab === 'pend' ? vPend() : V.tab === 'prog' ? vProg() : vHab();
+  const np = pendAbiertos(); $$('[data-badge="pend"]').forEach(x => { x.textContent = np || ''; x.hidden = !np; });
   $$('[data-act="tab"][data-t]').forEach(b => { if (!b.dataset.ancla) { if (b.dataset.t === V.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); } });
   if (openDay) fillDay();
   if (window.Sync) renderSync();
@@ -518,7 +905,7 @@ function toggle(hid, k, fromSheet) {
   if (!on) { hideToast(); return; }
   // feedback mínimo: el tilde se dibuja, un clic corto y una vibración breve
   click(); Comun.haptic(10);
-  Comun.chispas(document.querySelector(`.item[data-id="${hid}"] .chk`));
+  Comun.chispas(document.querySelector(T && !$('#arcade').hidden ? '#arcade .ar-emo' : `.item[data-id="${hid}"] .chk`));
   const h = S.habits.find(x => x.id === hid);
   if (!fromSheet) toast(`Marcado: ${h.name}.`, () => toggle(hid, k, fromSheet));
   // celebración solo en hitos: semana buena o un hito nuevo
@@ -535,15 +922,16 @@ function sello(rot, titulo, det) {
   clearTimeout(selloT); selloT = setTimeout(() => { s.innerHTML = ''; }, 6000);
 }
 let ac;
-function chime(notes) {
-  if (!S.settings.sound) return;
+function chime(notes, op) {
+  op = op || {};
+  if (!S.settings.sound && !op.siempre) return;
   try {
     ac = ac || new (window.AudioContext || window.webkitAudioContext)();
     if (ac.state === 'suspended') ac.resume();
     notes.forEach((f, i) => {
-      const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + i * .1;
-      o.type = 'sine'; o.frequency.value = f;
-      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.12, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + .18);
+      const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + i * (op.paso || .1);
+      o.type = op.onda || 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(op.vol || .12, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + .18);
       o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + .2);
     });
   } catch (e) {}
@@ -579,6 +967,8 @@ function editHabit(id) {
     <label class="lb" for="e-name">Nombre</label>
     <div class="er"><input type="text" class="emo" id="e-emoji" maxlength="8" value="${esc(h.emoji)}" aria-label="Emoji del hábito"><input type="text" id="e-name" placeholder="Nombre del hábito" value="${esc(h.name)}"></div>
     <div class="quick" role="group" aria-label="Emojis rápidos">${QUICK.map(e => `<button type="button" data-act="emo" data-e="${e}" aria-label="Usar ${e}">${e}</button>`).join('')}</div>
+    <label class="lb" for="e-desc">Descripción (opcional)</label><textarea id="e-desc" maxlength="600" placeholder="Qué vas a hacer en esta sesión">${esc(h.desc || '')}</textarea>
+    <label class="lb" for="e-min">Temporizador (minutos)</label><input type="number" id="e-min" min="1" max="180" inputmode="numeric" placeholder="25" value="${h.min > 0 ? h.min : ''}">
     <span class="lb" id="lb-dias">Días</span><div class="chips" id="e-days" role="group" aria-labelledby="lb-dias">${ORDER.map(d => `<button type="button" class="dchip ${h.days.includes(d) ? 'on' : ''}" data-act="dchip" data-d="${d}" aria-pressed="${h.days.includes(d)}" aria-label="${DFULL[d]}">${DAYS[d]}</button>`).join('')}</div>
     <label class="lb" for="e-time">Horario (opcional)</label>
     <div id="e-main"><input type="time" id="e-time" value="${esc(h.time)}"></div>
@@ -605,10 +995,13 @@ function saveHabit() {
   const per = $('#e-per').checked, times = {};
   if (per) $$('.trow').forEach(r => { const d = +r.dataset.d, v = r.querySelector('input').value; if (days.includes(d) && v) times[d] = v; });
   const hito = Math.round(+$('#e-hito').value) || 0;
+  const desc = $('#e-desc').value.trim(), min = Math.min(180, Math.round(+$('#e-min').value) || 0);
   const o = { name, emoji: $('#e-emoji').value.trim() || '⭐', color: ED.color, days, time: per ? '' : $('#e-time').value, times,
     since: $('#e-since').value || todayKey(), routine: $('#e-routine').value || null };
   if (hito > 0) o.hito = hito;
-  if (ED.id) { const h = S.habits.find(h => h.id === ED.id); Object.assign(h, o); if (!(hito > 0)) delete h.hito; }
+  if (desc) o.desc = desc;
+  if (min > 0) o.min = min;
+  if (ED.id) { const h = S.habits.find(h => h.id === ED.id); Object.assign(h, o); if (!(hito > 0)) delete h.hito; if (!desc) delete h.desc; if (!(min > 0)) delete h.min; }
   else S.habits.push({ id: uid(), ...o });
   save(); closeSheet(); render(); toast('Guardado.');
 }
@@ -644,8 +1037,8 @@ $('#imp').addEventListener('change', async e => {
   } catch (err) { toast('Ese archivo no sirve.'); }
 });
 
-/* ---------- navegación por hash (#hoy, #prog, #hab) ---------- */
-function leerHash() { const t = location.hash.replace('#', '').split('-')[0]; return ['hoy', 'prog', 'hab'].includes(t) ? t : 'hoy'; }
+/* ---------- navegación por hash (#hoy, #pend, #prog, #hab) ---------- */
+function leerHash() { const t = location.hash.replace('#', '').split('-')[0]; return ['hoy', 'pend', 'prog', 'hab'].includes(t) ? t : 'hoy'; }
 function irTab(t, ancla) {
   V.tab = t;
   const h = ancla ? t + '-' + ancla : t;
@@ -656,15 +1049,45 @@ function irTab(t, ancla) {
 addEventListener('hashchange', () => { const t = leerHash(); if (t !== V.tab) irTab(t); });
 
 /* ---------- eventos ---------- */
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#ov').hidden) closeSheet(); });
+document.addEventListener('keydown', e => {
+  if (T && !$('#arcade').hidden) {
+    if (e.key === 'Escape') { e.preventDefault(); if (T.fase === 'juego') accionArcade('arPausa', {}); else if (T.fase !== 'cuenta') cerrarArcade(); }
+    else if (e.key === ' ' && !e.target.closest('button')) { e.preventDefault(); if (T.fase === 'listo') accionArcade('arStart', {}); else if (T.fase === 'juego' || T.fase === 'pausa') accionArcade('arPausa', {}); }
+    return;
+  }
+  if (e.key === 'Escape' && !$('#ov').hidden) closeSheet();
+});
 document.addEventListener('click', e => {
   if (e.target.id === 'ov') return closeSheet();
   const t = e.target.closest('[data-act]');
   if (!t) return;
   const a = t.dataset.act, d = t.dataset;
+  if (a.startsWith('ar') && a !== 'arcade') return accionArcade(a, d, t);
   switch (a) {
+    case 'arcade': abrirArcade(d.id, d.tipo); break;
+    case 'pArcade': { const id = ED.pid, dsc = $('#pe-d').value.trim(), pp = S.pend.find(x => x.id === id); if (pp && dsc !== (pp.d || '')) { if (dsc) pp.d = dsc.slice(0, 600); else delete pp.d; save(); } closeSheet(); abrirArcade(id, 'p'); break; }
     case 'tab': e.preventDefault(); irTab(d.t, d.ancla); break;
     case 'tick': toggle(d.id, todayKey()); break;
+    case 'ptick': tickPend(d.id); break;
+    case 'pdel': delPend(d.id); break;
+    case 'pedit': editPend(d.id); break;
+    case 'parea': V.parea = d.a; render(); break;
+    case 'padd': V.parea = d.a; render(); { const i = $('#pend-in'); if (i) { i.scrollIntoView({ block: 'center', behavior: 'smooth' }); i.focus({ preventScroll: true }); } } break;
+    case 'peArea': ED.a = d.a; $$('#pe-a button').forEach(b => { b.classList.toggle('on', b === t); b.setAttribute('aria-checked', b === t); }); break;
+    case 'pSave': {
+      const p = S.pend.find(x => x.id === ED.pid), txt = $('#pe-t').value.trim();
+      if (!txt) return toast('Escribí algo.');
+      if (p) { const dsc = $('#pe-d').value.trim(); p.t = txt.slice(0, 200); p.a = ED.a; p.v = $('#pe-v').value || null; if (dsc) p.d = dsc.slice(0, 600); else delete p.d; save(); }
+      closeSheet(); render(); break;
+    }
+    case 'pvista': V.pvista = d.v; render(); break;
+    case 'phoy': { const p = S.pend.find(x => x.id === d.id); if (p) { p.v = todayKey(); save(); render(); toast('Pasado a hoy.', () => { p.v = null; save(); render(); }); } break; }
+    case 'psem': V.psem = +d.n === 0 ? 0 : (V.psem || 0) + +d.n; render(); break;
+    case 'pmes': V.pmes = +d.n === 0 ? 0 : (V.pmes || 0) + +d.n; render(); break;
+    case 'pirsem': V.pvista = 'semana'; V.psem = Math.round((Comun.lunes(parse(d.v)) - weekStart(0)) / (7 * 864e5)); render(); break;
+    case 'pdia': V.pfecha = d.v; render(); { const i = $('#pend-in'); if (i) { i.scrollIntoView({ block: 'center', behavior: 'smooth' }); i.focus({ preventScroll: true }); } } break;
+    case 'peSinFecha': $('#pe-v').value = ''; break;
+    case 'pDelS': { const id = ED.pid; closeSheet(); delPend(id); break; }
     case 'dtick': toggle(d.id, openDay, true); break;
     case 'day': openDaySheet(d.k); break;
     case 'wk': V.week += +d.n; render(); break;
@@ -715,13 +1138,150 @@ document.addEventListener('click', e => {
     case 'import': $('#imp').click(); break;
   }
 });
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { S = load(); render(); } });
+document.addEventListener('submit', e => {
+  if (e.target.id !== 'pend-form') return;
+  e.preventDefault();
+  const i = $('#pend-in'), t = i.value.trim();
+  if (t) addPend([t]);
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { S = load(); render(); if (T) { tickArcade(); if (T && T.fase === 'juego') pedirWake(); } } });
 addEventListener('pageshow', e => { if (e.persisted) { S = load(); render(); } });
 
 V.tab = leerHash();
 render();
 if (location.hash.includes('-')) irTab(V.tab, location.hash.split('-').slice(1).join('-'));
 if (window.Sync) { Sync.onStatus(renderSync); Sync.register('habitos', () => { S = load(); render(); }); }
+
+/* ---------- modo arcade: temporizador a pantalla completa ----------
+   Cuenta con la hora de fin (no con ticks), así sigue bien si la pantalla se apaga o la app queda de fondo.
+   El temporizador en curso se guarda en habitos-timer-v1: si se recarga la página, vuelve donde estaba. */
+const LS_T = 'habitos-timer-v1';
+const PRESETS = [5, 10, 15, 25, 45, 60];
+const SEG = 20;
+const BEEP = { onda: 'square', vol: .06 };
+let T = null, tInt = null, wake = null, cuentaT = [], focoAntes = null;
+const minDe = h => h.min > 0 ? h.min : 25;
+const restante = () => !T ? 0 : T.fin ? Math.max(0, T.fin - Date.now()) : T.rest;
+const mmss = ms => { const s = Math.ceil(ms / 1000); return `${pad(Math.floor(s / 60))}:${pad(s % 60)}`; };
+const esP = () => T && T.tipo === 'p';
+const habT = () => T && (esP() ? S.pend.find(x => x.id === T.id) : S.habits.find(x => x.id === T.id));
+const datosT = o => esP() ? { nm: o.t, desc: o.d, emoji: '📌', hecho: !!o.done, hoy: true } : { nm: o.name, desc: o.desc, emoji: o.emoji, hecho: isDone(o, todayKey()), hoy: due(o, todayKey()) };
+function guardarT() { try { if (T) localStorage.setItem(LS_T, JSON.stringify(T)); else localStorage.removeItem(LS_T); } catch (e) {} }
+async function pedirWake() { try { if (!wake && 'wakeLock' in navigator && !document.hidden) { wake = await navigator.wakeLock.request('screen'); wake.addEventListener('release', () => { wake = null; }); } } catch (e) {} }
+function soltarWake() { try { if (wake) wake.release(); } catch (e) {} wake = null; }
+function pantallaCompleta(on) {
+  try {
+    const d = document, el = d.documentElement, ya = d.fullscreenElement || d.webkitFullscreenElement;
+    const p = on ? !ya && (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el) : ya && (d.exitFullscreen || d.webkitExitFullscreen)?.call(d);
+    if (p && p.catch) p.catch(() => {});
+  } catch (e) {}
+}
+function temaArcade(on) { $$('meta[name="theme-color"]').forEach(m => { if (!m.dataset.orig) m.dataset.orig = m.content; m.content = m.dataset.orig; /* ahora usa el fondo de la app */ }); }
+
+function abrirArcade(id, tipo) {
+  const h = (tipo === 'p' ? S.pend : S.habits).find(x => x.id === id); if (!h) return;
+  T = { id, tipo: tipo === 'p' ? 'p' : 'h', total: minDe(h) * 60000, rest: minDe(h) * 60000, fin: null, fase: 'listo' };
+  guardarT(); mostrarArcade(); pantallaCompleta(true);
+}
+function mostrarArcade() {
+  focoAntes = document.activeElement;
+  $('#arcade').hidden = false; document.body.classList.add('lock'); temaArcade(true);
+  pintarArcade();
+  clearInterval(tInt); tInt = setInterval(tickArcade, 250);
+  if (T.fase === 'juego') pedirWake();
+}
+function cerrarArcade() {
+  cuentaT.forEach(clearTimeout); cuentaT = [];
+  T = null; guardarT(); clearInterval(tInt); soltarWake();
+  const el = $('#arcade'); el.hidden = true; el.innerHTML = '';
+  if ($('#ov').hidden) document.body.classList.remove('lock');
+  temaArcade(false); pantallaCompleta(false); document.title = 'Hábitos';
+  render();
+  if (focoAntes && focoAntes.isConnected && focoAntes.focus) focoAntes.focus();
+}
+function pintarArcade() {
+  const h = habT(); if (!h) return cerrarArcade();
+  const { nm, desc, emoji, hecho, hoy } = datosT(h), n = esP() ? 0 : sesiones(h), f = T.fase, min = Math.round(T.total / 60000);
+  const estado = { listo: '¿Arrancamos?', cuenta: '', juego: 'En foco', pausa: 'En pausa', fin: '' }[f];
+  let ctl = '';
+  if (f === 'listo') ctl = `<div class="ar-pre" role="group" aria-label="Minutos">${PRESETS.map(m => `<button data-act="arMin" data-n="${m}" class="${m === min ? 'on' : ''}" aria-pressed="${m === min}">${m}'</button>`).join('')}</div>
+    <div class="ar-fila"><button class="ar-b chico" data-act="arMas" data-n="-1" aria-label="Un minuto menos">−1'</button><button class="ar-b verde grande" data-act="arStart" id="ar-main">${ic('play')}Start</button><button class="ar-b chico" data-act="arMas" data-n="1" aria-label="Un minuto más">+1'</button></div>`;
+  else if (f === 'juego' || f === 'pausa') ctl = `<div class="ar-fila"><button class="ar-b chico" data-act="arReset">${ic('rotate-ccw')}Reset</button><button class="ar-b ${f === 'juego' ? 'azul' : 'verde'} grande" data-act="arPausa" id="ar-main">${ic(f === 'juego' ? 'pause' : 'play')}${f === 'juego' ? 'Pausa' : 'Seguir'}</button><button class="ar-b oro chico" data-act="arFin">${ic('check')}Listo</button></div>`;
+  else if (f === 'fin') ctl = `<div class="ar-fila">${hoy && !hecho ? `<button class="ar-b verde grande" data-act="arHecho" id="ar-main">${ic('check')}Marcar</button>` : ''}<button class="ar-b chico" data-act="arOtra" ${hoy && !hecho ? '' : 'id="ar-main"'}>${ic('rotate-ccw')}Otra</button><button class="ar-b rojo chico" data-act="arSalir">${ic('x')}Salir</button></div>`;
+  const centro = f === 'fin'
+    ? `<p class="ar-gano">${T.marcado ? (esP() ? '¡Tarea hecha! 🎉' : '+1 sesión 🎉') : T.temprano ? '¡Nivel superado!' : '¡Tiempo!'}</p><p class="ar-estado blink">${T.marcado && esP() ? 'Tachada de pendientes' : T.marcado ? `${n} ${n === 1 ? 'sesión' : 'sesiones'} en total` : hecho ? 'Ya estaba hecho hoy' : hoy ? 'Marcalo como hecho' : 'Hoy no estaba programado'}</p>`
+    : `<div class="ar-reloj" id="ar-reloj" role="timer" aria-label="Tiempo restante">${mmss(restante())}</div><div class="ar-vida" id="ar-vida" aria-hidden="true">${'<i></i>'.repeat(SEG)}</div><p class="ar-estado ${f === 'listo' || f === 'pausa' ? 'blink' : ''}">${estado}</p>`;
+  $('#arcade').innerHTML = `<header class="ar-top">${esP() ? `<span class="ar-chip" style="--c:${areaInfo(areaP(h)).c}"><i aria-hidden="true"></i>${esc(areaInfo(areaP(h)).n)}</span>` : `<span class="ar-chip racha">🔥 ${n} ${n === 1 ? 'sesión' : 'sesiones'}</span>`}<button class="icon-btn ar-x" data-act="arSalir" aria-label="Salir del modo foco">${ic('x')}</button></header>
+    <div class="ar-centro"><div class="ar-card"><span class="ar-emo" aria-hidden="true" style="--c:${esP() ? areaInfo(areaP(h)).c : colorDe(h)}">${esc(emoji)}</span><h2 class="ar-nm">${esc(nm)}</h2>${desc ? `<p class="ar-desc">${esc(desc)}</p>` : ''}</div>${centro}</div>
+    <div class="ar-ctl">${ctl}</div>`;
+  tickArcade(true);
+  const m = $('#ar-main'); if (m) m.focus({ preventScroll: true });
+}
+function tickArcade(soloPintar) {
+  if (!T) return;
+  const r = restante();
+  if (T.fase === 'juego' && r <= 0 && !soloPintar) return finArcade(false);
+  const rel = $('#ar-reloj'); if (!rel) return;
+  rel.textContent = mmss(r);
+  const on = Math.ceil(r / T.total * SEG);
+  $$('#ar-vida i').forEach((i, ix) => i.classList.toggle('off', ix >= on));
+  const a = $('#arcade');
+  a.classList.toggle('bajo', T.fase !== 'listo' && r <= Math.min(60000, T.total * .2));
+  a.classList.toggle('critico', T.fase === 'juego' && r <= 10000);
+  const h = habT();
+  document.title = T.fase === 'juego' || T.fase === 'pausa' ? `${mmss(r)} · ${h ? datosT(h).nm : ''}` : 'Hábitos';
+}
+function arrancar() {
+  const h = habT();
+  if (h && Math.round(T.total / 60000) !== h.min) { h.min = Math.round(T.total / 60000); save(); } // recuerda el último tiempo
+  T.fase = 'cuenta'; guardarT(); pintarArcade();
+  const caja = document.createElement('div'); caja.className = 'ar-cuenta'; caja.setAttribute('aria-live', 'assertive'); $('#arcade').appendChild(caja);
+  const pasos = Comun.reduce() ? ['¡YA!'] : ['3', '2', '1', '¡YA!'];
+  pasos.forEach((p, i) => cuentaT.push(setTimeout(() => {
+    caja.innerHTML = `<span class="${p === '¡YA!' ? 'ya' : ''}">${p}</span>`;
+    chime([p === '¡YA!' ? 880 : 440], BEEP);
+  }, i * 700)));
+  cuentaT.push(setTimeout(() => {
+    cuentaT = []; caja.remove();
+    T.fase = 'juego'; T.fin = Date.now() + T.rest; guardarT(); pedirWake(); pintarArcade();
+  }, pasos.length * 700));
+}
+function finArcade(temprano) {
+  T.rest = 0; T.fin = null; T.fase = 'fin'; T.temprano = temprano; guardarT(); soltarWake();
+  if (!temprano) { chime([523, 659, 784, 1047, 784, 1047, 1319], Object.assign({ siempre: true, paso: .13 }, BEEP)); Comun.haptic([200, 100, 200, 100, 400]); }
+  pintarArcade();
+}
+function accionArcade(a, d, t) {
+  if (!T) return;
+  const h = habT();
+  switch (a) {
+    case 'arMin': T.total = T.rest = +d.n * 60000; guardarT(); pintarArcade(); break;
+    case 'arMas': { const m = Math.max(1, Math.min(180, Math.round(T.total / 60000) + +d.n)); T.total = T.rest = m * 60000; guardarT(); pintarArcade(); break; }
+    case 'arStart': pantallaCompleta(true); arrancar(); break;
+    case 'arPausa':
+      if (T.fase === 'juego') { T.rest = restante(); T.fin = null; T.fase = 'pausa'; soltarWake(); }
+      else { T.fin = Date.now() + T.rest; T.fase = 'juego'; pedirWake(); }
+      chime([T.fase === 'juego' ? 660 : 330], BEEP); guardarT(); pintarArcade(); break;
+    case 'arReset': T.rest = T.total; T.fin = null; T.fase = 'listo'; soltarWake(); guardarT(); pintarArcade(); break;
+    case 'arFin': finArcade(true); break;
+    case 'arOtra': T.rest = T.total; T.fase = 'listo'; T.marcado = false; guardarT(); pintarArcade(); break;
+    case 'arHecho':
+      if (h && !datosT(h).hecho) { T.marcado = true; if (esP()) tickPend(h.id); else toggle(h.id, todayKey(), true); }
+      pintarArcade(); break;
+    case 'arSalir': cerrarArcade(); break;
+  }
+}
+(function retomarArcade() {
+  try {
+    const t = JSON.parse(localStorage.getItem(LS_T));
+    if (!t || !(t.tipo === 'p' ? S.pend : S.habits).some(h => h.id === t.id) || !(t.total > 0)) { localStorage.removeItem(LS_T); return; }
+    T = t;
+    if (T.fase === 'cuenta') T.fase = 'listo';
+    if (T.fase === 'juego' && restante() <= 0) { T.rest = 0; T.fin = null; T.fase = 'fin'; }
+    mostrarArcade();
+  } catch (e) {}
+})();
+
 </script>
 </body>
 </html>
