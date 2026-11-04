@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Ic } from './Ic';
 
 const leer = (k: string, def: boolean) => {
@@ -9,13 +9,13 @@ const leer = (k: string, def: boolean) => {
 export function Plegable({ id, titulo, resumen, valor, abiertoInicial = false, forzarAbierto, pie, children }: {
   id: string; titulo: string; resumen?: ReactNode; valor?: ReactNode; abiertoInicial?: boolean;
   /** Lo que se ve siempre debajo, abierto o cerrado (ej. "Agregar"). */
-  pie?: ReactNode; /** Mientras sea true queda abierto (ej. editando algo de adentro). */ forzarAbierto?: boolean; children: ReactNode;
+  pie?: ReactNode; /** Al pasar a true se abre (ej. al filtrar o al agregar algo); después la flecha lo sigue cerrando. */ forzarAbierto?: boolean; children: ReactNode;
 }) {
-  const [propio, setPropio] = useState(() => leer(id, abiertoInicial));
-  const abierto = propio || !!forzarAbierto;
+  const [abierto, setAbierto] = useState(() => leer(id, abiertoInicial));
+  useEffect(() => { if (forzarAbierto) setAbierto(true); }, [forzarAbierto]);
   const cambiar = () => {
     const v = !abierto;
-    setPropio(v);
+    setAbierto(v);
     try { localStorage.setItem(`finanzas-plegado-${id}`, v ? '1' : '0'); } catch { /* sin storage */ }
   };
   return (
