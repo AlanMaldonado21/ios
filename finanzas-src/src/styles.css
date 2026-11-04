@@ -93,8 +93,18 @@ button.fe-h:hover{background:var(--hover)}
 .plegable-b{padding-top:8px}
 details.plegado>summary{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;min-height:44px;cursor:pointer;list-style:none}
 details.plegado>summary::-webkit-details-marker{display:none}
-details.plegado>summary::after{content:"Mostrar";font:900 var(--t14)/1 var(--sans);color:var(--sel)}
-details.plegado[open]>summary::after{content:"Ocultar"}
+details.plegado>summary{align-items:center;flex-wrap:nowrap}
+details.plegado>summary>h2{flex:1}
+details.plegado>summary::after{content:"";flex:none;width:9px;height:9px;margin:0 6px 4px;border-right:2.5px solid var(--mu);border-bottom:2.5px solid var(--mu);transform:rotate(45deg);transition:transform var(--dur) var(--ease)}
+details.plegado[open]>summary::after{transform:translateY(4px) rotate(225deg)}
+.plegable .plg-v{font-weight:900;white-space:nowrap}
+.plegable .plg-v small{font-size:var(--t12);margin-left:2px}
+.plegable-b{animation:fade var(--dur) var(--ease)}
+.prot-izq{flex:1;min-width:0}
+.prot-rep{margin-top:12px}
+.prot-rep .dona-g{width:96px;height:96px}
+.plegable>span:first-child h2{font-size:var(--t18,18px)}
+.pesa .gs-t i{background:var(--ct)}
 details.plegado>summary h2{font-size:var(--t20)}
 
 /* cifra protagonista + mini datos */
