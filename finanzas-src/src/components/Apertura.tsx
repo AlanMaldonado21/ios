@@ -122,9 +122,9 @@ export function Apertura({ m, data }: { m: MesCalc; data: FinData }) {
 }
 
 /** "Pagué la tarjeta": marca de una vez todas las cuotas de esa tarjeta en el mes. */
-export function PagarTarjetas({ m }: { m: MesCalc }) {
+export function PagarTarjetas({ m, solo }: { m: MesCalc; solo?: string }) {
   const { pagos, setPagos } = useStore();
-  const tarjetas = [...new Set(m.cuotasDetalle.map(c => c.tarjeta))];
+  const tarjetas = [...new Set(m.cuotasDetalle.map(c => c.tarjeta))].filter(t => !solo || t === solo);
   if (tarjetas.length === 0) return null;
   return (
     <div className="pagar-tj">

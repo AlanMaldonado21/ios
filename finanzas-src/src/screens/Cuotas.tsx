@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { sumarMeses, totalQueFalta, ultimoPago } from '../../../lib/finanzas/calc';
 import { TARJETAS as TJ } from '../../../lib/finanzas/diario';
 import { fmtArs, mesCorto, mesLargo } from '../../../lib/finanzas/format';
@@ -23,6 +23,7 @@ export function Cuotas() {
   const { data, meses } = usePlan();
   const [abierta, setAbierta] = useState<string | null>(null);
   const [filtro, setFiltro] = useState<Filtro>('todas');
+  const aviso = useRef<HTMLDivElement>(null);
   const todas = data.cuotas;
   const pasa = (c: Cuota) => filtro === 'todas' || c.tarjeta === filtro;
   const fechaDe = new Map(gastos.map(g => [g.id, g.fecha]));
@@ -42,66 +43,12 @@ export function Cuotas() {
   const porMes = (cs: Cuota[]) => cs.reduce((a, c) => a + c.cuotaMensual, 0);
   const colorTj = (t: string) => TARJETAS.find(x => x.key === t)?.color ?? 'var(--sel)';
   const cuantas = (n: number) => (n === 1 ? '1 compra' : `${n} compras`);
+  // Al filtrar por tarjeta, llevar a la vista filtrada (el resumen de arriba ocupa casi toda la pantalla en el celu).
+  useEffect(() => { if (filtro !== 'todas') aviso.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, [filtro]);
   const resumen = (c: Cuota) => `${corta(c.tarjeta)} · ${c.cuotasRestantes === 1 ? 'queda 1 cuota' : `quedan ${c.cuotasRestantes} cuotas`} · hasta ${mesCorto(ultimoPago(c))}`;
 
-  return (
-    <div className="dash">
-      <header className="ph"><div><h1>Cuotas</h1><p className="sub">Lo que falta pagar con tarjeta</p></div></header>
-
-      <section className="protagonista">
-        <div className="reparto prot-rep">
-          <div className="prot-izq">
-            <span className="rotulo">Total que falta</span>
-            <b className="cifra"><CountUp value={totalFalta} format={fmtArs} ms={500} /></b>
-            {mesHoy && <span className="mu t14">Pagás <b className="num">{fmtArs(mesHoy.cuotas)}</b> en {mesCorto(mesHoy.mes)}</span>}
-          </div>
-          {totalFalta > 0 && <DonaChart label={todas.length === 1 ? 'compra' : 'compras'} centro={`${todas.length}`}
-            partes={TARJETAS.map(t => ({ name: t.key, color: t.color, value: porTarjeta(t.key) }))} />}
-        </div>
-        <div className="mini">
-          {TJ.map(t => (
-            <div key={t.id} className="mini-tj">
-              <button aria-pressed={filtro === t.id} onClick={() => { setAbierta(null); setFiltro(filtro === t.id ? 'todas' : t.id); }}
-                aria-label={`${filtro === t.id ? 'Ver todas las cuotas' : `Ver solo ${t.label}`}`}>
-                <span className="mini-r">{t.label}</span><b className="num">{fmtArs(porTarjeta(t.id))}</b>
-                <small>{filtro === t.id ? 'Tocá para ver todas' : 'Ver sus cuotas'}</small>
-              </button>
-            </div>
-          ))}
-          <div><span className="mini-r">Libre de cuotas</span><b>{ult ? mesCorto(sumarMeses(ult.mes, 1)) : 'ya'}</b></div>
-        </div>
-      </section>
-
-      <PagosDelMes que="cuotas" />
-      {nombreFiltro && (
-        <div className="filtro-tj" role="status">
-          <span>Solo <b>{nombreFiltro}</b> · falta <b className="num">{fmtArs(totalFiltro)}</b></span>
-          <button className="b-txt" onClick={() => setFiltro('todas')}><Ic n="x" size="s" />Ver todas</button>
-        </div>
-      )}
-
-      <section className="bloque">
-        <div className="bloque-h"><h2>Cuotas por mes</h2><span className="mu t12">Tocá un mes para abrirlo</span></div>
-        <ul className="leg inline">{TARJETAS.map(t => <li key={t.key}><i style={{ background: t.color }} /><span>{t.key}</span></li>)}</ul>
-        <CuotasChart meses={meses} sel="" onSel={abrir} />
-      </section>
-
-      {pesan.length > 0 && (
-        <section className="bloque">
-          <div className="bloque-h"><h2>Qué pesa más{nombreFiltro ? ` · ${corta(filtro)}` : ''}</h2><span className="mu t12">Lo que falta de cada compra</span></div>
-          <div className="pesa">
-            {pesan.slice(0, 6).map(({ c, falta }) => (
-              <div key={c.id} className="gs-t">
-                <span>{c.concepto || 'Sin nombre'}</span>
-                <i style={{ width: `${(falta / pesan[0].falta) * 100}%`, ['--ct' as string]: colorTj(c.tarjeta) }} />
-                <b className="num">{fmtArs(falta)}</b>
-              </div>
-            ))}
-            {pesan.length > 6 && <p className="mu t12">y {pesan.length - 6} más.</p>}
-          </div>
-        </section>
-      )}
-
+  const listas = (
+    <>
       <Plegable id="cuotas-pendientes" titulo={`Cuotas pendientes${nombreFiltro ? ` · ${corta(filtro)}` : ''}`}
         forzarAbierto={!!nombreFiltro || (abierta != null && aMano.some(c => c.id === abierta))}
         resumen={cuantas(aMano.length)} valor={<>{fmtArs(porMes(aMano))}<small className="mu">/mes</small></>}
@@ -149,6 +96,71 @@ export function Cuotas() {
           <p className="mu t12">Para cambiarlas o borrarlas, hacelo desde el gasto en Diario.</p>
         </Plegable>
       )}
+    </>
+  );
+
+  return (
+    <div className="dash">
+      <header className="ph"><div><h1>Cuotas</h1><p className="sub">Lo que falta pagar con tarjeta</p></div></header>
+
+      <section className="protagonista">
+        <div className="reparto prot-rep">
+          <div className="prot-izq">
+            <span className="rotulo">Total que falta</span>
+            <b className="cifra"><CountUp value={totalFalta} format={fmtArs} ms={500} /></b>
+            {mesHoy && <span className="mu t14">Pagás <b className="num">{fmtArs(mesHoy.cuotas)}</b> en {mesCorto(mesHoy.mes)}</span>}
+          </div>
+          {totalFalta > 0 && <DonaChart label={todas.length === 1 ? 'compra' : 'compras'} centro={`${todas.length}`}
+            partes={TARJETAS.map(t => ({ name: t.key, color: t.color, value: porTarjeta(t.key) }))} />}
+        </div>
+        <div className="mini">
+          {TJ.map(t => (
+            <div key={t.id} className="mini-tj">
+              <button aria-pressed={filtro === t.id} onClick={() => { setAbierta(null); setFiltro(filtro === t.id ? 'todas' : t.id); }}
+                aria-label={`${filtro === t.id ? 'Ver todas las cuotas' : `Ver solo ${t.label}`}`}>
+                <span className="mini-r">{t.label}</span><b className="num">{fmtArs(porTarjeta(t.id))}</b>
+                <small>{filtro === t.id ? 'Tocá para ver todas' : 'Ver sus cuotas'}</small>
+              </button>
+            </div>
+          ))}
+          <div><span className="mini-r">Libre de cuotas</span><b>{ult ? mesCorto(sumarMeses(ult.mes, 1)) : 'ya'}</b></div>
+        </div>
+      </section>
+
+      {nombreFiltro && (
+        <div className="filtro-tj" role="status" ref={aviso}>
+          <span>Solo <b>{nombreFiltro}</b> · falta <b className="num">{fmtArs(totalFiltro)}</b></span>
+          <button className="b-txt" onClick={() => setFiltro('todas')}><Ic n="x" size="s" />Ver todas</button>
+        </div>
+      )}
+
+      <PagosDelMes que="cuotas" tarjeta={nombreFiltro ? filtro : undefined} />
+
+      {nombreFiltro && listas}
+
+      <section className="bloque">
+        <div className="bloque-h"><h2>Cuotas por mes</h2><span className="mu t12">Tocá un mes para abrirlo</span></div>
+        <ul className="leg inline">{TARJETAS.map(t => <li key={t.key}><i style={{ background: t.color }} /><span>{t.key}</span></li>)}</ul>
+        <CuotasChart meses={meses} sel="" onSel={abrir} />
+      </section>
+
+      {pesan.length > 0 && (
+        <section className="bloque">
+          <div className="bloque-h"><h2>Qué pesa más{nombreFiltro ? ` · ${corta(filtro)}` : ''}</h2><span className="mu t12">Lo que falta de cada compra</span></div>
+          <div className="pesa">
+            {pesan.slice(0, 6).map(({ c, falta }) => (
+              <div key={c.id} className="gs-t">
+                <span>{c.concepto || 'Sin nombre'}</span>
+                <i style={{ width: `${(falta / pesan[0].falta) * 100}%`, ['--ct' as string]: colorTj(c.tarjeta) }} />
+                <b className="num">{fmtArs(falta)}</b>
+              </div>
+            ))}
+            {pesan.length > 6 && <p className="mu t12">y {pesan.length - 6} más.</p>}
+          </div>
+        </section>
+      )}
+
+      {!nombreFiltro && listas}
 
       <details className="bloque plegado">
         <summary><h2>Por mes y tarjeta</h2></summary>

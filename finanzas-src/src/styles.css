@@ -639,3 +639,4 @@ html.teclado .qa .add-monto input{font-size:34px}
 .qa-borrar{margin-top:12px;display:flex}
 .qa-borrar .b-txt{display:inline-flex;align-items:center;gap:6px}
 .pagar-tj .b-cobro{margin-top:8px}
+.filtro-tj{scroll-margin-top:72px}
