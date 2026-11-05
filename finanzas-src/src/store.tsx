@@ -1,16 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { ahorroReal, cuotaDesdeGasto, type Checks, type GastoDiario } from '../../lib/finanzas/diario';
-import { calcularPlan } from '../../lib/finanzas/calc';
+import { ahorroReal, cuotaDesdeGasto, gastosAlContado, gastosDelMes, totalGastos, type Checks, type GastoDiario } from '../../lib/finanzas/diario';
+import { calcularPlan, type MesCalc } from '../../lib/finanzas/calc';
 import { DATOS_INICIALES } from '../../lib/finanzas/seed';
 import type { FinData } from '../../lib/finanzas/types';
+import { cajaDelMes, type Marcas } from '../../lib/finanzas/pagos';
 
 // Los datos viven en este dispositivo (localStorage); si hay sesión, sync.js copia el documento a Supabase.
 const LS = 'finanzas-v1';
 
 /** sinGasto: días marcados "hoy no gasté" (YYYY-MM-DD). Campo nuevo y opcional: los datos viejos siguen valiendo. */
-type Estado = { data: FinData; checks: Checks; gastos: GastoDiario[]; topes: Record<string, number>; sinGasto: string[] };
+type Estado = { data: FinData; checks: Checks; gastos: GastoDiario[]; topes: Record<string, number>; sinGasto: string[]; pagos: Marcas; cobros: Marcas };
 
 const copiaSeed = (): FinData => JSON.parse(JSON.stringify(DATOS_INICIALES));
+
+const marcas = (x: unknown): Marcas => (x && typeof x === 'object' && !Array.isArray(x) ? x as Marcas : {});
 
 function cargar(): Estado {
   try {
@@ -20,10 +23,10 @@ function cargar(): Estado {
       if (!s.data && Number(s.dolar)) data.settings.dolar = Number(s.dolar); // formato viejo
       // Corrección: el ahorro en pesos de la planilla era el mismo ahorro en USD pasado a pesos.
       if (!s.fixAhorro && data.settings.ahorroUsdActual === 1050 && data.settings.ahorroPesosActual === 1627500) data.settings.ahorroPesosActual = 0;
-      return { data, checks: s.checks || {}, gastos: Array.isArray(s.gastos) ? s.gastos : [], topes: s.topes && typeof s.topes === 'object' ? s.topes : {}, sinGasto: Array.isArray(s.sinGasto) ? s.sinGasto : [] };
+      return { data, checks: s.checks || {}, gastos: Array.isArray(s.gastos) ? s.gastos : [], topes: s.topes && typeof s.topes === 'object' ? s.topes : {}, sinGasto: Array.isArray(s.sinGasto) ? s.sinGasto : [], pagos: marcas(s.pagos), cobros: marcas(s.cobros) };
     }
   } catch { /* sin datos */ }
-  return { data: copiaSeed(), checks: {}, gastos: [], topes: {}, sinGasto: [] };
+  return { data: copiaSeed(), checks: {}, gastos: [], topes: {}, sinGasto: [], pagos: {}, cobros: {} };
 }
 
 type Ctx = Estado & {
@@ -42,6 +45,10 @@ type Ctx = Estado & {
   editar: (fn: (d: FinData) => void) => void;
   /** Marca/desmarca "no gasté nada" en un día (cuenta como registrado). */
   toggleSinGasto: (dia: string) => void;
+  /** Marca/desmarca un gasto fijo, suscripción o cuota de un mes como pagado (clave de kPago). */
+  togglePago: (clave: string) => void;
+  /** Marca/desmarca "ya cobré" en un mes. */
+  toggleCobro: (mes: string) => void;
   guardado: number;
   /** Mes abierto en Inicio (no se guarda). null = mes actual. */
   /** Hoja de carga rápida de gasto abierta (no se guarda). */
@@ -114,9 +121,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const toggleSinGasto = useCallback((dia: string) => setSt(s => ({
     ...s, sinGasto: s.sinGasto.includes(dia) ? s.sinGasto.filter(x => x !== dia) : [...s.sinGasto, dia].sort(),
   })), []);
+  const togglePago = useCallback((k: string) => setSt(s => {
+    const pagos = { ...s.pagos };
+    if (pagos[k]) delete pagos[k]; else pagos[k] = true;
+    return { ...s, pagos };
+  }), []);
+  const toggleCobro = useCallback((mes: string) => setSt(s => {
+    const cobros = { ...s.cobros };
+    if (cobros[mes]) delete cobros[mes]; else cobros[mes] = true;
+    return { ...s, cobros };
+  }), []);
   const setDolar = useCallback((dolar: number) => editar(d => { d.settings.dolar = dolar; }), [editar]);
 
-  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, toggleSinGasto, marcarCheck, desmarcarCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, sheetGasto, setSheetGasto, gastoEdit, editarGasto, guardarEdicion, mesSel, setMesSel }}>{children}</C.Provider>;
+  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, toggleSinGasto, togglePago, toggleCobro, marcarCheck, desmarcarCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, sheetGasto, setSheetGasto, gastoEdit, editarGasto, guardarEdicion, mesSel, setMesSel }}>{children}</C.Provider>;
 }
 
 export function useStore() {
@@ -163,4 +180,11 @@ export function CopiaResumen() {
     try { localStorage.setItem(window.Comun?.RES ?? 'finanzas-resumen-v1', JSON.stringify({ real, meta, ts: Date.now() })); } catch { /* sin storage */ }
   }, [real, meta]);
   return null;
+}
+
+/** Caja real de un mes: cobrado menos pagado, ahorrado y gastado al contado. */
+export function useCaja(m: MesCalc) {
+  const { gastos, pagos, cobros, checks } = useStore();
+  const { data } = usePlan();
+  return cajaDelMes(m, data, pagos, cobros, !!checks[m.mes], totalGastos(gastosAlContado(gastosDelMes(gastos, m.mes))));
 }

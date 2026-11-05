@@ -10,6 +10,7 @@ import { CuotasChart, TARJETAS } from '../components/Charts';
 import { CountUp } from '../components/CountUp';
 import { Campo, FilaEditable } from '../components/FilaEditable';
 import { Ic } from '../components/Ic';
+import { PagosDelMes } from '../components/PagosDelMes';
 
 const corta = (t: string) => (t.startsWith('BNA') ? 'BNA' : 'MP');
 
@@ -40,6 +41,8 @@ export function Cuotas() {
           <div><dt>Libre de cuotas</dt><dd>{ult ? mesCorto(sumarMeses(ult.mes, 1)) : 'ya'}</dd></div>
         </dl>
       </section>
+
+      <PagosDelMes que="cuotas" />
 
       <section className="bloque">
         <div className="bloque-h"><h2>Cuotas pendientes</h2><span className="mu t12">Tocá una para editarla</span></div>

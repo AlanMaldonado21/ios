@@ -555,3 +555,21 @@ html.teclado .qa .ti .ic{width:14px;height:14px}
 html.teclado .qa .medios button{min-height:46px;flex-direction:row;gap:6px}
 html.teclado .qa .add-monto{padding:6px 14px}
 html.teclado .qa .add-monto input{font-size:34px}
+
+/* Pagos del mes: casilla "ya lo pagué", botón de cobro y caja real */
+.chk-pago{flex:none;width:26px;height:26px;border-radius:9px;border:2px solid var(--bd);border-bottom-width:4px;background:var(--card);color:#fff;display:grid;place-items:center;cursor:pointer;padding:0;transition:transform .15s var(--spring,ease),background .15s}
+.chk-pago.on{background:var(--acc);border-color:var(--acc)}
+.chk-pago:active{transform:scale(.9)}
+.fila.pagada .fila-n>span,.fila.pagada .fila-v{text-decoration:line-through;opacity:.55}
+.pagos-l .fila{padding:10px 0}
+.b-cobro{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;margin-top:10px;padding:12px 14px;border-radius:14px;border:2px solid var(--bd);border-bottom-width:4px;background:var(--card);color:var(--tx);font:900 var(--t14)/1.2 var(--sans);cursor:pointer;text-align:left}
+.b-cobro small{margin-left:auto;font-weight:700;font-size:var(--t12);color:var(--mu)}
+.b-cobro.on{background:var(--pos-bg);border-color:var(--pos);color:var(--pos)}
+.caja-real{margin-top:12px;padding:14px 16px;border-radius:16px;background:var(--bg3)}
+.caja-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.caja-top small{font-size:var(--t12);color:var(--mu)}
+.caja-top b{font:900 var(--t28)/1 var(--sans);color:var(--pos)}
+.caja-real.neg .caja-top b{color:var(--neg)}
+.caja-det{margin:10px 0 0;display:grid;gap:4px}
+.caja-det div{display:flex;justify-content:space-between;font-size:var(--t12);color:var(--mu)}
+.caja-det dt,.caja-det dd{margin:0}
