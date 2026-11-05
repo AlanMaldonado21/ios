@@ -8,9 +8,23 @@ export type TipoPago = 'f' | 's' | 'c'; // fijo, suscripción USD, cuota
 
 export const kPago = (mes: Mes, tipo: TipoPago, id: string) => `${mes}|${tipo}|${id}`;
 
+export type TipoCobro = 'i' | 'k' | 'a'; // ingreso fijo, comisión, aguinaldo
+export const kCobro = (mes: Mes, tipo: TipoCobro, id = '') => `${mes}|${tipo}|${id}`;
+
+export type FuenteCobro = { clave: string; nombre: string; monto: number };
+/** Cada lugar de donde entra plata en el mes, para marcar si ya cobraste. */
+export function fuentesDeCobro(m: MesCalc, data: FinData): FuenteCobro[] {
+  return [
+    ...data.ingresosFijos.map(i => ({ clave: kCobro(m.mes, 'i', i.id), nombre: i.nombre || 'Sin nombre', monto: i.montoMensual })),
+    { clave: kCobro(m.mes, 'k'), nombre: 'Comisión por ventas', monto: m.comision },
+    ...(m.aguinaldo > 0 ? [{ clave: kCobro(m.mes, 'a'), nombre: 'Aguinaldo', monto: m.aguinaldo }] : []),
+  ];
+}
+
 export type Caja = {
+  /** Cobraste al menos una fuente. */
   cobrado: boolean;
-  /** Ingreso del mes si ya cobraste, 0 si no. */
+  /** Suma de las fuentes que marcaste como cobradas. */
   entro: number;
   /** Fijos + suscripciones + cuotas marcados como pagados. */
   pagado: number;
@@ -33,8 +47,9 @@ export function cajaDelMes(m: MesCalc, data: FinData, pagos: Marcas, cobros: Mar
   ];
   let pagado = 0, falta = 0;
   for (const [k, v] of items) { if (pagos[k]) pagado += v; else falta += v; }
-  const cobrado = !!cobros[m.mes];
-  const entro = cobrado ? m.ingresoTotal : 0;
+  // cobros[mes] solo existe en datos de la primera versión: significaba "cobré todo".
+  const entro = cobros[m.mes] ? m.ingresoTotal : fuentesDeCobro(m, data).reduce((a, f) => a + (cobros[f.clave] ? f.monto : 0), 0);
+  const cobrado = entro > 0;
   const ahorro = ahorroSeparado ? m.ahorroPesos : 0;
   return { cobrado, entro, pagado, falta, ahorro, gastado, enMano: entro - pagado - ahorro - gastado };
 }

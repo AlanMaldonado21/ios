@@ -48,7 +48,9 @@ type Ctx = Estado & {
   /** Marca/desmarca un gasto fijo, suscripción o cuota de un mes como pagado (clave de kPago). */
   togglePago: (clave: string) => void;
   /** Marca/desmarca "ya cobré" en un mes. */
-  toggleCobro: (mes: string) => void;
+  toggleCobro: (clave: string) => void;
+  /** Marca (on) o desmarca varias fuentes de cobro de una vez. */
+  setCobros: (claves: string[], on: boolean) => void;
   guardado: number;
   /** Mes abierto en Inicio (no se guarda). null = mes actual. */
   /** Hoja de carga rápida de gasto abierta (no se guarda). */
@@ -126,14 +128,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (pagos[k]) delete pagos[k]; else pagos[k] = true;
     return { ...s, pagos };
   }), []);
-  const toggleCobro = useCallback((mes: string) => setSt(s => {
+  const toggleCobro = useCallback((k: string) => setSt(s => {
     const cobros = { ...s.cobros };
-    if (cobros[mes]) delete cobros[mes]; else cobros[mes] = true;
+    if (cobros[k]) delete cobros[k]; else cobros[k] = true;
+    return { ...s, cobros };
+  }), []);
+  const setCobros = useCallback((claves: string[], on: boolean) => setSt(s => {
+    const cobros = { ...s.cobros };
+    for (const k of claves) { if (on) cobros[k] = true; else delete cobros[k]; }
     return { ...s, cobros };
   }), []);
   const setDolar = useCallback((dolar: number) => editar(d => { d.settings.dolar = dolar; }), [editar]);
 
-  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, toggleSinGasto, togglePago, toggleCobro, marcarCheck, desmarcarCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, sheetGasto, setSheetGasto, gastoEdit, editarGasto, guardarEdicion, mesSel, setMesSel }}>{children}</C.Provider>;
+  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, toggleSinGasto, togglePago, toggleCobro, setCobros, marcarCheck, desmarcarCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, sheetGasto, setSheetGasto, gastoEdit, editarGasto, guardarEdicion, mesSel, setMesSel }}>{children}</C.Provider>;
 }
 
 export function useStore() {

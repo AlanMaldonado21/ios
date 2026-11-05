@@ -7,6 +7,7 @@ import { TextoInline } from '../components/Campos';
 import { CountUp } from '../components/CountUp';
 import { Campo, FilaEditable } from '../components/FilaEditable';
 import { Ic } from '../components/Ic';
+import { CobrosDelMes } from '../components/CobrosDelMes';
 
 export function Ingresos() {
   const { editar } = useStore();
@@ -39,6 +40,8 @@ export function Ingresos() {
           <div><dt>Aguinaldo (jun/dic)</dt><dd className="num">{fmtArs(aguinaldo)}</dd></div>
         </dl>
       </section>
+
+      <CobrosDelMes />
 
       <section className="bloque">
         <div className="bloque-h"><h2>Ingresos mensuales fijos</h2><span className="mu t12">Tocá uno para editarlo</span></div>
