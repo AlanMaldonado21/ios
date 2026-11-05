@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { MEDIOS, TARJETAS, montosFrecuentes, parseMonto, primerPagoCredito, type Medio, type Tarjeta } from '../../../lib/finanzas/diario';
 import type { GastoDiario } from '../../../lib/finanzas/diario';
+import { sumarMeses } from '../../../lib/finanzas/calc';
 import { fmtArs, mesLargo } from '../../../lib/finanzas/format';
 import { hoyISO, useStore } from '../store';
 import { Ic, type IcNombre } from './Ic';
@@ -70,9 +71,13 @@ function Hoja({ inicial, onEditado, onBorrado, onClose, onGuardado, agregar }: {
   const [medio, setMedio] = useState<Medio>(ult.medio);
   const [tarjeta, setTarjeta] = useState<Tarjeta>(ult.tarjeta);
   const [cuotas, setCuotas] = useState(ult.cuotas);
+  /** Mes de la primera cuota elegido a mano; null = el que calcula la tarjeta. */
+  const [mesPago, setMesPago] = useState<string | null>(inicial?.primerPago ?? null);
   const [fecha, setFecha] = useState(inicial?.fecha ?? hoyISO());
   const [otraFecha, setOtraFecha] = useState(!!inicial && inicial.fecha !== hoyISO() && inicial.fecha !== ayerISO());
   const n = parseMonto(monto);
+  const mesAuto = primerPagoCredito(fecha, tarjeta);
+  const mesPrimera = mesPago ?? mesAuto;
   // Categoría elegida (chip) y detalle libre opcional para "Otros". El gasto se guarda con el detalle si hay, si no con la categoría.
   const inicialLibre = !TIPOS.some(x => x.t === ult.tipo);
   const [cat, setCat] = useState(inicialLibre ? OTROS : ult.tipo);
@@ -91,10 +96,10 @@ function Hoja({ inicial, onEditado, onBorrado, onClose, onGuardado, agregar }: {
     if (!puede) return;
     const t = tipoFinal;
     if (inicial) {
-      onEditado(medio === 'credito' ? { id: inicial.id, fecha, tipo: t, monto: n, medio, tarjeta, cuotas } : { id: inicial.id, fecha, tipo: t, monto: n, medio });
+      onEditado(medio === 'credito' ? { id: inicial.id, fecha, tipo: t, monto: n, medio, tarjeta, cuotas, ...(mesPago ? { primerPago: mesPago } : {}) } : { id: inicial.id, fecha, tipo: t, monto: n, medio });
       return;
     }
-    const id = agregar(medio === 'credito' ? { fecha, tipo: t, monto: n, medio, tarjeta, cuotas } : { fecha, tipo: t, monto: n, medio });
+    const id = agregar(medio === 'credito' ? { fecha, tipo: t, monto: n, medio, tarjeta, cuotas, ...(mesPago ? { primerPago: mesPago } : {}) } : { fecha, tipo: t, monto: n, medio });
     guardarUlt({ tipo: cat, medio, tarjeta, cuotas });
     window.Comun?.haptic(10);
     onGuardado(id, `Guardado: ${t}, ${fmtArs(n)}, ${MEDIOS.find(m => m.id === medio)!.label.toLowerCase()}.`);
@@ -144,9 +149,14 @@ function Hoja({ inicial, onEditado, onBorrado, onClose, onGuardado, agregar }: {
             <div className="cuotas-sel">
               {[1, 3, 6, 9, 12, 18].map(c => <button key={c} className={cuotas === c ? 'on' : ''} onClick={() => setCuotas(c)}>{c}</button>)}
             </div>
+            <span className="add-l">Primera cuota en</span>
+            <select className="sel-mes" aria-label="Mes de la primera cuota" value={mesPago ?? ''} onChange={e => setMesPago(e.target.value || null)}>
+              <option value="">Automático · {mesLargo(mesAuto)}</option>
+              {[-1, 1, 2, 3].map(d => { const m = sumarMeses(mesAuto, d); return <option key={m} value={m}>{mesLargo(m)}</option>; })}
+            </select>
             <p className="cred-prev">
               {n > 0
-                ? <>{cuotas === 1 ? 'Un pago' : `${cuotas} cuotas`} de <b className="num">{fmtArs(n / cuotas)}</b> · {cuotas === 1 ? 'se paga' : 'la primera'} en <b>{mesLargo(primerPagoCredito(fecha, tarjeta))}</b></>
+                ? <>{cuotas === 1 ? 'Un pago' : `${cuotas} cuotas`} de <b className="num">{fmtArs(n / cuotas)}</b> · {cuotas === 1 ? 'se paga' : 'la primera'} en <b>{mesLargo(mesPrimera)}</b></>
                 : <>Se suma solo a Cuotas del plan · {tarjeta === 'BNA Visa' ? 'BNA cierra el 22' : 'se paga el mes siguiente'}</>}
             </p>
           </div>

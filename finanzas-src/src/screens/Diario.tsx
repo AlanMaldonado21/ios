@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { sumarMeses } from '../../../lib/finanzas/calc';
-import { MEDIOS, TARJETAS, type Medio, acumuladoDiario, agruparPorDia, gastosAlContado, gastosDelMes, primerPagoCredito, primerRegistro, totalGastos, totalPorMedio, totalPorTipo } from '../../../lib/finanzas/diario';
+import { MEDIOS, TARJETAS, type Medio, acumuladoDiario, agruparPorDia, gastosAlContado, gastosDelMes, primerPagoDe, primerRegistro, totalGastos, totalPorMedio, totalPorTipo } from '../../../lib/finanzas/diario';
 import { fmtArs, mesCorto, mesLargo } from '../../../lib/finanzas/format';
 import { hoyISO, usePlan, useStore } from '../store';
 import { CountUp } from '../components/CountUp';
@@ -176,7 +176,7 @@ export function Diario() {
                     <IcTipo t={g.tipo} />
                     <span className="gd-t"><b>{g.tipo}</b>
                       <MedioTag medio={g.medio}>{g.medio === 'credito' && g.tarjeta
-                        ? `${TARJETAS.find(t => t.id === g.tarjeta)?.corto} · ${(g.cuotas ?? 1) === 1 ? '1 pago' : `${g.cuotas} cuotas`} · desde ${mesCorto(primerPagoCredito(g.fecha, g.tarjeta))}`
+                        ? `${TARJETAS.find(t => t.id === g.tarjeta)?.corto} · ${(g.cuotas ?? 1) === 1 ? '1 pago' : `${g.cuotas} cuotas`} · desde ${mesCorto(primerPagoDe(g))}`
                         : undefined}</MedioTag>
                     </span>
                     <b className="gd-v num">{fmtArs(g.monto)}</b>

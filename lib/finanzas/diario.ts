@@ -23,6 +23,8 @@ export type GastoDiario = {
   /** Solo crédito */
   tarjeta?: Tarjeta;
   cuotas?: number;
+  /** Solo crédito, opcional: mes de la primera cuota si no es el que se calcula solo (cierre de la tarjeta). */
+  primerPago?: Mes;
 };
 
 /** Mes en que se paga la primera cuota de una compra con crédito. */
@@ -33,13 +35,16 @@ export function primerPagoCredito(fecha: string, tarjeta: Tarjeta): Mes {
   return sumarMeses(mes, 1);
 }
 
+/** Mes de la primera cuota: el que elegiste a mano o, si no, el calculado por el cierre. */
+export const primerPagoDe = (g: GastoDiario): Mes => g.primerPago ?? primerPagoCredito(g.fecha, g.tarjeta ?? 'MercadoPago');
+
 /** Una compra con crédito se convierte en cuota del plan (aunque sea en 1 pago). */
 export function cuotaDesdeGasto(g: GastoDiario): Cuota | null {
   if (g.medio !== 'credito' || !g.tarjeta) return null;
   const n = Math.max(1, Math.round(g.cuotas ?? 1));
   return {
     id: `g-${g.id}`, origen: g.id, concepto: g.tipo, tarjeta: g.tarjeta,
-    cuotaMensual: g.monto / n, cuotasRestantes: n, primerPago: primerPagoCredito(g.fecha, g.tarjeta),
+    cuotaMensual: g.monto / n, cuotasRestantes: n, primerPago: primerPagoDe(g),
   };
 }
 

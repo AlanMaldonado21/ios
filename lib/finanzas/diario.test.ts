@@ -131,3 +131,13 @@ describe('montosFrecuentes', () => {
     expect(r).toEqual([5000, 3000]);
   });
 });
+
+describe('primer pago elegido a mano', () => {
+  const g = { id: 'x', fecha: '2026-11-05', tipo: 'Ropa', monto: 90000, medio: 'credito' as const, tarjeta: 'MercadoPago' as const, cuotas: 3 };
+  it('sin elegir usa el cierre de la tarjeta', () => {
+    expect(cuotaDesdeGasto(g)!.primerPago).toBe('2026-12');
+  });
+  it('si lo elegís, manda lo elegido', () => {
+    expect(cuotaDesdeGasto({ ...g, primerPago: '2027-01' })!.primerPago).toBe('2027-01');
+  });
+});
