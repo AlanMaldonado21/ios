@@ -1,10 +1,10 @@
 import { Ic, type IcNombre } from '../components/Ic';
 
 const ITEMS: { h: string; i: IcNombre; t: string; d: string }[] = [
+  { h: '#/gastos', i: 'receipt', t: 'Gastos fijos', d: 'Marcá lo que ya pagaste' },
   { h: '#/mes', i: 'calendar-days', t: 'Detalle del mes', d: 'Ahorro, reparto y apertura' },
   { h: '#/ingresos', i: 'landmark', t: 'Ingresos', d: 'Sueldo, fijos y comisión' },
   { h: '#/cuotas', i: 'credit-card', t: 'Cuotas', d: 'Lo que debés con tarjeta' },
-  { h: '#/gastos', i: 'receipt', t: 'Gastos fijos', d: 'Servicios y suscripciones' },
   { h: '#/config', i: 'settings', t: 'Configuración', d: 'Meta, dólar, cuenta y sincronización' },
 ];
 

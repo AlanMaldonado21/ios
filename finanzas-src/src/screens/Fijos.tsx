@@ -7,6 +7,7 @@ import { TextoInline } from '../components/Campos';
 import { CountUp } from '../components/CountUp';
 import { Campo, FilaEditable } from '../components/FilaEditable';
 import { Ic } from '../components/Ic';
+import { PagosDelMes } from '../components/PagosDelMes';
 
 export function Fijos() {
   const { editar } = useStore();
@@ -29,6 +30,8 @@ export function Fijos() {
           <div><dt>Suscripciones en USD</dt><dd className="num">{fmtArs(subs)}</dd></div>
         </dl>
       </section>
+
+      <PagosDelMes que="fijos" />
 
       <section className="bloque">
         <div className="bloque-h"><h2>Gastos fijos</h2><span className="mu t12">Tocá uno para editarlo</span></div>

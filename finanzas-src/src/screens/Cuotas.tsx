@@ -11,6 +11,7 @@ import { Plegable } from '../components/Plegable';
 import { CountUp } from '../components/CountUp';
 import { Campo, FilaEditable } from '../components/FilaEditable';
 import { Ic } from '../components/Ic';
+import { PagosDelMes } from '../components/PagosDelMes';
 
 const corta = (t: string) => (t.startsWith('BNA') ? 'BNA' : 'MP');
 /** "2026-11-03" → "3/11/26" */
@@ -71,6 +72,7 @@ export function Cuotas() {
         </div>
       </section>
 
+      <PagosDelMes que="cuotas" />
       {nombreFiltro && (
         <div className="filtro-tj" role="status">
           <span>Solo <b>{nombreFiltro}</b> · falta <b className="num">{fmtArs(totalFiltro)}</b></span>
