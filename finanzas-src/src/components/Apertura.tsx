@@ -101,6 +101,7 @@ export function Apertura({ m, data }: { m: MesCalc; data: FinData }) {
             detalle={<><Pips n={c.numero} total={c.total} /> {c.numero === c.total ? 'última cuota' : `cuota ${c.numero} de ${c.total}`}</>}
             valor={fmtArs(c.monto)} check={ck('c', c.id, c.concepto)} />
         ))}
+        <PagarTarjetas m={m} />
       </Grupo>
 
       <Grupo ico="receipt" titulo="Gastos fijos" signo="−" total={m.gastos} tono="c4">
@@ -116,6 +117,29 @@ export function Apertura({ m, data }: { m: MesCalc; data: FinData }) {
         <b className="num"><CountUp value={m.libre} format={fmtArs} ms={600} /></b>
       </div>
       <CajaReal m={m} />
+    </div>
+  );
+}
+
+/** "Pagué la tarjeta": marca de una vez todas las cuotas de esa tarjeta en el mes. */
+export function PagarTarjetas({ m }: { m: MesCalc }) {
+  const { pagos, setPagos } = useStore();
+  const tarjetas = [...new Set(m.cuotasDetalle.map(c => c.tarjeta))];
+  if (tarjetas.length === 0) return null;
+  return (
+    <div className="pagar-tj">
+      {tarjetas.map(t => {
+        const cs = m.cuotasDetalle.filter(c => c.tarjeta === t);
+        const claves = cs.map(c => kPago(m.mes, 'c', c.id));
+        const todo = claves.every(k => pagos[k]);
+        const total = cs.reduce((a, c) => a + c.monto, 0);
+        return (
+          <button key={t} className={`b-cobro ${todo ? 'on' : ''}`} onClick={() => setPagos(claves, !todo)} aria-pressed={todo}>
+            <Ic n={todo ? 'check' : 'credit-card'} size="s" />{todo ? `Pagué ${t}` : `Pagué la ${t}`}
+            <small>{fmtArs(total)} · {todo ? 'tocá para deshacer' : 'marca sus cuotas'}</small>
+          </button>
+        );
+      })}
     </div>
   );
 }

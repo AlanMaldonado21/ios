@@ -2,7 +2,7 @@ import { mesActualDelPlan } from '../../../lib/finanzas/calc';
 import { fmtArs, fmtUsd, mesLargo } from '../../../lib/finanzas/format';
 import { kPago } from '../../../lib/finanzas/pagos';
 import { hoyMes, usePlan, useStore } from '../store';
-import { BotonCobro, CajaReal, Fila } from './Apertura';
+import { BotonCobro, CajaReal, Fila, PagarTarjetas } from './Apertura';
 
 /** Lista de "qué pagué este mes" (gastos fijos y suscripciones, o cuotas) con casilla, más la caja real. */
 export function PagosDelMes({ que }: { que: 'fijos' | 'cuotas' }) {
@@ -23,6 +23,7 @@ export function PagosDelMes({ que }: { que: 'fijos' | 'cuotas' }) {
     <section className="bloque">
       <div className="bloque-h"><h2>Pagos de {mesLargo(m.mes)}</h2><span className="mu t12">Tildá lo que ya pagaste</span></div>
       {filas.length === 0 ? <p className="mu vacio">Este mes no tenés nada para pagar acá.</p> : <div className="pagos-l">{filas}</div>}
+      {que === 'cuotas' && <PagarTarjetas m={m} />}
       <BotonCobro m={m} />
       <CajaReal m={m} />
     </section>
