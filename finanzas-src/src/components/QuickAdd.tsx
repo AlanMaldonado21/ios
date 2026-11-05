@@ -50,7 +50,7 @@ export function QuickAdd() {
 
   return (
     <>
-      {sheetGasto && <Hoja key={gastoEdit?.id ?? 'nuevo'} inicial={gastoEdit} onEditado={g => { guardarEdicion(g); setSheetGasto(false); setAviso({ id: g.id, msg: 'Gasto actualizado.', sinDeshacer: true }); }} onClose={() => setSheetGasto(false)} onGuardado={(id, msg) => { setSheetGasto(false); setAviso({ id, msg }); }} agregar={agregarGasto} />}
+      {sheetGasto && <Hoja key={gastoEdit?.id ?? 'nuevo'} inicial={gastoEdit} onBorrado={id => { borrarGasto(id); setSheetGasto(false); setAviso({ id, msg: 'Gasto borrado.', sinDeshacer: true }); }} onEditado={g => { guardarEdicion(g); setSheetGasto(false); setAviso({ id: g.id, msg: 'Gasto actualizado.', sinDeshacer: true }); }} onClose={() => setSheetGasto(false)} onGuardado={(id, msg) => { setSheetGasto(false); setAviso({ id, msg }); }} agregar={agregarGasto} />}
       <div className={`toast ${aviso ? 'on' : ''}`} role="status" aria-live="polite">
         <span>{aviso?.msg}</span>
         {aviso && !aviso.sinDeshacer && <button onClick={() => { borrarGasto(aviso.id); setAviso(null); }}>Deshacer</button>}
@@ -59,12 +59,13 @@ export function QuickAdd() {
   );
 }
 
-function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
-  inicial: GastoDiario | null; onEditado: (g: GastoDiario) => void;
+function Hoja({ inicial, onEditado, onBorrado, onClose, onGuardado, agregar }: {
+  inicial: GastoDiario | null; onEditado: (g: GastoDiario) => void; onBorrado: (id: string) => void;
   onClose: () => void; onGuardado: (id: string, msg: string) => void; agregar: ReturnType<typeof useStore>['agregarGasto'];
 }) {
   const ult = useRef(inicial ? { tipo: inicial.tipo, medio: inicial.medio, tarjeta: inicial.tarjeta ?? ULT0.tarjeta, cuotas: inicial.cuotas ?? 1 } : leerUlt()).current;
   const { gastos } = useStore();
+  const [confBorrar, setConfBorrar] = useState(false);
   const [monto, setMonto] = useState(inicial ? formatearInput(String(inicial.monto).replace('.', ',')) : '');
   const [medio, setMedio] = useState<Medio>(ult.medio);
   const [tarjeta, setTarjeta] = useState<Tarjeta>(ult.tarjeta);
@@ -148,6 +149,14 @@ function Hoja({ inicial, onEditado, onClose, onGuardado, agregar }: {
                 ? <>{cuotas === 1 ? 'Un pago' : `${cuotas} cuotas`} de <b className="num">{fmtArs(n / cuotas)}</b> · {cuotas === 1 ? 'se paga' : 'la primera'} en <b>{mesLargo(primerPagoCredito(fecha, tarjeta))}</b></>
                 : <>Se suma solo a Cuotas del plan · {tarjeta === 'BNA Visa' ? 'BNA cierra el 22' : 'se paga el mes siguiente'}</>}
             </p>
+          </div>
+        )}
+
+        {inicial && (
+          <div className="qa-borrar">
+            {confBorrar
+              ? <span className="gd-del" role="group" aria-label="¿Borrar este gasto?"><button className="si" onClick={() => onBorrado(inicial.id)}>Sí, borrar</button><button onClick={() => setConfBorrar(false)}>No</button></span>
+              : <button className="b-txt neg" onClick={() => setConfBorrar(true)}><Ic n="trash-2" size="s" />Borrar este gasto</button>}
           </div>
         )}
 

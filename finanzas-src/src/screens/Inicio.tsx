@@ -5,13 +5,16 @@ import { PagosMes } from '../components/PagosMes';
 import { IcTipo } from '../components/QuickAdd';
 import { ResumenSemana } from '../components/ResumenSemana';
 import { MedioTag } from '../components/MedioTag';
+import { useState } from 'react';
+import { Ic } from '../components/Ic';
 import { hoyMes, useAhorroReal, usePlan, useStore } from '../store';
 
 const diaCorto = (iso: string) => { const [, m, d] = iso.split('-'); return `${Number(d)}/${Number(m)}`; };
 
 /** Pantalla de todos los días. Protagonista: el gasto del mes (cuánto llevás y cuánto te queda). La meta de ahorro vive en Plan. */
 export function Inicio() {
-  const { gastos, checks, setMesSel, editarGasto } = useStore();
+  const { gastos, checks, setMesSel, editarGasto, borrarGasto } = useStore();
+  const [borrando, setBorrando] = useState<string | null>(null);
   const { meses } = usePlan();
   const { meta } = useAhorroReal();
   const mes = hoyMes();
@@ -32,12 +35,18 @@ export function Inicio() {
           : (
             <ul className="lista">
               {recientes.map(g => (
-                <li key={g.id}>
+                <li key={g.id} className="gd">
                   <button className="gd-main" onClick={() => editarGasto(g)} aria-label={`Editar ${g.tipo}`}>
                     <IcTipo t={g.tipo} />
                     <span className="gd-t"><b>{g.tipo}</b><span><MedioTag medio={g.medio} /> <span className="mu">{diaCorto(g.fecha)}</span></span></span>
                     <b className="gd-v num">{fmtArs(g.monto)}</b>
                   </button>
+                  {borrando === g.id ? (
+                    <span className="gd-del" role="group" aria-label="¿Borrar este gasto?">
+                      <button className="si" onClick={() => { borrarGasto(g.id); setBorrando(null); }}>Borrar</button>
+                      <button onClick={() => setBorrando(null)}>No</button>
+                    </span>
+                  ) : <button className="icon-btn gd-x" onClick={() => setBorrando(g.id)} aria-label={`Borrar ${g.tipo}`}><Ic n="trash-2" size="s" /></button>}
                 </li>
               ))}
             </ul>

@@ -636,3 +636,6 @@ html.teclado .qa .add-monto input{font-size:34px}
 .gs-desg .gs-t{grid-template-columns:minmax(0,1fr) auto;row-gap:6px;padding:6px 0}
 .gs-desg .gs-t>i{grid-column:1/-1;grid-row:2}
 @media (max-width:380px){.gs-medios>button>.medio{font-size:11px}}
+.qa-borrar{margin-top:12px;display:flex}
+.qa-borrar .b-txt{display:inline-flex;align-items:center;gap:6px}
+.pagar-tj .b-cobro{margin-top:8px}

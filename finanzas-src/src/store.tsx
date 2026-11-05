@@ -47,6 +47,8 @@ type Ctx = Estado & {
   toggleSinGasto: (dia: string) => void;
   /** Marca/desmarca un gasto fijo, suscripción o cuota de un mes como pagado (clave de kPago). */
   togglePago: (clave: string) => void;
+  /** Marca (on) o desmarca varios pagos de una vez. */
+  setPagos: (claves: string[], on: boolean) => void;
   /** Marca/desmarca "ya cobré" en un mes. */
   toggleCobro: (clave: string) => void;
   /** Marca (on) o desmarca varias fuentes de cobro de una vez. */
@@ -128,6 +130,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (pagos[k]) delete pagos[k]; else pagos[k] = true;
     return { ...s, pagos };
   }), []);
+  const setPagos = useCallback((claves: string[], on: boolean) => setSt(s => {
+    const pagos = { ...s.pagos };
+    for (const k of claves) { if (on) pagos[k] = true; else delete pagos[k]; }
+    return { ...s, pagos };
+  }), []);
   const toggleCobro = useCallback((k: string) => setSt(s => {
     const cobros = { ...s.cobros };
     if (cobros[k]) delete cobros[k]; else cobros[k] = true;
@@ -140,7 +147,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }), []);
   const setDolar = useCallback((dolar: number) => editar(d => { d.settings.dolar = dolar; }), [editar]);
 
-  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, toggleSinGasto, togglePago, toggleCobro, setCobros, marcarCheck, desmarcarCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, sheetGasto, setSheetGasto, gastoEdit, editarGasto, guardarEdicion, mesSel, setMesSel }}>{children}</C.Provider>;
+  return <C.Provider value={{ ...st, dolar: st.data.settings.dolar, toggleCheck, toggleSinGasto, togglePago, setPagos, toggleCobro, setCobros, marcarCheck, desmarcarCheck, agregarGasto, borrarGasto, setDolar, setTope, editar, guardado, sheetGasto, setSheetGasto, gastoEdit, editarGasto, guardarEdicion, mesSel, setMesSel }}>{children}</C.Provider>;
 }
 
 export function useStore() {
