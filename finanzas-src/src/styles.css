@@ -642,3 +642,31 @@ html.teclado .qa .add-monto input{font-size:34px}
 .filtro-tj{scroll-margin-top:72px}
 .caja-sub{margin:12px 0 0;padding-top:10px;border-top:2px dotted var(--ln2);font:800 var(--t12)/1 var(--sans);color:var(--mu);text-transform:uppercase;letter-spacing:.04em}
 .caja-det .caja-tot{margin-top:4px;padding-top:6px;border-top:2px solid var(--ln2);font-size:var(--t14);font-weight:900;color:var(--pos)}
+
+/* Armar mi mes */
+.arm-pasos{display:flex;gap:6px;list-style:none;margin:0 0 12px;padding:0;overflow-x:auto}
+.arm-pasos li{flex:1;min-width:0}
+.arm-pasos button{width:100%;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:12px;border:2px solid var(--ln2);border-bottom-width:4px;background:var(--card);color:var(--mu);font:900 var(--t12)/1.1 var(--sans);cursor:pointer}
+.arm-pasos button.on{border-color:var(--sel);color:var(--sel)}
+.arm-pasos button.ok{color:var(--acc)}
+.arm-libre{position:sticky;top:8px;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;margin-bottom:12px;border-radius:14px;background:var(--pos-bg);font-weight:900}
+.arm-libre small{display:block;font-weight:700;font-size:var(--t12);color:var(--mu)}
+.arm-libre b{font:900 var(--t20,20px)/1 var(--sans);color:var(--pos)}
+.arm-libre.neg{background:var(--neg-bg)}.arm-libre.neg b{color:var(--neg)}
+.arm-lista{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:10px}
+.arm-fila{display:flex;align-items:flex-start;gap:8px;padding-bottom:10px;border-bottom:2px dotted var(--bg3)}
+.arm-campos{flex:1;min-width:0;display:grid;gap:6px}
+.arm-resta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.arm-com{margin-top:12px}
+.arm-rot{font:800 var(--t12)/1 var(--sans);color:var(--mu);text-transform:uppercase;letter-spacing:.04em}
+.arm-sub{margin-top:18px}
+.arm-pct{display:flex;align-items:center;justify-content:center;gap:18px;margin:12px 0 4px}
+.arm-pct b{font:900 44px/1 var(--sans)}
+.arm-pct-t{text-align:center;margin:0 0 8px}
+.arm-res{margin:0 0 4px;display:grid;gap:6px}
+.arm-res div{display:flex;justify-content:space-between}
+.arm-res dt,.arm-res dd{margin:0}
+.arm-aviso{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--neg-bg);color:var(--neg);font-weight:800}
+.arm-fin{display:block;text-align:center;margin-top:12px}
+.arm-nav{display:flex;justify-content:space-between;gap:8px;margin:14px 0 24px}
+.arm-nav .b-pri{margin-left:auto}
