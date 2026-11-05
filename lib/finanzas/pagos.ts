@@ -34,6 +34,12 @@ export type Caja = {
   ahorro: number;
   /** Gastos al contado del Diario. */
   gastado: number;
+  /** Lo que todavía no cobraste del ingreso del mes. */
+  faltaCobrar: number;
+  /** Ahorro del mes que todavía no separaste. */
+  ahorroPendiente: number;
+  /** Libre del mes después de cobrar y pagar todo, menos lo gastado al contado. Es el mismo "Quedan" de Inicio. */
+  libre: number;
   /** Plata en mano: lo cobrado menos lo pagado, lo ahorrado y lo gastado. */
   enMano: number;
 };
@@ -51,5 +57,10 @@ export function cajaDelMes(m: MesCalc, data: FinData, pagos: Marcas, cobros: Mar
   const entro = cobros[m.mes] ? m.ingresoTotal : fuentesDeCobro(m, data).reduce((a, f) => a + (cobros[f.clave] ? f.monto : 0), 0);
   const cobrado = entro > 0;
   const ahorro = ahorroSeparado ? m.ahorroPesos : 0;
-  return { cobrado, entro, pagado, falta, ahorro, gastado, enMano: entro - pagado - ahorro - gastado };
+  return {
+    cobrado, entro, pagado, falta, ahorro, gastado,
+    faltaCobrar: m.ingresoTotal - entro, ahorroPendiente: m.ahorroPesos - ahorro,
+    libre: m.libre - gastado,
+    enMano: entro - pagado - ahorro - gastado,
+  };
 }

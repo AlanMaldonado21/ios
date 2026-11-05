@@ -41,4 +41,10 @@ describe('cajaDelMes', () => {
   it('la marca vieja del mes cuenta como todo cobrado', () => {
     expect(cajaDelMes(m, data, {}, { [m.mes]: true }, false, 0).entro).toBe(m.ingresoTotal);
   });
+  it('el puente cierra: en caja + falta cobrar − falta pagar − ahorro pendiente = libre', () => {
+    const i = data.ingresosFijos[0], g = data.gastosFijos[0];
+    const c = cajaDelMes(m, data, { [kPago(m.mes, 'f', g.id)]: true }, { [kCobro(m.mes, 'i', i.id)]: true }, false, 5000);
+    expect(c.enMano + c.faltaCobrar - c.falta - c.ahorroPendiente).toBeCloseTo(c.libre);
+    expect(c.libre).toBeCloseTo(m.libre - 5000);
+  });
 });

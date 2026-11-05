@@ -32,7 +32,7 @@ function Registro() {
   const marcadoHoy = sinGasto.includes(hoy);
   return (
     <div className="registro">
-      <p>{r.dias > 0 ? <>Registraste <b className="num">{r.dias}</b> {r.dias === 1 ? 'día' : 'días'} seguidos.</> : 'Sin racha de registro todavía.'}
+      <p>{r.dias > 0 ? <>Registraste <b className="num">{r.dias}</b> {r.dias === 1 ? 'día seguido' : 'días seguidos'}.</> : 'Sin racha de registro todavía.'}
         {!r.hoy && r.dias > 0 ? <span className="mu"> Hoy falta cargar.</span> : null}</p>
       {!conGastoHoy && (
         <button className={marcadoHoy ? 'b-sec on' : 'b-sec'} aria-pressed={marcadoHoy} onClick={() => { toggleSinGasto(hoy); window.Comun?.haptic(10); }}>
