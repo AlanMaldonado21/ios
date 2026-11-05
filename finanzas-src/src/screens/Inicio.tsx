@@ -27,7 +27,7 @@ function PendienteMes({ m }: { m: NonNullable<ReturnType<typeof usePlan>['meses'
 export function Inicio() {
   const { gastos, checks, setMesSel, editarGasto, borrarGasto } = useStore();
   const [borrando, setBorrando] = useState<string | null>(null);
-  const { meses } = usePlan();
+  const { meses, data } = usePlan();
   const { meta } = useAhorroReal();
   const mes = hoyMes();
   const planMes = meses.find(m => m.mes === mes);
@@ -37,6 +37,9 @@ export function Inicio() {
   return (
     <div className="dash">
       <h1 className="vh">Inicio</h1>
+      {data.ingresosFijos.length === 0 && (
+        <a className="renglon-link" href="#/armar"><span><b>Armá tu mes</b> en 2 minutos: ingresos, fijos y cuotas.</span><span className="mu">Empezar →</span></a>
+      )}
       <ComoVoy librePlan={planMes?.libre ?? null} />
       {planMes && <PendienteMes m={planMes} />}
       <HabitosHoy />

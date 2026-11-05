@@ -2,6 +2,7 @@ import { Suspense, useEffect, useState, type ReactNode } from 'react';
 import { Inicio } from './screens/Inicio';
 import { Ingresos } from './screens/Ingresos';
 import { Fijos } from './screens/Fijos';
+import { Armar } from './screens/Armar';
 import { Mas } from './screens/Mas';
 import { Config } from './screens/Config';
 import { ErrorBoundary, lazyConRecarga } from './components/Recuperar';
@@ -17,12 +18,13 @@ const Diario = lazyConRecarga(() => import('./screens/Diario').then(m => ({ defa
 const Plan = lazyConRecarga(() => import('./screens/Plan').then(m => ({ default: m.Plan })));
 const Cuotas = lazyConRecarga(() => import('./screens/Cuotas').then(m => ({ default: m.Cuotas })));
 
-export type Ruta = 'inicio' | 'mas' | 'mes' | 'diario' | 'plan' | 'ingresos' | 'cuotas' | 'gastos' | 'config';
+export type Ruta = 'inicio' | 'mas' | 'mes' | 'diario' | 'plan' | 'ingresos' | 'cuotas' | 'gastos' | 'config' | 'armar';
 
 type Item = { r: Ruta; ico: IcNombre; label: string };
 /** Rail de escritorio: todas las pantallas. */
 const NAV: Item[] = [
   { r: 'inicio', ico: 'house', label: 'Inicio' },
+  { r: 'armar', ico: 'list-checks', label: 'Armar mi mes' },
   { r: 'diario', ico: 'notebook-pen', label: 'Diario' },
   { r: 'plan', ico: 'calendar-range', label: 'Plan' },
   { r: 'mes', ico: 'calendar-days', label: 'Detalle del mes' },
@@ -34,9 +36,9 @@ const NAV: Item[] = [
 const TABS_A: Item[] = [{ r: 'inicio', ico: 'house', label: 'Inicio' }, { r: 'diario', ico: 'notebook-pen', label: 'Diario' }];
 const TABS_B: Item[] = [{ r: 'plan', ico: 'calendar-range', label: 'Plan' }, { r: 'mas', ico: 'ellipsis', label: 'Más' }];
 /** Qué solapa del celu se ilumina para cada ruta. */
-const tabDe = (r: Ruta): Ruta => (['mes', 'ingresos', 'cuotas', 'gastos', 'config'].includes(r) ? 'mas' : r);
+const tabDe = (r: Ruta): Ruta => (['mes', 'ingresos', 'cuotas', 'gastos', 'config', 'armar'].includes(r) ? 'mas' : r);
 
-const RUTAS: Ruta[] = ['inicio', 'mas', 'mes', 'diario', 'plan', 'ingresos', 'cuotas', 'gastos', 'config'];
+const RUTAS: Ruta[] = ['inicio', 'mas', 'mes', 'diario', 'plan', 'ingresos', 'cuotas', 'gastos', 'config', 'armar'];
 function useRuta(): Ruta {
   const leer = () => { const r = location.hash.replace(/^#\/?/, '') as Ruta; return RUTAS.includes(r) ? r : 'inicio'; };
   const [r, setR] = useState<Ruta>(leer);
@@ -92,6 +94,7 @@ export function App() {
     case 'plan': vista = <Plan />; break;
     case 'cuotas': vista = <Cuotas />; break;
     case 'gastos': vista = <Fijos />; break;
+    case 'armar': vista = <Armar />; break;
     case 'mas': vista = <Mas />; break;
     case 'config': vista = <Config />; break;
     default: vista = <Inicio />;

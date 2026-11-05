@@ -1,6 +1,7 @@
 import { Ic, type IcNombre } from '../components/Ic';
 
 const ITEMS: { h: string; i: IcNombre; t: string; d: string }[] = [
+  { h: '#/armar', i: 'list-checks', t: 'Armar mi mes', d: 'Paso a paso: ingresos, fijos, cuotas y ahorro' },
   { h: '#/gastos', i: 'receipt', t: 'Gastos fijos', d: 'Marcá lo que ya pagaste' },
   { h: '#/mes', i: 'calendar-days', t: 'Detalle del mes', d: 'Ahorro, reparto y apertura' },
   { h: '#/ingresos', i: 'landmark', t: 'Ingresos', d: 'Sueldo, fijos y comisión' },
