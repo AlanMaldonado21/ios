@@ -93,8 +93,19 @@ button.fe-h:hover{background:var(--hover)}
 .plegable-b{padding-top:8px}
 details.plegado>summary{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;min-height:44px;cursor:pointer;list-style:none}
 details.plegado>summary::-webkit-details-marker{display:none}
-details.plegado>summary::after{content:"Mostrar";font:900 var(--t14)/1 var(--sans);color:var(--sel)}
-details.plegado[open]>summary::after{content:"Ocultar"}
+details.plegado>summary{align-items:center;flex-wrap:nowrap}
+details.plegado>summary>h2{flex:1}
+details.plegado>summary::after{content:"";flex:none;width:9px;height:9px;margin:0 6px 4px;border-right:2.5px solid var(--mu);border-bottom:2.5px solid var(--mu);transform:rotate(45deg);transition:transform var(--dur) var(--ease)}
+details.plegado[open]>summary::after{transform:translateY(4px) rotate(225deg)}
+.plegable .plg-v{font-weight:900;white-space:nowrap}
+.plegable .plg-v small{font-size:var(--t12);margin-left:2px}
+.plegable-b{animation:fade var(--dur) var(--ease)}
+.prot-izq{flex:1;min-width:0}
+.prot-rep{align-items:center}
+.prot-rep .dona-g{width:84px;height:84px}
+.prot-izq .cifra{white-space:nowrap}
+.plegable>span:first-child h2{font-size:var(--t18,18px)}
+.pesa .gs-t i{background:var(--ct)}
 details.plegado>summary h2{font-size:var(--t20)}
 
 /* cifra protagonista + mini datos */
@@ -195,9 +206,22 @@ details.plegado>summary h2{font-size:var(--t20)}
 .gs-graf{margin-top:16px}
 .gs-graf p{margin:4px 0 0}
 .gs-medios{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 0}
-.gs-medios>div{padding:10px;border-radius:14px;background:var(--bg3)}
-.gs-medios dt{font-size:var(--t12)}
-.gs-medios dd{margin:6px 0 0;font-size:var(--t16);font-weight:900}
+.gs-medios>button{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;padding:10px;border:2px solid transparent;border-bottom-width:4px;border-radius:14px;background:var(--bg3);color:inherit;text-align:left;cursor:pointer;transition:transform 110ms var(--ease),border-color var(--dur) var(--ease),background var(--dur) var(--ease)}
+.gs-medios>button:hover:not(:disabled){border-color:var(--ln2)}
+.gs-medios>button:active:not(:disabled){transform:translateY(2px);border-bottom-width:2px}
+.gs-medios>button:disabled{cursor:default;opacity:.7}
+.gs-medios>button b{font-size:var(--t16);font-weight:900}
+.gs-medios>button small{font-size:var(--t12);color:var(--mu)}
+.gs-medios>button[aria-pressed="true"]{background:var(--sel-bg);border-color:var(--sel)}
+.gs-medios>button[aria-pressed="true"] small{color:var(--sel);font-weight:800}
+.gs-desg{margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--bg3);animation:fade var(--dur) var(--ease)}
+.gs-desg-h{display:flex;justify-content:space-between;gap:8px;margin:0 0 6px;font-size:var(--t14)}
+.gs-desg-h b{font-weight:900}
+.gs-desg .gs-t b small{font-weight:800;font-size:var(--t12)}
+.gs-tj{display:flex;flex-wrap:wrap;gap:6px 16px;margin:8px 0 0;font-size:var(--t14)}
+.gs-tj>div{display:flex;gap:6px}
+.gs-tj dt{color:var(--mu)}
+.gs-tj dd{margin:0;font-weight:900}
 .gs-tipos{margin-top:12px;padding-top:4px}
 .gs-tipos summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:900;font-size:var(--t14);color:var(--sel)}
 .gs-t{display:grid;grid-template-columns:minmax(0,150px) 1fr auto;align-items:center;gap:10px;font-size:var(--t14);padding:4px 0}
@@ -344,7 +368,23 @@ li:nth-child(4n+4) .mas-i>.ic:first-child{background:var(--naranja-bg);color:var
 .badge{display:inline-flex;align-items:center;margin-top:4px;padding:4px 10px;border-radius:999px;font:900 var(--t12)/1.4 var(--sans)}
 .b-pos{background:var(--pos-bg);color:var(--pos)}
 .b-warn{background:var(--warn-bg);color:var(--warn)}
-.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.hero-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:16px}
+.hero-stats .dest{background:var(--sel-bg);box-shadow:inset 0 0 0 2px var(--sel)}
+.hero-stats .dest span,.hero-stats .dest b{color:var(--sel)}
+.hero-acc{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}
+.hero-acc .badge{margin-top:0}
+.meta-ed-b{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border:2px solid var(--ln2);border-bottom-width:3px;border-radius:999px;background:var(--card);color:var(--sel);font:900 var(--t12)/1 var(--sans);cursor:pointer}
+.meta-ed-b:active{transform:translateY(1px);border-bottom-width:2px}
+.meta-ed-b.on{background:var(--acc);border-color:var(--acc-sh);color:#fff}
+.meta-ed{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px;padding:14px;border-radius:16px;background:var(--bg3);animation:pop 260ms var(--spring)}
+.meta-ed-c{display:flex;flex-direction:column;gap:8px;min-width:0}
+.meta-ed-l{font-size:var(--t12);font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--mu)}
+.meta-ed .money{width:100%}
+.meta-ed .sel-mes{width:100%}
+.meta-ed-chips{display:flex;gap:6px;flex-wrap:wrap}
+.meta-ed-chips button{flex:1;min-height:36px;border:2px solid var(--ln2);border-bottom-width:3px;border-radius:12px;background:var(--card);color:var(--tx);font:800 var(--t14)/1 var(--sans);cursor:pointer}
+.meta-ed-chips button:active{transform:translateY(1px);border-bottom-width:2px}
+.strip-ayuda{margin:-6px 4px 8px}
 .hero-stats div{padding:10px;border-radius:14px;background:var(--bg3);display:flex;flex-direction:column;gap:2px;min-width:0}
 .hero-stats span{font-size:var(--t12);color:var(--mu);font-weight:800}
 .hero-stats b{font:900 var(--t16)/1.2 var(--sans)}
@@ -538,6 +578,8 @@ li:nth-child(4n+4) .mas-i>.ic:first-child{background:var(--naranja-bg);color:var
   .grid-plan .span2{grid-column:span 2}
   .hero{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:32px}
   .hero-stats{margin-top:0}
+  .hero .meta-ed{order:1;margin-top:0}
+  .hero-leg{order:2;grid-column:1/-1;margin-top:0}
 }
 @media (min-width:900px) and (max-width:1100px){.hero{grid-template-columns:1fr}}
 .cifra .num,.hero-n .num,.cv-n.num,.prog-n b .num,.chk-sum b,.libre b .num{letter-spacing:-.02em}
@@ -573,3 +615,24 @@ html.teclado .qa .add-monto input{font-size:34px}
 .caja-det{margin:10px 0 0;display:grid;gap:4px}
 .caja-det div{display:flex;justify-content:space-between;font-size:var(--t12);color:var(--mu)}
 .caja-det dt,.caja-det dd{margin:0}
+
+/* Cuotas: tarjetas que filtran por banco */
+.mini .mini-r{display:block;font-size:var(--t12);color:var(--mu)}
+.mini>div>b{display:block;margin:2px 0 0;font-size:var(--t16);font-weight:900}
+.mini>.mini-tj{padding:0;background:none}
+.mini-tj button{display:flex;flex-direction:column;align-items:flex-start;width:100%;height:100%;padding:10px 12px;border:2px solid transparent;border-bottom-width:4px;border-radius:14px;background:var(--bg3);color:inherit;text-align:left;cursor:pointer;transition:transform 110ms var(--ease),background var(--dur) var(--ease),border-color var(--dur) var(--ease)}
+.mini-tj button:hover{border-color:var(--ln2)}
+.mini-tj button:active{transform:translateY(2px);border-bottom-width:2px}
+.mini-tj button b{margin:2px 0 0;font-size:var(--t16);font-weight:900}
+.mini-tj button small{margin-top:4px;font-size:var(--t12);color:var(--mu)}
+.mini-tj button[aria-pressed="true"]{background:var(--sel-bg);border-color:var(--sel)}
+.mini-tj button[aria-pressed="true"] .mini-r,.mini-tj button[aria-pressed="true"] small{color:var(--sel)}
+.filtro-tj{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 14px;margin:0 0 14px;border:2px solid var(--sel);border-radius:var(--r-l);background:var(--sel-bg);color:var(--sel);font-size:var(--t14)}
+.filtro-tj .b-txt{display:inline-flex;align-items:center;gap:4px;min-height:36px}
+.fe-fecha{display:inline-flex;align-items:center;gap:4px}
+
+/* Diario: desglose por medio de pago */
+.gs-medios>button>.medio{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gs-desg .gs-t{grid-template-columns:minmax(0,1fr) auto;row-gap:6px;padding:6px 0}
+.gs-desg .gs-t>i{grid-column:1/-1;grid-row:2}
+@media (max-width:380px){.gs-medios>button>.medio{font-size:11px}}
