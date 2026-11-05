@@ -7,11 +7,23 @@ import { ResumenSemana } from '../components/ResumenSemana';
 import { MedioTag } from '../components/MedioTag';
 import { useState } from 'react';
 import { Ic } from '../components/Ic';
-import { hoyMes, useAhorroReal, usePlan, useStore } from '../store';
+import { hoyMes, useAhorroReal, useCaja, usePlan, useStore } from '../store';
 
 const diaCorto = (iso: string) => { const [, m, d] = iso.split('-'); return `${Number(d)}/${Number(m)}`; };
 
 /** Pantalla de todos los días. Protagonista: el gasto del mes (cuánto llevás y cuánto te queda). La meta de ahorro vive en Plan. */
+/** Lo que todavía falta mover este mes: cobrar y pagar. Lleva a donde se marca. */
+function PendienteMes({ m }: { m: NonNullable<ReturnType<typeof usePlan>['meses'][number]> }) {
+  const c = useCaja(m);
+  if (c.faltaCobrar <= 0 && c.falta <= 0) return null;
+  return (
+    <a className="renglon-link" href="#/gastos">
+      <span>Este mes: falta cobrar <b className="num">{fmtArs(c.faltaCobrar)}</b> · falta pagar <b className="num">{fmtArs(c.falta)}</b></span>
+      <span className="mu">Marcar →</span>
+    </a>
+  );
+}
+
 export function Inicio() {
   const { gastos, checks, setMesSel, editarGasto, borrarGasto } = useStore();
   const [borrando, setBorrando] = useState<string | null>(null);
@@ -26,6 +38,7 @@ export function Inicio() {
     <div className="dash">
       <h1 className="vh">Inicio</h1>
       <ComoVoy librePlan={planMes?.libre ?? null} />
+      {planMes && <PendienteMes m={planMes} />}
       <HabitosHoy />
 
       <section className="bloque">

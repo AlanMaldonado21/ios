@@ -171,7 +171,13 @@ export function CajaReal({ m }: { m: MesCalc }) {
         <div><dt>Pagado</dt><dd className="num">− {fmtArs(c.pagado)}</dd></div>
         {c.ahorro > 0 && <div><dt>Ahorro separado</dt><dd className="num">− {fmtArs(c.ahorro)}</dd></div>}
         {c.gastado > 0 && <div><dt>Gastado al contado</dt><dd className="num">− {fmtArs(c.gastado)}</dd></div>}
-        <div><dt>Falta pagar</dt><dd className="num">{fmtArs(c.falta)}</dd></div>
+      </dl>
+      <p className="caja-sub">Para llegar a lo que te queda libre</p>
+      <dl className="caja-det">
+        <div><dt>Falta cobrar</dt><dd className="num">+ {fmtArs(c.faltaCobrar)}</dd></div>
+        <div><dt>Falta pagar</dt><dd className="num">− {fmtArs(c.falta)}</dd></div>
+        <div><dt>Ahorro por separar</dt><dd className="num">− {fmtArs(c.ahorroPendiente)}</dd></div>
+        <div className="caja-tot"><dt>Te queda libre</dt><dd className="num">{fmtArs(c.libre)}</dd></div>
       </dl>
     </div>
   );
