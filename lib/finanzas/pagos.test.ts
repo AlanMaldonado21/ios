@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { calcularPlan } from './calc';
-import { cajaDelMes, kPago } from './pagos';
+import { cajaDelMes, fuentesDeCobro, kCobro, kPago } from './pagos';
 import { SEED } from './seed';
 
 const data = JSON.parse(JSON.stringify(SEED));
@@ -29,5 +29,16 @@ describe('cajaDelMes', () => {
     const g = data.gastosFijos[0];
     const c = cajaDelMes(m, data, { [kPago(m.mes, 'f', g.id)]: true }, {}, false, 0);
     expect(c.pagado + c.falta).toBeCloseTo(m.gastos + m.cuotas);
+  });
+  it('cobro por fuente: solo suma lo marcado', () => {
+    const f = fuentesDeCobro(m, data);
+    expect(f.reduce((a, x) => a + x.monto, 0)).toBeCloseTo(m.ingresoTotal);
+    const i = data.ingresosFijos[0];
+    const c = cajaDelMes(m, data, {}, { [kCobro(m.mes, 'i', i.id)]: true }, false, 0);
+    expect(c.entro).toBe(i.montoMensual);
+    expect(c.cobrado).toBe(true);
+  });
+  it('la marca vieja del mes cuenta como todo cobrado', () => {
+    expect(cajaDelMes(m, data, {}, { [m.mes]: true }, false, 0).entro).toBe(m.ingresoTotal);
   });
 });

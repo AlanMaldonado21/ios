@@ -4,8 +4,8 @@ import type { FinData } from '../../../lib/finanzas/types';
 import { fmtArs, fmtPct, fmtUsd, mesCorto } from '../../../lib/finanzas/format';
 import { CountUp } from './CountUp';
 import { Ic, type IcNombre } from './Ic';
-import { kPago, type TipoPago } from '../../../lib/finanzas/pagos';
-import { useCaja, useStore } from '../store';
+import { fuentesDeCobro, kCobro, kPago, type TipoPago } from '../../../lib/finanzas/pagos';
+import { useCaja, usePlan, useStore } from '../store';
 
 function Grupo({ ico, titulo, signo, total, tono, children, extra }: {
   ico: IcNombre; titulo: string; signo: '+' | '−'; total: number; tono: string; children: ReactNode; extra?: ReactNode;
@@ -22,6 +22,21 @@ function Grupo({ ico, titulo, signo, total, tono, children, extra }: {
       <div className="grp-b"><div>{children}</div></div>
     </div>
   );
+}
+
+/** Casilla "ya cobré" de cada fuente de ingreso. Sabe leer la marca vieja de todo el mes. */
+export function useCobroCheck(m: MesCalc) {
+  const { cobros, toggleCobro, setCobros } = useStore();
+  const { data } = usePlan();
+  return (clave: string, nombre: string) => ({
+    on: !!cobros[clave] || !!cobros[m.mes],
+    nombre,
+    onToggle: () => {
+      if (!cobros[m.mes]) { toggleCobro(clave); return; }
+      setCobros([m.mes], false); // pasa de "todo cobrado" a marcar cada fuente salvo esta
+      setCobros(fuentesDeCobro(m, data).map(f => f.clave).filter(k => k !== clave), true);
+    },
+  });
 }
 
 /** Casilla "ya lo pagué". */
@@ -55,14 +70,15 @@ function Pips({ n, total }: { n: number; total: number }) {
 export function Apertura({ m, data }: { m: MesCalc; data: FinData }) {
   const dolar = data.settings.dolar;
   const { pagos, togglePago } = useStore();
+  const ci = useCobroCheck(m);
   const ck = (t: TipoPago, id: string, nombre: string) => { const k = kPago(m.mes, t, id); return { on: !!pagos[k], onToggle: () => togglePago(k), nombre }; };
   return (
     <div className="apertura">
       <Grupo ico="landmark" titulo="Ingresos" signo="+" total={m.ingresoTotal} tono="tx">
-        {data.ingresosFijos.map(i => <Fila key={i.id} nombre={i.nombre} detalle={i.esBaseAguinaldo ? 'Sueldo · base del aguinaldo' : 'Fijo mensual'} valor={fmtArs(i.montoMensual)} />)}
-        <Fila nombre={`Comisión ${fmtPct(data.comisionPct)}`} detalle={<>sobre {fmtArs(m.facturacionBase)} facturados en {mesCorto(m.mesFacturado)}</>} valor={fmtArs(m.comision)} />
-        {m.aguinaldo > 0 && <Fila nombre="Aguinaldo" tag={<span className="tag t-pos">extra</span>} detalle="Mitad del sueldo base" valor={fmtArs(m.aguinaldo)} />}
-        <BotonCobro mes={m.mes} />
+        {data.ingresosFijos.map(i => <Fila key={i.id} nombre={i.nombre} detalle={i.esBaseAguinaldo ? 'Sueldo · base del aguinaldo' : 'Fijo mensual'} valor={fmtArs(i.montoMensual)} check={ci(kCobro(m.mes, 'i', i.id), i.nombre)} />)}
+        <Fila nombre={`Comisión ${fmtPct(data.comisionPct)}`} detalle={<>sobre {fmtArs(m.facturacionBase)} facturados en {mesCorto(m.mesFacturado)}</>} valor={fmtArs(m.comision)} check={ci(kCobro(m.mes, 'k'), 'Comisión')} />
+        {m.aguinaldo > 0 && <Fila nombre="Aguinaldo" tag={<span className="tag t-pos">extra</span>} detalle="Mitad del sueldo base" valor={fmtArs(m.aguinaldo)} check={ci(kCobro(m.mes, 'a'), 'Aguinaldo')} />}
+        <BotonCobro m={m} />
       </Grupo>
 
       <Grupo ico="flag" titulo="Ahorro" signo="−" total={m.ahorroPesos} tono="acc"
@@ -104,14 +120,17 @@ export function Apertura({ m, data }: { m: MesCalc; data: FinData }) {
   );
 }
 
-/** Botón "ya cobré / todavía no cobré" del mes. */
-export function BotonCobro({ mes }: { mes: string }) {
-  const { cobros, toggleCobro } = useStore();
-  const on = !!cobros[mes];
+/** Botón "cobré todo / todavía no cobré": marca o desmarca todas las fuentes del mes de una vez. */
+export function BotonCobro({ m }: { m: MesCalc }) {
+  const { cobros, setCobros } = useStore();
+  const { data } = usePlan();
+  const fuentes = fuentesDeCobro(m, data);
+  const n = cobros[m.mes] ? fuentes.length : fuentes.filter(f => cobros[f.clave]).length;
+  const todo = n === fuentes.length;
   return (
-    <button className={`b-cobro ${on ? 'on' : ''}`} onClick={() => toggleCobro(mes)} aria-pressed={on}>
-      <Ic n={on ? 'check' : 'clock'} size="s" />{on ? 'Ya cobré este mes' : 'Todavía no cobré'}
-      <small>{on ? 'Tocá para deshacer' : 'Tocá cuando cobres'}</small>
+    <button className={`b-cobro ${todo ? 'on' : ''}`} onClick={() => { setCobros([m.mes, ...fuentes.map(f => f.clave)], !todo); }} aria-pressed={todo}>
+      <Ic n={todo ? 'check' : 'clock'} size="s" />{todo ? 'Ya cobré todo' : n === 0 ? 'Todavía no cobré' : `Cobré ${n} de ${fuentes.length}`}
+      <small>{todo ? 'Tocá para deshacer' : 'Tocá para marcar todo cobrado'}</small>
     </button>
   );
 }
